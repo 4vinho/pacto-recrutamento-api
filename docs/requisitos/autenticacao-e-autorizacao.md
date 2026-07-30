@@ -25,6 +25,40 @@ Um usuário pode possuir, no máximo, um perfil de candidato:
 Usuario 1 --- 0..1 Candidato
 ```
 
+## Comandos e endpoints
+
+### Cadastrar usuário
+
+```http
+POST /auth/cadastro
+```
+
+Cria uma conta de usuário.
+
+### Autenticar usuário
+
+```http
+POST /auth/login
+```
+
+Valida as credenciais e concede acesso ao sistema.
+
+### Solicitar recuperação de senha
+
+```http
+POST /auth/recuperacao-senha/solicitacoes
+```
+
+Inicia a recuperação e envia ao usuário um token temporário.
+
+### Redefinir senha
+
+```http
+POST /auth/recuperacao-senha/confirmacoes
+```
+
+Valida o token temporário e registra uma nova senha.
+
 ## Regras de negócio
 
 - O e-mail deve identificar um único usuário.
@@ -38,3 +72,4 @@ Usuario 1 --- 0..1 Candidato
 - Dado um usuário com credenciais válidas, quando ele se autenticar, então o acesso deve ser concedido.
 - Dado um usuário com credenciais inválidas, quando ele tentar se autenticar, então o acesso deve ser negado.
 - Dado um usuário sem o papel exigido, quando ele acessar uma funcionalidade restrita, então a operação deve ser rejeitada.
+- Dado um token de recuperação válido, quando o usuário informar uma nova senha, então a senha deve ser redefinida.

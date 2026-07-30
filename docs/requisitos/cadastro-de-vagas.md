@@ -31,6 +31,44 @@ Cada pergunta pertence a exatamente uma vaga e deve informar:
 - Se a resposta é obrigatória.
 - Ordem de apresentação.
 
+## Comandos e endpoints
+
+### Criar vaga
+
+```http
+POST /vagas
+```
+
+### Criar pergunta da vaga
+
+```http
+POST /vagas/{vagaId}/perguntas
+```
+
+### Criar requisito da vaga
+
+```http
+POST /vagas/{vagaId}/requisitos
+```
+
+### Criar template de vaga
+
+```http
+POST /templates-vaga
+```
+
+### Criar pergunta do template
+
+```http
+POST /templates-vaga/{templateId}/perguntas
+```
+
+### Criar requisito do template
+
+```http
+POST /templates-vaga/{templateId}/requisitos
+```
+
 ## Regras de negócio
 
 - Apenas administradores podem cadastrar vagas.
