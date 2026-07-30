@@ -6,6 +6,17 @@ Servir como roadmap executável para a construção do backend, indicando a orde
 
 Este documento não implementa nenhuma etapa. Cada item deve ser realizado e validado antes de seguir para o próximo.
 
+## Escopo atual
+
+Neste momento, somente a fundação técnica deve ser implementada:
+
+- Etapa 1 — Ambiente Docker.
+- Etapa 2 — Dependências e configuração-base.
+- Etapa 3 — Estrutura Clean/Onion.
+- Estrutura inicial da Etapa 5 para habilitar o Flyway, ainda sem migrations de domínio.
+
+Endpoints, entidades, JWT funcional, upload de currículos e demais regras de negócio permanecem documentados como trabalho futuro.
+
 ## Princípios de execução
 
 - Implementar uma etapa pequena por vez.
