@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: recrutamento-api
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/recrutamento}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+server:
+  port: ${SERVER_PORT:8080}
