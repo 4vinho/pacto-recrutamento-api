@@ -2,32 +2,25 @@ package br.com.pacto.recrutamento.core.entities;
 
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@Entity
-@Table(name = "candidaturas", uniqueConstraints = @UniqueConstraint(
-        name = "uk_candidaturas_candidato_vaga", columnNames = {"candidato_id", "vaga_id"}))
-public class Candidatura extends EntidadeAuditavel {
-    @Column(name = "candidato_id", nullable = false)
+public class Candidatura {
+    private UUID id;
     private UUID candidatoId;
-    @Column(name = "vaga_id", nullable = false)
     private UUID vagaId;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 30)
     private StatusCandidatura status = StatusCandidatura.ENVIADA;
-    @Column(name = "cancelado_em")
+    private OffsetDateTime criadoEm;
+    private OffsetDateTime atualizadoEm;
     private OffsetDateTime canceladoEm;
 
-    public Candidatura() {}
+    public Candidatura() {
+        id = UUID.randomUUID();
+        criadoEm = OffsetDateTime.now();
+        atualizadoEm = criadoEm;
+    }
     public Candidatura(UUID candidatoId, UUID vagaId) {
-        super(UUID.randomUUID());
+        this();
         this.candidatoId = candidatoId;
         this.vagaId = vagaId;
     }
@@ -39,6 +32,8 @@ public class Candidatura extends EntidadeAuditavel {
         setStatus(StatusCandidatura.CANCELADA);
         canceladoEm = data;
     }
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
     public UUID getCandidatoId() { return candidatoId; }
     public void setCandidatoId(UUID candidatoId) { this.candidatoId = candidatoId; }
     public UUID getVagaId() { return vagaId; }
@@ -75,4 +70,8 @@ public class Candidatura extends EntidadeAuditavel {
     }
     public OffsetDateTime getCanceladoEm() { return canceladoEm; }
     public void setCanceladoEm(OffsetDateTime canceladoEm) { this.canceladoEm = canceladoEm; }
+    public OffsetDateTime getCriadoEm() { return criadoEm; }
+    public void setCriadoEm(OffsetDateTime criadoEm) { this.criadoEm = criadoEm; }
+    public OffsetDateTime getAtualizadoEm() { return atualizadoEm; }
+    public void setAtualizadoEm(OffsetDateTime atualizadoEm) { this.atualizadoEm = atualizadoEm; }
 }

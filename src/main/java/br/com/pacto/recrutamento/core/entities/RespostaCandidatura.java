@@ -1,34 +1,38 @@
 package br.com.pacto.recrutamento.core.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@Entity
-@Table(name = "respostas_candidatura", uniqueConstraints = @UniqueConstraint(
-        name = "uk_respostas_candidatura_pergunta", columnNames = {"candidatura_id", "pergunta_id"}))
-public class RespostaCandidatura extends EntidadeAuditavel {
-    @Column(name = "candidatura_id", nullable = false)
+public class RespostaCandidatura {
+    private UUID id;
     private UUID candidaturaId;
-    @Column(name = "pergunta_id", nullable = false)
     private UUID perguntaId;
-    @Column(name = "valor", nullable = false, columnDefinition = "TEXT")
     private String valor;
+    private OffsetDateTime criadoEm;
+    private OffsetDateTime atualizadoEm;
 
-    public RespostaCandidatura() {}
+    public RespostaCandidatura() {
+        id = UUID.randomUUID();
+        criadoEm = OffsetDateTime.now();
+        atualizadoEm = criadoEm;
+    }
     public RespostaCandidatura(UUID candidaturaId, UUID perguntaId, String valor) {
-        super(UUID.randomUUID());
+        this();
         this.candidaturaId = candidaturaId;
         this.perguntaId = perguntaId;
         this.valor = valor;
     }
 
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
     public UUID getCandidaturaId() { return candidaturaId; }
     public void setCandidaturaId(UUID candidaturaId) { this.candidaturaId = candidaturaId; }
     public UUID getPerguntaId() { return perguntaId; }
     public void setPerguntaId(UUID perguntaId) { this.perguntaId = perguntaId; }
     public String getValor() { return valor; }
     public void setValor(String valor) { this.valor = valor; }
+    public OffsetDateTime getCriadoEm() { return criadoEm; }
+    public void setCriadoEm(OffsetDateTime criadoEm) { this.criadoEm = criadoEm; }
+    public OffsetDateTime getAtualizadoEm() { return atualizadoEm; }
+    public void setAtualizadoEm(OffsetDateTime atualizadoEm) { this.atualizadoEm = atualizadoEm; }
 }
