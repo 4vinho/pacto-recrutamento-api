@@ -1,0 +1,152 @@
+package br.com.pacto.recrutamento.app.serviceImpl;
+
+import br.com.pacto.recrutamento.app.dtos.candidato.AtualizarCandidatoDTO;
+import br.com.pacto.recrutamento.app.dtos.candidato.CandidatoDTO;
+import br.com.pacto.recrutamento.app.dtos.candidato.CandidaturaResumoDTO;
+import br.com.pacto.recrutamento.app.dtos.candidato.CriarCandidatoDTO;
+import br.com.pacto.recrutamento.app.dtos.candidato.ListarMinhasCandidaturasDTO;
+import br.com.pacto.recrutamento.app.ports.CandidatoRepository;
+import br.com.pacto.recrutamento.app.ports.CandidatoPersistido;
+import br.com.pacto.recrutamento.app.ports.CandidaturaDoCandidato;
+import br.com.pacto.recrutamento.app.ports.PaginaCandidaturas;
+import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
+import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class CandidatoServiceImplTest {
+
+    private final CandidatoRepository repository = new CandidatoRepositoryFalso();
+    private final CandidatoServiceImpl service = new CandidatoServiceImpl(repository);
+
+    @Test
+    void criaPerfilDoUsuarioQuandoAindaNaoExiste() {
+        UUID usuarioId = UUID.randomUUID();
+        LocalDate dataAdmissao = LocalDate.of(2020, 2, 3);
+
+        TypedResponse<CandidatoDTO> resposta = service.criarCandidato(
+                new CriarCandidatoDTO(usuarioId, dataAdmissao));
+
+        assertThat(resposta.getStatusCode()).isEqualTo(201);
+        assertThat(resposta.getData().getUsuarioId()).isEqualTo(usuarioId);
+        assertThat(resposta.getData().getDataAdmissao()).isEqualTo(dataAdmissao);
+    }
+
+    @Test
+    void naoCriaSegundoPerfilParaMesmoUsuario() {
+        UUID usuarioId = UUID.randomUUID();
+        repository.salvar(usuarioId, LocalDate.of(2019, 1, 1));
+
+        TypedResponse<CandidatoDTO> resposta = service.criarCandidato(
+                new CriarCandidatoDTO(usuarioId, LocalDate.of(2020, 2, 3)));
+
+        assertThat(resposta.getStatusCode()).isEqualTo(409);
+        assertThat(resposta.getData()).isNull();
+    }
+
+    @Test
+    void atualizaApenasPerfilAssociadoAoUsuarioInformado() {
+        UUID usuarioId = UUID.randomUUID();
+        UUID outroUsuarioId = UUID.randomUUID();
+        CandidatoPersistido perfilDoUsuario = repository.salvar(usuarioId, LocalDate.of(2019, 1, 1));
+        CandidatoPersistido perfilDeOutroUsuario = repository.salvar(outroUsuarioId, LocalDate.of(2018, 1, 1));
+
+        TypedResponse<CandidatoDTO> resposta = service.atualizarCandidato(
+                new AtualizarCandidatoDTO(usuarioId, LocalDate.of(2022, 4, 5)));
+
+        assertThat(resposta.getStatusCode()).isEqualTo(200);
+        assertThat(resposta.getData().getId()).isEqualTo(perfilDoUsuario.getId());
+        assertThat(repository.buscarPorUsuarioId(usuarioId).get().getDataAdmissao())
+                .isEqualTo(LocalDate.of(2022, 4, 5));
+        assertThat(repository.buscarPorUsuarioId(outroUsuarioId).get().getId())
+                .isEqualTo(perfilDeOutroUsuario.getId());
+        assertThat(repository.buscarPorUsuarioId(outroUsuarioId).get().getDataAdmissao())
+                .isEqualTo(LocalDate.of(2018, 1, 1));
+    }
+
+    @Test
+    void retornaNaoEncontradoAoAtualizarUsuarioSemPerfil() {
+        TypedResponse<CandidatoDTO> resposta = service.atualizarCandidato(
+                new AtualizarCandidatoDTO(UUID.randomUUID(), LocalDate.now()));
+
+        assertThat(resposta.getStatusCode()).isEqualTo(404);
+        assertThat(resposta.getData()).isNull();
+    }
+
+    @Test
+    void listaSomenteCandidaturasDoProprioUsuarioComEstadoAtualEFeedback() {
+        UUID usuarioId = UUID.randomUUID();
+        OffsetDateTime criadaEm = OffsetDateTime.parse("2024-04-05T10:15:30-03:00");
+        CandidaturaDoCandidato candidatura = new CandidaturaDoCandidato(
+                UUID.randomUUID(), UUID.randomUUID(), "Desenvolvedor", StatusCandidatura.EM_ANALISE,
+                criadaEm, "Perfil em avaliacao");
+        ((CandidatoRepositoryFalso) repository).pagina = new PaginaCandidaturas(
+                Collections.singletonList(candidatura), 1);
+
+        TypedPagedResponse<CandidaturaResumoDTO> resposta = service.listarMinhasCandidaturas(
+                new ListarMinhasCandidaturasDTO(usuarioId, 0, 10));
+
+        assertThat(((CandidatoRepositoryFalso) repository).ultimoUsuarioConsultado).isEqualTo(usuarioId);
+        assertThat(resposta.getStatusCode()).isEqualTo(200);
+        assertThat(resposta.getTotalItems()).isEqualTo(1);
+        assertThat(resposta.getData()).extracting(CandidaturaResumoDTO::getTituloVaga)
+                .containsExactly("Desenvolvedor");
+        assertThat(resposta.getData().get(0).getStatus()).isEqualTo(StatusCandidatura.EM_ANALISE);
+        assertThat(resposta.getData().get(0).getFeedback()).isEqualTo("Perfil em avaliacao");
+    }
+
+    @Test
+    void retornaRequisicaoInvalidaComPaginaVaziaQuandoUsuarioNaoFoiInformado() {
+        TypedPagedResponse<CandidaturaResumoDTO> resposta = service.listarMinhasCandidaturas(
+                new ListarMinhasCandidaturasDTO(null, 0, 10));
+
+        assertThat(resposta.getStatusCode()).isEqualTo(400);
+        assertThat(resposta.getData()).isEmpty();
+        assertThat(resposta.getPage()).isZero();
+        assertThat(resposta.getPageSize()).isEqualTo(10);
+    }
+
+    @Test
+    void retornaRequisicaoInvalidaComPaginacaoSeguraQuandoPaginaOuTamanhoSaoInvalidos() {
+        TypedPagedResponse<CandidaturaResumoDTO> resposta = service.listarMinhasCandidaturas(
+                new ListarMinhasCandidaturasDTO(UUID.randomUUID(), -1, 0));
+
+        assertThat(resposta.getStatusCode()).isEqualTo(400);
+        assertThat(resposta.getData()).isEmpty();
+        assertThat(resposta.getPage()).isZero();
+        assertThat(resposta.getPageSize()).isEqualTo(1);
+    }
+
+    private static class CandidatoRepositoryFalso implements CandidatoRepository {
+        private final java.util.Map<UUID, CandidatoPersistido> perfis = new java.util.HashMap<>();
+        private UUID ultimoUsuarioConsultado;
+        private PaginaCandidaturas pagina = new PaginaCandidaturas(Collections.<CandidaturaDoCandidato>emptyList(), 0);
+
+        @Override public boolean existePorUsuarioId(UUID usuarioId) { return perfis.containsKey(usuarioId); }
+        @Override public CandidatoPersistido salvar(UUID usuarioId, LocalDate dataAdmissao) {
+            CandidatoPersistido perfil = new CandidatoPersistido(UUID.randomUUID(), usuarioId, dataAdmissao);
+            perfis.put(usuarioId, perfil);
+            return perfil;
+        }
+        @Override public Optional<CandidatoPersistido> buscarPorUsuarioId(UUID usuarioId) {
+            return Optional.ofNullable(perfis.get(usuarioId));
+        }
+        @Override public CandidatoPersistido atualizar(CandidatoPersistido perfil, LocalDate dataAdmissao) {
+            CandidatoPersistido atualizado = new CandidatoPersistido(perfil.getId(), perfil.getUsuarioId(), dataAdmissao);
+            perfis.put(perfil.getUsuarioId(), atualizado);
+            return atualizado;
+        }
+        @Override public PaginaCandidaturas listarCandidaturasDoUsuario(UUID usuarioId, int page, int pageSize) {
+            ultimoUsuarioConsultado = usuarioId;
+            return pagina;
+        }
+    }
+}
