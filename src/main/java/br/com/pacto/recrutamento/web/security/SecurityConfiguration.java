@@ -31,6 +31,8 @@ public class SecurityConfiguration {
                         "/auth/recuperacao-senha/solicitacoes",
                         "/auth/recuperacao-senha/confirmacoes",
                         "/v3/api-docs/**",
+                        "/swagger",
+                        "/swagger/**",
                         "/swagger-ui.html",
                         "/swagger-ui/**",
                         "/actuator/health").permitAll()
