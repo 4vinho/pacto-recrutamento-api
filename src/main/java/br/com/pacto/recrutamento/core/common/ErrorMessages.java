@@ -15,6 +15,8 @@ public final class ErrorMessages {
     public static final String CURRICULO_ATIVO_EXISTENTE = "Já existe um currículo ativo";
     public static final String CURRICULO_ATIVO_NAO_ENCONTRADO = "Currículo ativo não encontrado";
     public static final String CURRICULO_PDF_INVALIDO = "O currículo deve ser um PDF válido";
+    public static final String NOME_ARQUIVO_CURRICULO_INVALIDO =
+            "O nome original do currículo é inválido";
     public static final String CURRICULO_NAO_ENCONTRADO = "Currículo não encontrado";
     public static final String COMANDO_CADASTRO_OBRIGATORIO = "Comando de cadastro obrigatório.";
     public static final String COMANDO_RECUPERACAO_OBRIGATORIO = "Comando de recuperação obrigatório.";

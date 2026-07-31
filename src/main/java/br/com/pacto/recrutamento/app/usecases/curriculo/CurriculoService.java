@@ -43,7 +43,11 @@ public class CurriculoService implements CurriculoUseCase {
 
     @Override
     public TypedResponse<CurriculoDTO> enviarCurriculo(EnviarCurriculoDTO command) {
+        if (command == null || command.getUsuarioId() == null) {
+            return erro(400, DADOS_INVALIDOS);
+        }
         Arquivo recebido = Arquivo.de(command.getNomeOriginal(), command.getConteudo());
+        if (!recebido.nomeValido()) return erro(400, NOME_ARQUIVO_CURRICULO_INVALIDO);
         if (!recebido.ehPdfValido()) return erro(400, CURRICULO_PDF_INVALIDO);
         Optional<UUID> candidatoId = candidatos.buscarIdPorUsuario(command.getUsuarioId());
         if (!candidatoId.isPresent()) return erro(404, CANDIDATO_NAO_ENCONTRADO);
@@ -55,7 +59,11 @@ public class CurriculoService implements CurriculoUseCase {
 
     @Override
     public TypedResponse<CurriculoDTO> substituirCurriculo(SubstituirCurriculoDTO command) {
+        if (command == null || command.getUsuarioId() == null) {
+            return erro(400, DADOS_INVALIDOS);
+        }
         Arquivo recebido = Arquivo.de(command.getNomeOriginal(), command.getConteudo());
+        if (!recebido.nomeValido()) return erro(400, NOME_ARQUIVO_CURRICULO_INVALIDO);
         if (!recebido.ehPdfValido()) return erro(400, CURRICULO_PDF_INVALIDO);
         Optional<UUID> candidatoId = candidatos.buscarIdPorUsuario(command.getUsuarioId());
         if (!candidatoId.isPresent()) return erro(404, CANDIDATO_NAO_ENCONTRADO);
@@ -76,6 +84,10 @@ public class CurriculoService implements CurriculoUseCase {
     @Override
     public TypedResponse<UrlTemporariaCurriculoDTO> gerarUrlTemporariaCurriculo(
             GerarUrlTemporariaCurriculoDTO query) {
+        if (query == null || query.getUsuarioSolicitanteId() == null
+                || query.getCurriculoId() == null) {
+            return new TypedResponse<UrlTemporariaCurriculoDTO>(400, DADOS_INVALIDOS, null);
+        }
         Optional<Curriculo> curriculo = repositorio.buscarAtivoPorId(query.getCurriculoId());
         if (!curriculo.isPresent())
             return new TypedResponse<UrlTemporariaCurriculoDTO>(404, CURRICULO_NAO_ENCONTRADO, null);
@@ -150,6 +162,21 @@ public class CurriculoService implements CurriculoUseCase {
 
         private static Arquivo de(String nomeOriginal, byte[] conteudo) {
             return new Arquivo(nomeOriginal, conteudo == null ? new byte[0] : conteudo);
+        }
+
+        private boolean nomeValido() {
+            if (nomeOriginal == null) return false;
+            String nome = nomeOriginal.trim();
+            if (nome.isEmpty() || nome.length() > 255 || nome.equals(".") || nome.equals("..")) {
+                return false;
+            }
+            for (int i = 0; i < nome.length(); i++) {
+                char caractere = nome.charAt(i);
+                if (caractere == '/' || caractere == '\\' || Character.isISOControl(caractere)) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private boolean ehPdfValido() {

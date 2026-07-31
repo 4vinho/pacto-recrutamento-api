@@ -28,6 +28,46 @@ class CurriculoServiceTest {
             repositorio, storage, candidatos, clock);
 
     @Test
+    void recusaComandosNulosSemAcessarDependencias() {
+        assertThat(service.enviarCurriculo(null).getStatusCode()).isEqualTo(400);
+        assertThat(service.substituirCurriculo(null).getStatusCode()).isEqualTo(400);
+        assertThat(service.gerarUrlTemporariaCurriculo(null).getStatusCode()).isEqualTo(400);
+
+        verifyNoInteractions(repositorio, storage, candidatos);
+    }
+
+    @Test
+    void recusaUsuarioArquivoOuConsultaSemIdentificadoresObrigatorios() {
+        assertThat(service.enviarCurriculo(new EnviarCurriculoDTO(
+                null, "curriculo.pdf", "application/pdf", PDF)).getStatusCode()).isEqualTo(400);
+        assertThat(service.substituirCurriculo(new SubstituirCurriculoDTO(
+                null, "curriculo.pdf", "application/pdf", PDF)).getStatusCode()).isEqualTo(400);
+        assertThat(service.gerarUrlTemporariaCurriculo(
+                new GerarUrlTemporariaCurriculoDTO(null, UUID.randomUUID())).getStatusCode())
+                .isEqualTo(400);
+        assertThat(service.gerarUrlTemporariaCurriculo(
+                new GerarUrlTemporariaCurriculoDTO(USUARIO, null)).getStatusCode())
+                .isEqualTo(400);
+
+        verifyNoInteractions(repositorio, storage, candidatos);
+    }
+
+    @Test
+    void recusaNomeOriginalInvalidoEConteudoNuloComoErroDeValidacao() {
+        assertThat(service.enviarCurriculo(new EnviarCurriculoDTO(
+                USUARIO, "  ", "application/pdf", PDF)).getStatusCode()).isEqualTo(400);
+        assertThat(service.enviarCurriculo(new EnviarCurriculoDTO(
+                USUARIO, "pasta/curriculo.pdf", "application/pdf", PDF)).getStatusCode())
+                .isEqualTo(400);
+        assertThat(service.substituirCurriculo(new SubstituirCurriculoDTO(
+                USUARIO, null, "application/pdf", PDF)).getStatusCode()).isEqualTo(400);
+        assertThat(service.enviarCurriculo(new EnviarCurriculoDTO(
+                USUARIO, "curriculo.pdf", "application/pdf", null)).getStatusCode()).isEqualTo(400);
+
+        verifyNoInteractions(repositorio, storage, candidatos);
+    }
+
+    @Test
     void enviarRecusaArquivoSemAssinaturaPdfReal() {
         assertThat(service.enviarCurriculo(new EnviarCurriculoDTO(
                 USUARIO, "curriculo.pdf", "application/pdf", "texto".getBytes())).getStatusCode())

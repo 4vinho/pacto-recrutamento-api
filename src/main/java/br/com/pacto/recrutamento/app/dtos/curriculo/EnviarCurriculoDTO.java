@@ -14,7 +14,7 @@ public class EnviarCurriculoDTO {
         this.usuarioId = usuarioId;
         this.nomeOriginal = nomeOriginal;
         this.contentType = contentType;
-        this.conteudo = Arrays.copyOf(conteudo, conteudo.length);
+        this.conteudo = conteudo == null ? new byte[0] : Arrays.copyOf(conteudo, conteudo.length);
     }
 
     public UUID getUsuarioId() {
