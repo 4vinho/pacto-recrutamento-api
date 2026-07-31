@@ -2,7 +2,7 @@ package br.com.pacto.recrutamento.app.ports.out.notificacao;
 
 import br.com.pacto.recrutamento.app.dtos.notificacao.CandidaturaCriadaDTO;
 import br.com.pacto.recrutamento.app.ports.out.notificacao.model.DestinatariosCandidatura;
-import br.com.pacto.recrutamento.app.serviceImpl.NotificacaoServiceImpl;
+import br.com.pacto.recrutamento.app.usecases.notificacao.NotificacaoService;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Notificacao;
 import br.com.pacto.recrutamento.core.enums.StatusNotificacao;
@@ -13,12 +13,12 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class NotificacaoServiceImplTest {
+class NotificacaoServiceTest {
     @Test
     void persistirIntencaoAntesDoCanalNotificaResponsavelECandidato() {
         Memoria memoria = new Memoria();
         UUID evento = UUID.randomUUID();
-        NotificacaoServiceImpl service = new NotificacaoServiceImpl(memoria, memoria, memoria);
+        NotificacaoService service = new NotificacaoService(memoria, memoria, memoria);
 
         TypedResponse<Void> response = service.processarCandidaturaCriada(new CandidaturaCriadaDTO(evento, memoria.candidaturaId, OffsetDateTime.now()));
 
@@ -32,7 +32,7 @@ class NotificacaoServiceImplTest {
     void falhaDoCanalPermaneceRegistradaSemPropagarExcecao() {
         Memoria memoria = new Memoria();
         memoria.falhar = true;
-        NotificacaoServiceImpl service = new NotificacaoServiceImpl(memoria, memoria, memoria);
+        NotificacaoService service = new NotificacaoService(memoria, memoria, memoria);
 
         TypedResponse<Void> response = service.processarCandidaturaCriada(new CandidaturaCriadaDTO(UUID.randomUUID(), memoria.candidaturaId, OffsetDateTime.now()));
 

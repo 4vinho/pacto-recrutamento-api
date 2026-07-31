@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.serviceImpl;
+package br.com.pacto.recrutamento.app.usecases.candidatura;
 
 import br.com.pacto.recrutamento.app.dtos.candidatura.*;
 import br.com.pacto.recrutamento.app.ports.in.candidatura.CandidaturaUseCase;
@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 import java.util.*;
 
 @Service
-public class CandidaturaServiceImpl implements CandidaturaUseCase {
+public class CandidaturaService implements CandidaturaUseCase {
     private final CandidatoPort candidatos;
     private final CandidaturaPort candidaturas;
     private final VagaCandidaturaPort vagas;
@@ -21,7 +21,7 @@ public class CandidaturaServiceImpl implements CandidaturaUseCase {
     private final AutorizacaoResponsavelCandidaturaPort autorizacao;
     private final EventosCandidaturaPort eventos;
 
-    public CandidaturaServiceImpl(CandidatoPort candidatos,
+    public CandidaturaService(CandidatoPort candidatos,
                                   CandidaturaPort candidaturas,
                                   VagaCandidaturaPort vagas,
                                   PerguntaCandidaturaPort perguntas,

@@ -4,7 +4,7 @@ import br.com.pacto.recrutamento.app.dtos.templatevaga.CriarTemplateVagaDTO;
 import br.com.pacto.recrutamento.app.dtos.templatevaga.CriarVagaAPartirDoTemplateDTO;
 import br.com.pacto.recrutamento.app.dtos.templatevaga.ExcluirItemTemplateVagaDTO;
 import br.com.pacto.recrutamento.app.dtos.templatevaga.SalvarPerguntaTemplateVagaDTO;
-import br.com.pacto.recrutamento.app.serviceImpl.TemplateVagaServiceImpl;
+import br.com.pacto.recrutamento.app.usecases.templatevaga.TemplateVagaService;
 import br.com.pacto.recrutamento.core.entities.*;
 import br.com.pacto.recrutamento.core.enums.TipoResposta;
 import org.junit.jupiter.api.Test;
@@ -14,11 +14,11 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TemplateVagaServiceImplTest {
+class TemplateVagaServiceTest {
     @Test
     void recusa_criacao_para_nao_administrador() {
         Memoria memoria = new Memoria();
-        TemplateVagaServiceImpl service = memoria.service(false);
+        TemplateVagaService service = memoria.service(false);
         assertEquals(403, service.criarTemplate(new CriarTemplateVagaDTO(UUID.randomUUID(), "Titulo", "Descricao")).getStatusCode());
     }
 
@@ -71,8 +71,8 @@ class TemplateVagaServiceImplTest {
         final PerguntasVaga perguntasVaga = new PerguntasVaga();
         final RequisitosVaga requisitosVaga = new RequisitosVaga();
 
-        TemplateVagaServiceImpl service(boolean admin) {
-            return new TemplateVagaServiceImpl(templates, perguntas, requisitos, vagas, perguntasVaga, requisitosVaga, id -> admin, Clock.systemUTC());
+        TemplateVagaService service(boolean admin) {
+            return new TemplateVagaService(templates, perguntas, requisitos, vagas, perguntasVaga, requisitosVaga, id -> admin, Clock.systemUTC());
         }
 
         TemplateVaga template() {

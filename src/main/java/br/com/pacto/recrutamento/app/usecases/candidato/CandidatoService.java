@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.serviceImpl;
+package br.com.pacto.recrutamento.app.usecases.candidato;
 
 import br.com.pacto.recrutamento.app.dtos.candidato.*;
 import br.com.pacto.recrutamento.app.ports.in.candidato.CandidatoUseCase;
@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CandidatoServiceImpl implements CandidatoUseCase {
+public class CandidatoService implements CandidatoUseCase {
     private final CandidatoPort candidatoRepository;
 
-    public CandidatoServiceImpl(CandidatoPort candidatoRepository) {
+    public CandidatoService(CandidatoPort candidatoRepository) {
         this.candidatoRepository = candidatoRepository;
     }
 

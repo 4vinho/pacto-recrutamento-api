@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.app.ports.out.curriculo;
 
-import br.com.pacto.recrutamento.app.serviceImpl.CurriculoServiceImpl;
+import br.com.pacto.recrutamento.app.usecases.curriculo.CurriculoService;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
@@ -13,10 +13,10 @@ class CurriculoArchitectureTest {
 
     @Test
     void casoDeUsoEPortasFormamUmSliceNaAplicacao() {
-        assertThat(CurriculoServiceImpl.class.getPackage().getName())
-                .isEqualTo("br.com.pacto.recrutamento.app.serviceImpl");
+        assertThat(CurriculoService.class.getPackage().getName())
+                .isEqualTo("br.com.pacto.recrutamento.app.usecases.curriculo");
 
-        assertThat(Arrays.stream(CurriculoServiceImpl.class.getDeclaredFields())
+        assertThat(Arrays.stream(CurriculoService.class.getDeclaredFields())
                 .filter(field -> !Modifier.isStatic(field.getModifiers()))
                 .map(Field::getType)
                 .filter(Class::isInterface)

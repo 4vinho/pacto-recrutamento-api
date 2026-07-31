@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.app.ports.out.usuario;
 
-import br.com.pacto.recrutamento.app.serviceImpl.UsuarioServiceImpl;
+import br.com.pacto.recrutamento.app.usecases.usuario.UsuarioService;
 import br.com.pacto.recrutamento.infra.adapters.usuario.PapelJpaAdapter;
 import br.com.pacto.recrutamento.infra.adapters.usuario.RefreshTokenJpaAdapter;
 import br.com.pacto.recrutamento.infra.adapters.usuario.UsuarioJpaAdapter;
@@ -13,7 +13,8 @@ class UsuarioArquiteturaTest {
 
     @Test
     void casoDeUsoEPortasDeUsuarioPermanecemNaCamadaAppDaFuncionalidade() {
-        assertThat(UsuarioServiceImpl.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.serviceImpl");
+        assertThat(UsuarioService.class.getPackage().getName())
+                .isEqualTo("br.com.pacto.recrutamento.app.usecases.usuario");
         assertThat(UsuarioPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.out.usuario");
         assertThat(PapelPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.out.usuario");
         assertThat(RefreshTokenPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.out.usuario");

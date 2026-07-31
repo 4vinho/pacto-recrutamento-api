@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.serviceImpl;
+package br.com.pacto.recrutamento.app.usecases.templatevaga;
 
 import br.com.pacto.recrutamento.app.dtos.templatevaga.*;
 import br.com.pacto.recrutamento.app.dtos.vaga.VagaDTO;
@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class TemplateVagaServiceImpl implements TemplateVagaUseCase {
+public class TemplateVagaService implements TemplateVagaUseCase {
     private final TemplateVagaPort templates;
     private final PerguntaTemplateVagaPort perguntas;
     private final RequisitoTemplateVagaPort requisitos;
@@ -25,7 +25,7 @@ public class TemplateVagaServiceImpl implements TemplateVagaUseCase {
     private final AutorizacaoTemplateVagaPort autorizacao;
     private final Clock clock;
 
-    public TemplateVagaServiceImpl(TemplateVagaPort templates,
+    public TemplateVagaService(TemplateVagaPort templates,
                                    PerguntaTemplateVagaPort perguntas,
                                    RequisitoTemplateVagaPort requisitos,
                                    VagaTemplatePort vagas,

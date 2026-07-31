@@ -1,6 +1,12 @@
 package br.com.pacto.recrutamento.app;
 
-import br.com.pacto.recrutamento.app.serviceImpl.*;
+import br.com.pacto.recrutamento.app.usecases.candidato.CandidatoService;
+import br.com.pacto.recrutamento.app.usecases.candidatura.CandidaturaService;
+import br.com.pacto.recrutamento.app.usecases.curriculo.CurriculoService;
+import br.com.pacto.recrutamento.app.usecases.notificacao.NotificacaoService;
+import br.com.pacto.recrutamento.app.usecases.templatevaga.TemplateVagaService;
+import br.com.pacto.recrutamento.app.usecases.usuario.UsuarioService;
+import br.com.pacto.recrutamento.app.usecases.vaga.VagaService;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -44,13 +50,13 @@ class ArquiteturaCamadasTest {
     @Test
     void casosDeUsoImplementamPortasDeEntradaEDependemDePortasDeSaida() {
         Class<?>[] services = {
-                CandidatoServiceImpl.class,
-                CandidaturaServiceImpl.class,
-                CurriculoServiceImpl.class,
-                NotificacaoServiceImpl.class,
-                TemplateVagaServiceImpl.class,
-                UsuarioServiceImpl.class,
-                VagaServiceImpl.class
+                CandidatoService.class,
+                CandidaturaService.class,
+                CurriculoService.class,
+                NotificacaoService.class,
+                TemplateVagaService.class,
+                UsuarioService.class,
+                VagaService.class
         };
 
         for (Class<?> service : services) {

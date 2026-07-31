@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.app.ports.out.templatevaga;
 
-import br.com.pacto.recrutamento.app.serviceImpl.TemplateVagaServiceImpl;
+import br.com.pacto.recrutamento.app.usecases.templatevaga.TemplateVagaService;
 import br.com.pacto.recrutamento.core.entities.PerguntaTemplateVaga;
 import br.com.pacto.recrutamento.core.entities.RequisitoTemplateVaga;
 import br.com.pacto.recrutamento.core.entities.TemplateVaga;
@@ -14,12 +14,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ArquiteturaTemplateVagaTest {
     @Test
     void aplicacaoNaoDependeDeInfraEEntidadesDoCoreSaoJpa() throws Exception {
-        assertThat(Class.forName("br.com.pacto.recrutamento.app.serviceImpl.TemplateVagaServiceImpl")).isNotNull();
+        assertThat(Class.forName("br.com.pacto.recrutamento.app.usecases.templatevaga.TemplateVagaService")).isNotNull();
         assertThat(Class.forName("br.com.pacto.recrutamento.app.ports.out.templatevaga.TemplateVagaPort")).isNotNull();
         assertThat(TemplateVaga.class.isAnnotationPresent(Entity.class)).isTrue();
         assertThat(PerguntaTemplateVaga.class.isAnnotationPresent(Entity.class)).isTrue();
         assertThat(RequisitoTemplateVaga.class.isAnnotationPresent(Entity.class)).isTrue();
-        for (Class<?> type : new Class<?>[]{TemplateVagaServiceImpl.class, TemplateVagaPort.class,
+        for (Class<?> type : new Class<?>[]{TemplateVagaService.class, TemplateVagaPort.class,
                 PerguntaTemplateVagaPort.class, RequisitoTemplateVagaPort.class}) {
             for (Class<?> dependency : type.getInterfaces()) assertThat(dependency.getName()).doesNotContain("infra");
             assertThat(type.getPackage().getName()).doesNotContain("infra");
@@ -28,7 +28,7 @@ class ArquiteturaTemplateVagaTest {
 
     @Test
     void copiaETransacionalNoServiceDaAplicacao() throws Exception {
-        Method metodo = TemplateVagaServiceImpl.class.getMethod("criarVagaAPartirDoTemplate",
+        Method metodo = TemplateVagaService.class.getMethod("criarVagaAPartirDoTemplate",
                 br.com.pacto.recrutamento.app.dtos.templatevaga.CriarVagaAPartirDoTemplateDTO.class);
         assertThat(metodo.isAnnotationPresent(org.springframework.transaction.annotation.Transactional.class)).isTrue();
     }

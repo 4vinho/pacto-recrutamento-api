@@ -1,7 +1,7 @@
 package br.com.pacto.recrutamento.app.ports.out.vaga;
 
 import br.com.pacto.recrutamento.app.dtos.vaga.*;
-import br.com.pacto.recrutamento.app.serviceImpl.VagaServiceImpl;
+import br.com.pacto.recrutamento.app.usecases.vaga.VagaService;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
@@ -20,13 +20,13 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class VagaServiceImplTest {
+class VagaServiceTest {
     private final UUID administrador = UUID.randomUUID();
     private final UUID naoAutorizado = UUID.randomUUID();
     private final MemoriaVagas vagas = new MemoriaVagas();
     private final MemoriaPerguntas perguntas = new MemoriaPerguntas();
     private final MemoriaRequisitos requisitos = new MemoriaRequisitos();
-    private final VagaServiceImpl service = new VagaServiceImpl(vagas, perguntas, requisitos,
+    private final VagaService service = new VagaService(vagas, perguntas, requisitos,
             usuarioId -> administrador.equals(usuarioId), Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC));
 
     @Test

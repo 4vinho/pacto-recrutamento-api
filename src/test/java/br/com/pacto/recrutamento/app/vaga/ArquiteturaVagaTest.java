@@ -13,7 +13,7 @@ class ArquiteturaVagaTest {
 
     @Test
     void entidadesDoCoreSaoPersistidasDiretamente() throws Exception {
-        assertThat(Class.forName("br.com.pacto.recrutamento.app.serviceImpl.VagaServiceImpl")).isNotNull();
+        assertThat(Class.forName("br.com.pacto.recrutamento.app.usecases.vaga.VagaService")).isNotNull();
         assertThat(Class.forName("br.com.pacto.recrutamento.app.ports.out.vaga.VagaPort")).isNotNull();
         assertThat(Vaga.class.isAnnotationPresent(Entity.class)).isTrue();
         assertThat(PerguntaVaga.class.isAnnotationPresent(Entity.class)).isTrue();

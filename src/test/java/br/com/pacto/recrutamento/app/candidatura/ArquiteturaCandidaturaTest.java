@@ -18,8 +18,8 @@ class ArquiteturaCandidaturaTest {
     @Test
     void servicesEPortasNaoDependemDaInfraEEntidadesUsamJpa() throws IOException {
         Stream<Path> raizes = Stream.of(
-                Paths.get("src/main/java/br/com/pacto/recrutamento/app/serviceImpl"),
-                Paths.get("src/main/java/br/com/pacto/recrutamento/app/ports/candidatura"));
+                Paths.get("src/main/java/br/com/pacto/recrutamento/app/usecases/candidatura"),
+                Paths.get("src/main/java/br/com/pacto/recrutamento/app/ports/out/candidatura"));
         for (Path raiz : (Iterable<Path>) raizes::iterator) {
             try (Stream<Path> fontes = Files.walk(raiz)) {
                 fontes.filter(path -> path.toString().endsWith(".java")).forEach(path -> {

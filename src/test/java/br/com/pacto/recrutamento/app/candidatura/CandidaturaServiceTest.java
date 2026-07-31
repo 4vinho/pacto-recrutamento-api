@@ -3,7 +3,7 @@ package br.com.pacto.recrutamento.app.ports.out.candidatura;
 import br.com.pacto.recrutamento.app.dtos.candidatura.*;
 import br.com.pacto.recrutamento.app.ports.out.candidato.CandidatoPort;
 import br.com.pacto.recrutamento.app.ports.out.candidato.model.CandidaturaDoCandidato;
-import br.com.pacto.recrutamento.app.serviceImpl.CandidaturaServiceImpl;
+import br.com.pacto.recrutamento.app.usecases.candidatura.CandidaturaService;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.*;
@@ -17,17 +17,17 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CandidaturaServiceImplTest {
+class CandidaturaServiceTest {
     private final UUID usuarioCandidato = UUID.randomUUID();
     private final UUID candidatoId = UUID.randomUUID();
     private final UUID responsavel = UUID.randomUUID();
     private final Candidatos candidatos = new Candidatos(usuarioCandidato, candidatoId);
-    private final CandidaturaServiceImpl service = new CandidaturaServiceImpl(candidatos,
-            candidaturas, vagas, perguntas, new Autorizacao(), eventos);
     private final Candidaturas candidaturas = new Candidaturas();
     private final Vagas vagas = new Vagas();
     private final Perguntas perguntas = new Perguntas();
     private final Eventos eventos = new Eventos();
+    private final CandidaturaService service = new CandidaturaService(candidatos,
+            candidaturas, vagas, perguntas, new Autorizacao(), eventos);
 
     @Test
     void criaCandidaturaEnviadaParaCandidatoEmVagaAbertaEPublicaEventoAposSalvar() {

@@ -7,7 +7,13 @@ import br.com.pacto.recrutamento.app.ports.out.notificacao.NotificacaoPort;
 import br.com.pacto.recrutamento.app.ports.out.templatevaga.TemplateVagaPort;
 import br.com.pacto.recrutamento.app.ports.out.usuario.UsuarioPort;
 import br.com.pacto.recrutamento.app.ports.out.vaga.VagaPort;
-import br.com.pacto.recrutamento.app.serviceImpl.*;
+import br.com.pacto.recrutamento.app.usecases.candidato.CandidatoService;
+import br.com.pacto.recrutamento.app.usecases.candidatura.CandidaturaService;
+import br.com.pacto.recrutamento.app.usecases.curriculo.CurriculoService;
+import br.com.pacto.recrutamento.app.usecases.notificacao.NotificacaoService;
+import br.com.pacto.recrutamento.app.usecases.templatevaga.TemplateVagaService;
+import br.com.pacto.recrutamento.app.usecases.usuario.UsuarioService;
+import br.com.pacto.recrutamento.app.usecases.vaga.VagaService;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,15 +21,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AppPackageStructureTest {
 
     @Test
-    void implementacoesFicamEmServiceImpl() {
-        assertPackage("br.com.pacto.recrutamento.app.serviceImpl",
-                CandidatoServiceImpl.class,
-                CandidaturaServiceImpl.class,
-                CurriculoServiceImpl.class,
-                NotificacaoServiceImpl.class,
-                TemplateVagaServiceImpl.class,
-                UsuarioServiceImpl.class,
-                VagaServiceImpl.class);
+    void implementacoesFicamOrganizadasPorCasoDeUso() {
+        assertPackage("br.com.pacto.recrutamento.app.usecases.candidato", CandidatoService.class);
+        assertPackage("br.com.pacto.recrutamento.app.usecases.candidatura", CandidaturaService.class);
+        assertPackage("br.com.pacto.recrutamento.app.usecases.curriculo", CurriculoService.class);
+        assertPackage("br.com.pacto.recrutamento.app.usecases.notificacao", NotificacaoService.class);
+        assertPackage("br.com.pacto.recrutamento.app.usecases.templatevaga", TemplateVagaService.class);
+        assertPackage("br.com.pacto.recrutamento.app.usecases.usuario", UsuarioService.class);
+        assertPackage("br.com.pacto.recrutamento.app.usecases.vaga", VagaService.class);
     }
 
     @Test

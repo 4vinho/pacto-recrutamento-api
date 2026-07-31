@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.serviceImpl;
+package br.com.pacto.recrutamento.app.usecases.curriculo;
 
 import br.com.pacto.recrutamento.app.dtos.curriculo.*;
 import br.com.pacto.recrutamento.app.ports.in.curriculo.CurriculoUseCase;
@@ -20,8 +20,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class CurriculoServiceImpl implements CurriculoUseCase {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CurriculoServiceImpl.class);
+public class CurriculoService implements CurriculoUseCase {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CurriculoService.class);
     private static final int TAMANHO_MAXIMO_BYTES = 5 * 1024 * 1024;
     private static final Duration DURACAO_URL = Duration.ofMinutes(5);
     private static final String PDF = "application/pdf";
@@ -31,7 +31,7 @@ public class CurriculoServiceImpl implements CurriculoUseCase {
     private final CandidatoConsultaPort candidatos;
     private final Clock clock;
 
-    public CurriculoServiceImpl(CurriculoPort repositorio, ArquivoStoragePort storage,
+    public CurriculoService(CurriculoPort repositorio, ArquivoStoragePort storage,
                                 CandidatoConsultaPort candidatos, Clock clock) {
         this.repositorio = repositorio;
         this.storage = storage;

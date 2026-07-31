@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.serviceImpl;
+package br.com.pacto.recrutamento.app.usecases.vaga;
 
 import br.com.pacto.recrutamento.app.dtos.vaga.*;
 import br.com.pacto.recrutamento.app.ports.in.vaga.VagaUseCase;
@@ -18,14 +18,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class VagaServiceImpl implements VagaUseCase {
+public class VagaService implements VagaUseCase {
     private final VagaPort vagas;
     private final PerguntaVagaPort perguntas;
     private final RequisitoVagaPort requisitos;
     private final AutorizacaoVagaPort autorizacao;
     private final Clock clock;
 
-    public VagaServiceImpl(VagaPort vagas, PerguntaVagaPort perguntas,
+    public VagaService(VagaPort vagas, PerguntaVagaPort perguntas,
                            RequisitoVagaPort requisitos, AutorizacaoVagaPort autorizacao,
                            Clock clock) {
         this.vagas = vagas;

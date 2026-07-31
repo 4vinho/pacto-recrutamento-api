@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.serviceImpl;
+package br.com.pacto.recrutamento.app.usecases.notificacao;
 
 import br.com.pacto.recrutamento.app.dtos.notificacao.CandidaturaCriadaDTO;
 import br.com.pacto.recrutamento.app.dtos.notificacao.StatusCandidaturaAlteradoDTO;
@@ -17,12 +17,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class NotificacaoServiceImpl implements NotificacaoUseCase {
+public class NotificacaoService implements NotificacaoUseCase {
     private final DestinatariosCandidaturaPort destinatarios;
     private final NotificacaoPort notificacoes;
     private final CanalNotificacaoPort canal;
 
-    public NotificacaoServiceImpl(DestinatariosCandidaturaPort destinatarios, NotificacaoPort notificacoes, CanalNotificacaoPort canal) {
+    public NotificacaoService(DestinatariosCandidaturaPort destinatarios, NotificacaoPort notificacoes, CanalNotificacaoPort canal) {
         this.destinatarios = destinatarios;
         this.notificacoes = notificacoes;
         this.canal = canal;

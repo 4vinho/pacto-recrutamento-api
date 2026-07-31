@@ -2,7 +2,7 @@ package br.com.pacto.recrutamento.app.ports.out.candidato;
 
 import br.com.pacto.recrutamento.app.dtos.candidato.*;
 import br.com.pacto.recrutamento.app.ports.out.candidato.model.CandidaturaDoCandidato;
-import br.com.pacto.recrutamento.app.serviceImpl.CandidatoServiceImpl;
+import br.com.pacto.recrutamento.app.usecases.candidato.CandidatoService;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
@@ -18,10 +18,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CandidatoServiceImplTest {
+class CandidatoServiceTest {
 
     private final CandidatoPort repository = new CandidatoRepositoryFalso();
-    private final CandidatoServiceImpl service = new CandidatoServiceImpl(repository);
+    private final CandidatoService service = new CandidatoService(repository);
 
     @Test
     void criaPerfilDoUsuarioQuandoAindaNaoExiste() {

@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.serviceImpl;
+package br.com.pacto.recrutamento.app.usecases.usuario;
 
 import br.com.pacto.recrutamento.app.dtos.usuario.*;
 import br.com.pacto.recrutamento.app.ports.in.usuario.UsuarioUseCase;
@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UsuarioServiceImpl implements UsuarioUseCase {
+public class UsuarioService implements UsuarioUseCase {
     private static final long MINUTOS_ACCESS_TOKEN = 15;
     private static final long DIAS_REFRESH_TOKEN = 7;
     private static final long MINUTOS_RECUPERACAO_SENHA = 30;
@@ -29,7 +29,7 @@ public class UsuarioServiceImpl implements UsuarioUseCase {
     private final RecuperacaoSenhaPort recuperacoes;
     private final Clock relogio;
 
-    public UsuarioServiceImpl(UsuarioPort usuarios, PapelPort papeis, RefreshTokenPort refreshTokens,
+    public UsuarioService(UsuarioPort usuarios, PapelPort papeis, RefreshTokenPort refreshTokens,
                               CodificadorSenhaPort senhas, GeradorTokenPort tokens,
                               RecuperacaoSenhaPort recuperacoes, Clock relogio) {
         this.usuarios = usuarios;

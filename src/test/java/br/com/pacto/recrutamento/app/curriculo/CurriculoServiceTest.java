@@ -3,7 +3,7 @@ package br.com.pacto.recrutamento.app.ports.out.curriculo;
 import br.com.pacto.recrutamento.app.dtos.curriculo.EnviarCurriculoDTO;
 import br.com.pacto.recrutamento.app.dtos.curriculo.GerarUrlTemporariaCurriculoDTO;
 import br.com.pacto.recrutamento.app.dtos.curriculo.SubstituirCurriculoDTO;
-import br.com.pacto.recrutamento.app.serviceImpl.CurriculoServiceImpl;
+import br.com.pacto.recrutamento.app.usecases.curriculo.CurriculoService;
 import br.com.pacto.recrutamento.core.entities.Curriculo;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-class CurriculoServiceImplTest {
+class CurriculoServiceTest {
     private static final byte[] PDF = "%PDF-1.7\nconteudo".getBytes();
     private static final UUID USUARIO = UUID.randomUUID();
     private static final UUID CANDIDATO = UUID.randomUUID();
@@ -24,7 +24,7 @@ class CurriculoServiceImplTest {
     private final ArquivoStoragePort storage = mock(ArquivoStoragePort.class);
     private final CandidatoConsultaPort candidatos = mock(CandidatoConsultaPort.class);
     private final Clock clock = Clock.fixed(Instant.parse("2026-07-30T12:00:00Z"), ZoneOffset.UTC);
-    private final CurriculoServiceImpl service = new CurriculoServiceImpl(
+    private final CurriculoService service = new CurriculoService(
             repositorio, storage, candidatos, clock);
 
     @Test
