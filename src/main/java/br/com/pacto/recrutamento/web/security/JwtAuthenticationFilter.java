@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.web;
+package br.com.pacto.recrutamento.web.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

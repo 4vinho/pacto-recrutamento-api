@@ -1,4 +1,8 @@
-package br.com.pacto.recrutamento.web;
+package br.com.pacto.recrutamento.web.controller;
+
+import br.com.pacto.recrutamento.web.config.OpenApiConfiguration;
+import br.com.pacto.recrutamento.web.security.AuthenticatedUser;
+import br.com.pacto.recrutamento.web.support.HttpResponses;
 
 import br.com.pacto.recrutamento.app.dtos.candidato.*;
 import br.com.pacto.recrutamento.app.ports.in.candidato.CandidatoUseCase;

@@ -1,4 +1,7 @@
-package br.com.pacto.recrutamento.web;
+package br.com.pacto.recrutamento.web.controller;
+
+import br.com.pacto.recrutamento.web.security.AuthenticatedUser;
+import br.com.pacto.recrutamento.web.support.HttpResponses;
 
 import br.com.pacto.recrutamento.app.dtos.usuario.*;
 import br.com.pacto.recrutamento.app.ports.in.usuario.UsuarioUseCase;

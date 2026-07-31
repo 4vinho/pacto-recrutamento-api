@@ -1,14 +1,14 @@
-package br.com.pacto.recrutamento.web;
+package br.com.pacto.recrutamento.web.security;
 
 import org.springframework.security.core.Authentication;
 
 import java.util.UUID;
 
-final class AuthenticatedUser {
+public final class AuthenticatedUser {
     private AuthenticatedUser() {
     }
 
-    static UUID id(Authentication authentication) {
+    public static UUID id(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new UnauthenticatedException();
         }
@@ -19,7 +19,7 @@ final class AuthenticatedUser {
         }
     }
 
-    static final class UnauthenticatedException extends RuntimeException {
+    public static final class UnauthenticatedException extends RuntimeException {
         private static final long serialVersionUID = 1L;
     }
 }

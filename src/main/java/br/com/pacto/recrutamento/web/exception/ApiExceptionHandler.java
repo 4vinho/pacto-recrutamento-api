@@ -1,8 +1,9 @@
-package br.com.pacto.recrutamento.web;
+package br.com.pacto.recrutamento.web.exception;
 
 import br.com.pacto.recrutamento.core.common.BusinessException;
 import br.com.pacto.recrutamento.core.common.ErrorCode;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.web.security.AuthenticatedUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

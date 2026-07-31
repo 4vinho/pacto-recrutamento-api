@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.web;
+package br.com.pacto.recrutamento.web.security;
 
 import static br.com.pacto.recrutamento.core.common.ErrorMessages.*;
 
