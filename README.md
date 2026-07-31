@@ -14,7 +14,17 @@ Para execução sem Docker:
 
 ## Executar com Docker
 
-Opcionalmente, copie `.env.example` para `.env` e altere as configurações locais.
+Copie `.env.example` para `.env` e altere as credenciais e a chave JWT:
+
+```shell
+cp .env.example .env
+```
+
+No PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
 
 ```shell
 docker compose up --build
@@ -23,6 +33,8 @@ docker compose up --build
 Serviços:
 
 - API: `http://localhost:8080`
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 - PostgreSQL: `localhost:5432`
 - MinIO API: `http://localhost:9000`
 - MinIO Console: `http://localhost:9001`
@@ -31,7 +43,9 @@ Os dados do PostgreSQL e do MinIO são mantidos em volumes nomeados.
 
 ## Executar sem Docker
 
-Configure `DATABASE_URL`, `DATABASE_USERNAME` e `DATABASE_PASSWORD` se os valores padrão não atenderem ao seu ambiente.
+Defina obrigatoriamente `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`,
+`MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET`, `SERVER_PORT`
+e `JWT_SECRET` antes de iniciar a aplicação.
 Depois execute:
 
 ```shell

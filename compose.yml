@@ -73,6 +73,7 @@ services:
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD deve ser informado}
       MINIO_BUCKET: ${MINIO_BUCKET:?MINIO_BUCKET deve ser informado}
       SERVER_PORT: ${SERVER_PORT:?SERVER_PORT deve ser informado}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET deve ser informado}
     ports:
       - "${SERVER_PORT:?SERVER_PORT deve ser informado}:8080"
     depends_on:
