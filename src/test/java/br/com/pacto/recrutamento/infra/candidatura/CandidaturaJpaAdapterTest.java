@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.candidatura;
 
-import br.com.pacto.recrutamento.app.candidatura.CandidaturaRepositorio;
+import br.com.pacto.recrutamento.app.ports.candidatura.CandidaturaRepositorio;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
 import org.junit.jupiter.api.Test;

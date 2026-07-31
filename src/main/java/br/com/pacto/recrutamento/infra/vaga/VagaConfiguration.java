@@ -1,11 +1,11 @@
 package br.com.pacto.recrutamento.infra.vaga;
 
 import br.com.pacto.recrutamento.app.services.VagaService;
-import br.com.pacto.recrutamento.app.vaga.AutorizacaoVaga;
-import br.com.pacto.recrutamento.app.vaga.PerguntaVagaRepositorio;
-import br.com.pacto.recrutamento.app.vaga.RequisitoVagaRepositorio;
-import br.com.pacto.recrutamento.app.vaga.VagaRepositorio;
-import br.com.pacto.recrutamento.app.vaga.VagaServiceImpl;
+import br.com.pacto.recrutamento.app.ports.vaga.AutorizacaoVaga;
+import br.com.pacto.recrutamento.app.ports.vaga.PerguntaVagaRepositorio;
+import br.com.pacto.recrutamento.app.ports.vaga.RequisitoVagaRepositorio;
+import br.com.pacto.recrutamento.app.ports.vaga.VagaRepositorio;
+import br.com.pacto.recrutamento.app.serviceImpl.VagaServiceImpl;
 import br.com.pacto.recrutamento.core.enums.NomePapel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

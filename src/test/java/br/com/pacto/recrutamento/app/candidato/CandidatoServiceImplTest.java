@@ -1,4 +1,6 @@
-package br.com.pacto.recrutamento.app.candidato;
+package br.com.pacto.recrutamento.app.ports.candidato;
+
+import br.com.pacto.recrutamento.app.serviceImpl.CandidatoServiceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.candidato.AtualizarCandidatoDTO;
 import br.com.pacto.recrutamento.app.dtos.candidato.CandidatoDTO;

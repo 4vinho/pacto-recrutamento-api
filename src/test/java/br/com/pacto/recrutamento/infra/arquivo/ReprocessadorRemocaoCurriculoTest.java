@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.arquivo;
 
-import br.com.pacto.recrutamento.app.curriculo.ArquivoStorage;
+import br.com.pacto.recrutamento.app.ports.curriculo.ArquivoStorage;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;

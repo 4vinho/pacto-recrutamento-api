@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.notificacao;
 
-import br.com.pacto.recrutamento.app.notificacao.NotificacaoPort;
+import br.com.pacto.recrutamento.app.ports.notificacao.NotificacaoPort;
 import br.com.pacto.recrutamento.core.entities.Notificacao;
 import org.springframework.stereotype.Component;
 import java.util.Optional;

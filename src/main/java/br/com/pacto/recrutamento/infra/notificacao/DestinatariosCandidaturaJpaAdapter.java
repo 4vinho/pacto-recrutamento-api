@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.notificacao;
-import br.com.pacto.recrutamento.app.notificacao.DestinatariosCandidatura;
-import br.com.pacto.recrutamento.app.notificacao.DestinatariosCandidaturaPort;
+import br.com.pacto.recrutamento.app.ports.notificacao.DestinatariosCandidatura;
+import br.com.pacto.recrutamento.app.ports.notificacao.DestinatariosCandidaturaPort;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;

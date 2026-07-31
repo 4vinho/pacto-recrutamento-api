@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.usuario;
 
-import br.com.pacto.recrutamento.app.usuario.CodificadorSenha;
+import br.com.pacto.recrutamento.app.ports.usuario.CodificadorSenha;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.candidatura;
 
-import br.com.pacto.recrutamento.app.candidatura.PerguntaCandidaturaRepositorio;
+import br.com.pacto.recrutamento.app.ports.candidatura.PerguntaCandidaturaRepositorio;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;

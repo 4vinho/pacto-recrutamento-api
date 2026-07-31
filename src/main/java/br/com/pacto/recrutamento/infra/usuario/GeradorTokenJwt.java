@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.usuario;
 
-import br.com.pacto.recrutamento.app.usuario.GeradorToken;
+import br.com.pacto.recrutamento.app.ports.usuario.GeradorToken;
 import br.com.pacto.recrutamento.core.entities.Papel;
 import br.com.pacto.recrutamento.core.entities.Usuario;
 import io.jsonwebtoken.Jwts;

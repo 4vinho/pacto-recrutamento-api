@@ -1,4 +1,6 @@
-package br.com.pacto.recrutamento.app.vaga;
+package br.com.pacto.recrutamento.app.ports.vaga;
+
+import br.com.pacto.recrutamento.app.serviceImpl.VagaServiceImpl;
 
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
@@ -13,8 +15,8 @@ class ArquiteturaVagaTest {
 
     @Test
     void sliceDaAplicacaoFicaCoesoESemDependenciasJpa() throws Exception {
-        assertThat(Class.forName("br.com.pacto.recrutamento.app.vaga.VagaServiceImpl")).isNotNull();
-        assertThat(Class.forName("br.com.pacto.recrutamento.app.vaga.VagaRepositorio")).isNotNull();
+        assertThat(Class.forName("br.com.pacto.recrutamento.app.serviceImpl.VagaServiceImpl")).isNotNull();
+        assertThat(Class.forName("br.com.pacto.recrutamento.app.ports.vaga.VagaRepositorio")).isNotNull();
         assertThat(Vaga.class.isAnnotationPresent(Entity.class)).isFalse();
         assertThat(PerguntaVaga.class.isAnnotationPresent(Entity.class)).isFalse();
         assertThat(RequisitoVaga.class.isAnnotationPresent(Entity.class)).isFalse();

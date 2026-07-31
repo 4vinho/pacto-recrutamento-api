@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.candidatura;
+package br.com.pacto.recrutamento.app.ports.candidatura;
 
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
@@ -15,16 +15,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ArquiteturaCandidaturaTest {
     @Test
     void sliceDaAplicacaoNaoDependeDeSpringJpaOuInfra() throws IOException {
-        Path raiz = Paths.get("src/main/java/br/com/pacto/recrutamento/app/candidatura");
-        try (Stream<Path> fontes = Files.walk(raiz)) {
-            fontes.filter(path -> path.toString().endsWith(".java")).forEach(path -> {
-                try {
-                    String fonte = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-                    assertThat(fonte).doesNotContain("org.springframework", "javax.persistence", ".infra.");
-                } catch (IOException ex) {
-                    throw new IllegalStateException(ex);
-                }
-            });
+        Stream<Path> raizes = Stream.of(
+                Paths.get("src/main/java/br/com/pacto/recrutamento/app/serviceImpl"),
+                Paths.get("src/main/java/br/com/pacto/recrutamento/app/ports/candidatura"));
+        for (Path raiz : (Iterable<Path>) raizes::iterator) {
+            try (Stream<Path> fontes = Files.walk(raiz)) {
+                fontes.filter(path -> path.toString().endsWith(".java")).forEach(path -> {
+                    try {
+                        String fonte = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+                        assertThat(fonte).doesNotContain("org.springframework", "javax.persistence", ".infra.");
+                    } catch (IOException ex) {
+                        throw new IllegalStateException(ex);
+                    }
+                });
+            }
         }
         assertThat(Candidatura.class.isAnnotationPresent(Entity.class)).isFalse();
         assertThat(RespostaCandidatura.class.isAnnotationPresent(Entity.class)).isFalse();

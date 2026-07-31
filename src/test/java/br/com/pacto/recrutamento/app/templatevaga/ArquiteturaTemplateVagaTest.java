@@ -1,4 +1,8 @@
-package br.com.pacto.recrutamento.app.templatevaga;
+package br.com.pacto.recrutamento.app.ports.templatevaga;
+
+import br.com.pacto.recrutamento.app.serviceImpl.VagaServiceImpl;
+
+import br.com.pacto.recrutamento.app.serviceImpl.TemplateVagaServiceImpl;
 
 import br.com.pacto.recrutamento.core.entities.PerguntaTemplateVaga;
 import br.com.pacto.recrutamento.core.entities.RequisitoTemplateVaga;
@@ -13,8 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ArquiteturaTemplateVagaTest {
     @Test
     void aplicacaoECoreNaoDependemDeJpaSpringOuInfra() throws Exception {
-        assertThat(Class.forName("br.com.pacto.recrutamento.app.templatevaga.TemplateVagaServiceImpl")).isNotNull();
-        assertThat(Class.forName("br.com.pacto.recrutamento.app.templatevaga.TemplateVagaRepositorio")).isNotNull();
+        assertThat(Class.forName("br.com.pacto.recrutamento.app.serviceImpl.TemplateVagaServiceImpl")).isNotNull();
+        assertThat(Class.forName("br.com.pacto.recrutamento.app.ports.templatevaga.TemplateVagaRepositorio")).isNotNull();
         assertThat(TemplateVaga.class.isAnnotationPresent(Entity.class)).isFalse();
         assertThat(PerguntaTemplateVaga.class.isAnnotationPresent(Entity.class)).isFalse();
         assertThat(RequisitoTemplateVaga.class.isAnnotationPresent(Entity.class)).isFalse();

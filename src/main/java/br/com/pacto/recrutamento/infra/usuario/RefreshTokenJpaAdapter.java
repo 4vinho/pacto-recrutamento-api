@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.usuario;
 
-import br.com.pacto.recrutamento.app.usuario.RefreshTokenPort;
+import br.com.pacto.recrutamento.app.ports.usuario.RefreshTokenPort;
 import br.com.pacto.recrutamento.core.entities.RefreshToken;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

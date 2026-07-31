@@ -1,9 +1,0 @@
-package br.com.pacto.recrutamento.app.candidatura;
-
-import br.com.pacto.recrutamento.core.entities.Vaga;
-
-import java.util.UUID;
-
-public interface AutorizacaoResponsavelCandidatura {
-    boolean podeGerenciar(UUID usuarioId, Vaga vaga);
-}

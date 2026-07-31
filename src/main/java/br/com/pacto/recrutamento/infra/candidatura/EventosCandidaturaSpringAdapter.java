@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.candidatura;
 
-import br.com.pacto.recrutamento.app.candidatura.EventosCandidatura;
+import br.com.pacto.recrutamento.app.ports.candidatura.EventosCandidatura;
 import br.com.pacto.recrutamento.app.dtos.notificacao.CandidaturaCriadaDTO;
 import br.com.pacto.recrutamento.app.dtos.notificacao.StatusCandidaturaAlteradoDTO;
 import br.com.pacto.recrutamento.core.entities.Candidatura;

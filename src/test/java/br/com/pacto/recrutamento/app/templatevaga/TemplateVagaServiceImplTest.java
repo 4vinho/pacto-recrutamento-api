@@ -1,4 +1,8 @@
-package br.com.pacto.recrutamento.app.templatevaga;
+package br.com.pacto.recrutamento.app.ports.templatevaga;
+
+import br.com.pacto.recrutamento.app.serviceImpl.VagaServiceImpl;
+
+import br.com.pacto.recrutamento.app.serviceImpl.TemplateVagaServiceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.templatevaga.*;
 import br.com.pacto.recrutamento.core.entities.*;

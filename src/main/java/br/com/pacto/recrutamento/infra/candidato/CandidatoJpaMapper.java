@@ -1,7 +1,7 @@
 package br.com.pacto.recrutamento.infra.candidato;
 
-import br.com.pacto.recrutamento.app.candidato.CandidatoPersistido;
-import br.com.pacto.recrutamento.app.candidato.CandidaturaDoCandidato;
+import br.com.pacto.recrutamento.app.ports.candidato.CandidatoPersistido;
+import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.springframework.stereotype.Component;
 

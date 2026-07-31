@@ -1,7 +1,8 @@
 package br.com.pacto.recrutamento.infra.candidatura;
 
-import br.com.pacto.recrutamento.app.candidato.CandidatoRepository;
-import br.com.pacto.recrutamento.app.candidatura.*;
+import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
+import br.com.pacto.recrutamento.app.ports.candidatura.*;
+import br.com.pacto.recrutamento.app.serviceImpl.CandidaturaServiceImpl;
 import br.com.pacto.recrutamento.app.services.CandidaturaService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

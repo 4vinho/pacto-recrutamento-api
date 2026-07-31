@@ -1,4 +1,6 @@
-package br.com.pacto.recrutamento.app.usuario;
+package br.com.pacto.recrutamento.app.ports.usuario;
+
+import br.com.pacto.recrutamento.app.serviceImpl.UsuarioServiceImpl;
 
 import org.junit.jupiter.api.Test;
 import br.com.pacto.recrutamento.infra.usuario.BCryptCodificadorSenha;
@@ -12,13 +14,13 @@ class UsuarioArquiteturaTest {
 
     @Test
     void casoDeUsoEPortasDeUsuarioPermanecemNaCamadaAppDaFuncionalidade() {
-        assertThat(UsuarioServiceImpl.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.usuario");
-        assertThat(UsuarioPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.usuario");
-        assertThat(PapelPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.usuario");
-        assertThat(RefreshTokenPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.usuario");
-        assertThat(CodificadorSenha.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.usuario");
-        assertThat(GeradorToken.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.usuario");
-        assertThat(RecuperacaoSenhaPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.usuario");
+        assertThat(UsuarioServiceImpl.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.serviceImpl");
+        assertThat(UsuarioPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.usuario");
+        assertThat(PapelPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.usuario");
+        assertThat(RefreshTokenPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.usuario");
+        assertThat(CodificadorSenha.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.usuario");
+        assertThat(GeradorToken.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.usuario");
+        assertThat(RecuperacaoSenhaPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.usuario");
     }
 
     @Test

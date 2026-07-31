@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.usuario;
 
-import br.com.pacto.recrutamento.app.usuario.GeradorToken;
+import br.com.pacto.recrutamento.app.ports.usuario.GeradorToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,6 @@
-package br.com.pacto.recrutamento.app.curriculo;
+package br.com.pacto.recrutamento.app.ports.curriculo;
+
+import br.com.pacto.recrutamento.app.serviceImpl.CurriculoServiceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.curriculo.EnviarCurriculoDTO;
 import br.com.pacto.recrutamento.app.dtos.curriculo.GerarUrlTemporariaCurriculoDTO;

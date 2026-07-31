@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.vaga;
 
-import br.com.pacto.recrutamento.app.vaga.AutorizacaoVaga;
+import br.com.pacto.recrutamento.app.ports.vaga.AutorizacaoVaga;
 import br.com.pacto.recrutamento.core.enums.NomePapel;
 
 import java.util.Collection;

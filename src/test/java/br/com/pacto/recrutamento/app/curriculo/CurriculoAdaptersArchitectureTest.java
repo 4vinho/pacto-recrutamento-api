@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.curriculo;
+package br.com.pacto.recrutamento.app.ports.curriculo;
 
 import br.com.pacto.recrutamento.infra.arquivo.RemocaoCurriculoPendenteJpaAdapter;
 import br.com.pacto.recrutamento.infra.curriculo.CandidatoConsultaJpaAdapter;

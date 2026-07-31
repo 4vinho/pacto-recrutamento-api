@@ -1,4 +1,6 @@
-package br.com.pacto.recrutamento.app.notificacao;
+package br.com.pacto.recrutamento.app.ports.notificacao;
+
+import br.com.pacto.recrutamento.app.serviceImpl.NotificacaoServiceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.notificacao.CandidaturaCriadaDTO;
 import br.com.pacto.recrutamento.core.common.TypedResponse;

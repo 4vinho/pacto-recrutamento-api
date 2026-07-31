@@ -1,4 +1,6 @@
-package br.com.pacto.recrutamento.app.vaga;
+package br.com.pacto.recrutamento.app.ports.vaga;
+
+import br.com.pacto.recrutamento.app.serviceImpl.VagaServiceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.vaga.AlterarStatusVagaDTO;
 import br.com.pacto.recrutamento.app.dtos.vaga.AtualizarVagaDTO;

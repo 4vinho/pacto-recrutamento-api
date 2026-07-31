@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.candidato;
+package br.com.pacto.recrutamento.app.ports.candidato;
 
 import br.com.pacto.recrutamento.infra.candidato.CandidatoJpaAdapter;
 import br.com.pacto.recrutamento.infra.candidato.CandidatoJpaEntity;
@@ -13,7 +13,7 @@ class ArquiteturaCandidatoTest {
     @Test
     void aplicacaoDefinePortaSemConhecerJpaEAdapterFicaNaInfraestrutura() {
         assertThat(CandidatoRepository.class.getPackage().getName())
-                .isEqualTo("br.com.pacto.recrutamento.app.candidato");
+                .isEqualTo("br.com.pacto.recrutamento.app.ports.candidato");
         assertThat(CandidatoRepository.class.isAnnotationPresent(Entity.class)).isFalse();
         assertThat(CandidatoJpaAdapter.class.getPackage().getName())
                 .isEqualTo("br.com.pacto.recrutamento.infra.candidato");

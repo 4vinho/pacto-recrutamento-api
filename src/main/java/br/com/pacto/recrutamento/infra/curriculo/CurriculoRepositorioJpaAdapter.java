@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.curriculo;
 
-import br.com.pacto.recrutamento.app.curriculo.CurriculoRepositorio;
+import br.com.pacto.recrutamento.app.ports.curriculo.CurriculoRepositorio;
 import br.com.pacto.recrutamento.core.entities.Curriculo;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

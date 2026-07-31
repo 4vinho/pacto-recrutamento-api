@@ -1,9 +1,9 @@
 package br.com.pacto.recrutamento.infra.candidato;
 
-import br.com.pacto.recrutamento.app.candidato.CandidatoPersistido;
-import br.com.pacto.recrutamento.app.candidato.CandidatoRepository;
-import br.com.pacto.recrutamento.app.candidato.CandidaturaDoCandidato;
-import br.com.pacto.recrutamento.app.candidato.PaginaCandidaturas;
+import br.com.pacto.recrutamento.app.ports.candidato.CandidatoPersistido;
+import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
+import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
+import br.com.pacto.recrutamento.app.ports.candidato.PaginaCandidaturas;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;

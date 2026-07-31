@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.arquivo;
 
-import br.com.pacto.recrutamento.app.curriculo.RemocaoCurriculoPendente;
+import br.com.pacto.recrutamento.app.ports.curriculo.RemocaoCurriculoPendente;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

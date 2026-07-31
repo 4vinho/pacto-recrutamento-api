@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.templatevaga;
 
-import br.com.pacto.recrutamento.app.templatevaga.PerguntaTemplateVagaRepositorio;
+import br.com.pacto.recrutamento.app.ports.templatevaga.PerguntaTemplateVagaRepositorio;
 import br.com.pacto.recrutamento.core.entities.PerguntaTemplateVaga;
 import org.springframework.stereotype.Repository;
 import java.util.List;

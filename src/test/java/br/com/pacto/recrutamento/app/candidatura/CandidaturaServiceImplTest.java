@@ -1,4 +1,6 @@
-package br.com.pacto.recrutamento.app.candidatura;
+package br.com.pacto.recrutamento.app.ports.candidatura;
+
+import br.com.pacto.recrutamento.app.serviceImpl.CandidaturaServiceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.candidatura.AtualizarStatusCandidaturaDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.CancelarCandidaturaDTO;
@@ -7,10 +9,10 @@ import br.com.pacto.recrutamento.app.dtos.candidatura.ConsultarCandidaturaDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.CriarCandidaturaDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.RegistrarRespostasDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.RespostaCandidaturaDTO;
-import br.com.pacto.recrutamento.app.candidato.CandidatoPersistido;
-import br.com.pacto.recrutamento.app.candidato.CandidatoRepository;
-import br.com.pacto.recrutamento.app.candidato.CandidaturaDoCandidato;
-import br.com.pacto.recrutamento.app.candidato.PaginaCandidaturas;
+import br.com.pacto.recrutamento.app.ports.candidato.CandidatoPersistido;
+import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
+import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
+import br.com.pacto.recrutamento.app.ports.candidato.PaginaCandidaturas;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
