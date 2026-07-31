@@ -11,8 +11,8 @@ import br.com.pacto.recrutamento.app.dtos.candidatura.RegistrarRespostasDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.RespostaCandidaturaDTO;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
-import br.com.pacto.recrutamento.app.ports.candidato.PaginaCandidaturas;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.Candidato;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
@@ -223,7 +223,10 @@ class CandidaturaServiceImplTest {
             return candidato;
         }
         public Optional<Candidato> buscarPorUsuarioId(UUID usuarioId) { return Optional.ofNullable(dados.get(usuarioId)); }
-        public PaginaCandidaturas listarCandidaturasDoUsuario(UUID u, int p, int s) { return new PaginaCandidaturas(Collections.<CandidaturaDoCandidato>emptyList(), 0); }
+        public PaginaGenerico<CandidaturaDoCandidato> listarCandidaturasDoUsuario(
+                UUID u, int p, int s) {
+            return new PaginaGenerico<>(Collections.<CandidaturaDoCandidato>emptyList(), 0);
+        }
     }
     private final class Candidaturas implements CandidaturaRepositorio {
         private final Map<UUID, Candidatura> dados = new HashMap<>(); private final Set<String> chavesExistentes = new HashSet<>(); private final List<RespostaCandidatura> respostas = new ArrayList<>(); private boolean falharPorUnicidade; private boolean falharRespostasPorUnicidade; private boolean salvouAntesDoEvento;

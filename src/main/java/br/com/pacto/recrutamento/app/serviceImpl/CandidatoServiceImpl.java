@@ -2,7 +2,6 @@ package br.com.pacto.recrutamento.app.serviceImpl;
 
 import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
-import br.com.pacto.recrutamento.app.ports.candidato.PaginaCandidaturas;
 
 import br.com.pacto.recrutamento.app.dtos.candidato.AtualizarCandidatoDTO;
 import br.com.pacto.recrutamento.app.dtos.candidato.CandidatoDTO;
@@ -12,6 +11,7 @@ import br.com.pacto.recrutamento.app.dtos.candidato.ListarMinhasCandidaturasDTO;
 import br.com.pacto.recrutamento.app.services.CandidatoService;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.entities.Candidato;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +61,8 @@ public class CandidatoServiceImpl implements CandidatoService {
         if (!consultaValida(query)) {
             return requisicaoInvalida(query);
         }
-        PaginaCandidaturas pagina = candidatoRepository.listarCandidaturasDoUsuario(
+        PaginaGenerico<CandidaturaDoCandidato> pagina =
+                candidatoRepository.listarCandidaturasDoUsuario(
                 query.getUsuarioId(), query.getPage(), query.getPageSize());
         List<CandidaturaResumoDTO> candidaturas = pagina.getItens().stream()
                 .map(this::paraResumo)

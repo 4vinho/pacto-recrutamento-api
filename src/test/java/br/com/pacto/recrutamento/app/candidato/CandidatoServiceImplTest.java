@@ -9,6 +9,7 @@ import br.com.pacto.recrutamento.app.dtos.candidato.CriarCandidatoDTO;
 import br.com.pacto.recrutamento.app.dtos.candidato.ListarMinhasCandidaturasDTO;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.entities.Candidato;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.junit.jupiter.api.Test;
@@ -89,7 +90,7 @@ class CandidatoServiceImplTest {
         CandidaturaDoCandidato candidatura = new CandidaturaDoCandidato(
                 UUID.randomUUID(), UUID.randomUUID(), "Desenvolvedor", StatusCandidatura.EM_ANALISE,
                 criadaEm, "Perfil em avaliacao");
-        ((CandidatoRepositoryFalso) repository).pagina = new PaginaCandidaturas(
+        ((CandidatoRepositoryFalso) repository).pagina = new PaginaGenerico<>(
                 Collections.singletonList(candidatura), 1);
 
         TypedPagedResponse<CandidaturaResumoDTO> resposta = service.listarMinhasCandidaturas(
@@ -129,7 +130,8 @@ class CandidatoServiceImplTest {
     private static class CandidatoRepositoryFalso implements CandidatoRepository {
         private final java.util.Map<UUID, Candidato> perfis = new java.util.HashMap<>();
         private UUID ultimoUsuarioConsultado;
-        private PaginaCandidaturas pagina = new PaginaCandidaturas(Collections.<CandidaturaDoCandidato>emptyList(), 0);
+        private PaginaGenerico<CandidaturaDoCandidato> pagina =
+                new PaginaGenerico<>(Collections.<CandidaturaDoCandidato>emptyList(), 0);
 
         @Override public boolean existePorUsuarioId(UUID usuarioId) { return perfis.containsKey(usuarioId); }
         @Override public Candidato salvar(Candidato candidato) {
@@ -139,7 +141,8 @@ class CandidatoServiceImplTest {
         @Override public Optional<Candidato> buscarPorUsuarioId(UUID usuarioId) {
             return Optional.ofNullable(perfis.get(usuarioId));
         }
-        @Override public PaginaCandidaturas listarCandidaturasDoUsuario(UUID usuarioId, int page, int pageSize) {
+        @Override public PaginaGenerico<CandidaturaDoCandidato> listarCandidaturasDoUsuario(
+                UUID usuarioId, int page, int pageSize) {
             ultimoUsuarioConsultado = usuarioId;
             return pagina;
         }

@@ -2,7 +2,7 @@ package br.com.pacto.recrutamento.infra.candidato;
 
 import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
-import br.com.pacto.recrutamento.app.ports.candidato.PaginaCandidaturas;
+import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.entities.Candidato;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.springframework.data.domain.Page;
@@ -37,13 +37,14 @@ public class CandidatoJpaAdapter implements CandidatoRepository {
     }
 
     @Override
-    public PaginaCandidaturas listarCandidaturasDoUsuario(UUID usuarioId, int page, int pageSize) {
+    public PaginaGenerico<CandidaturaDoCandidato> listarCandidaturasDoUsuario(
+            UUID usuarioId, int page, int pageSize) {
         Page<CandidaturaPainelProjection> resultado = repository.listarPainel(
                 usuarioId, PageRequest.of(page, pageSize));
         List<CandidaturaDoCandidato> itens = resultado.getContent().stream()
                 .map(this::paraAplicacao)
                 .collect(Collectors.toList());
-        return new PaginaCandidaturas(itens, resultado.getTotalElements());
+        return new PaginaGenerico<>(itens, resultado.getTotalElements());
     }
 
     private CandidaturaDoCandidato paraAplicacao(CandidaturaPainelProjection projection) {
