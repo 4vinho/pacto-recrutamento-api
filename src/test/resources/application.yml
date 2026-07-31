@@ -20,3 +20,7 @@ storage:
     access-key: test
     secret-key: test
     bucket: test
+
+security:
+  jwt:
+    secret: uma-chave-de-teste-com-pelo-menos-trinta-e-dois-bytes
