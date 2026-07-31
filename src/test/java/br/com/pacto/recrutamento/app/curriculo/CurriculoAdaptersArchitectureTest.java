@@ -1,7 +1,7 @@
 package br.com.pacto.recrutamento.app.ports.curriculo;
 
-import br.com.pacto.recrutamento.infra.curriculo.CandidatoConsultaJpaAdapter;
-import br.com.pacto.recrutamento.infra.curriculo.CurriculoRepositorioJpaAdapter;
+import br.com.pacto.recrutamento.infra.adapters.curriculo.CandidatoConsultaJpaAdapter;
+import br.com.pacto.recrutamento.infra.adapters.curriculo.CurriculoRepositorioJpaAdapter;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

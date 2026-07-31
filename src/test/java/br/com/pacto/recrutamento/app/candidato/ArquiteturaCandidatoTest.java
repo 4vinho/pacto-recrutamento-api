@@ -1,7 +1,7 @@
 package br.com.pacto.recrutamento.app.ports.candidato;
 
 import br.com.pacto.recrutamento.core.entities.Candidato;
-import br.com.pacto.recrutamento.infra.candidato.CandidatoJpaAdapter;
+import br.com.pacto.recrutamento.infra.adapters.candidato.CandidatoJpaAdapter;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.Entity;
@@ -16,7 +16,7 @@ class ArquiteturaCandidatoTest {
                 .isEqualTo("br.com.pacto.recrutamento.app.ports.candidato");
         assertThat(CandidatoRepository.class.isAnnotationPresent(Entity.class)).isFalse();
         assertThat(CandidatoJpaAdapter.class.getPackage().getName())
-                .isEqualTo("br.com.pacto.recrutamento.infra.candidato");
+                .isEqualTo("br.com.pacto.recrutamento.infra.adapters.candidato");
         assertThat(Candidato.class).hasAnnotation(Entity.class);
     }
 

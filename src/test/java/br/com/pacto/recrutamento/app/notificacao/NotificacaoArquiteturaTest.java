@@ -2,7 +2,7 @@ package br.com.pacto.recrutamento.app.ports.notificacao;
 
 import br.com.pacto.recrutamento.app.serviceImpl.NotificacaoServiceImpl;
 import br.com.pacto.recrutamento.core.entities.Notificacao;
-import br.com.pacto.recrutamento.infra.notificacao.NotificacaoJpaAdapter;
+import br.com.pacto.recrutamento.infra.adapters.notificacao.NotificacaoJpaAdapter;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.Entity;
@@ -14,6 +14,7 @@ class NotificacaoArquiteturaTest {
     void notificacaoDoCoreEhEntidadeJpaEAdaptadorPermaneceNaInfraestrutura() {
         assertThat(Notificacao.class.isAnnotationPresent(Entity.class)).isTrue();
         assertThat(NotificacaoServiceImpl.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.serviceImpl");
-        assertThat(NotificacaoJpaAdapter.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.infra.notificacao");
+        assertThat(NotificacaoJpaAdapter.class.getPackage().getName())
+                .isEqualTo("br.com.pacto.recrutamento.infra.adapters.notificacao");
     }
 }
