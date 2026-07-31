@@ -1,5 +1,7 @@
 package br.com.pacto.recrutamento.core.common;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -7,6 +9,7 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TypedResponseTest {
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void respostaCalculaErroPeloStatusHttp() {
@@ -25,6 +28,23 @@ class TypedResponseTest {
                 422, "Campo inválido.", null, ErrorCode.VALIDATION_ERROR);
 
         assertThat(response.getErrorCode()).isEqualTo("VALIDATION_ERROR");
+    }
+
+    @Test
+    void serializaSomenteDataEmCasoDeSucesso() throws JsonProcessingException {
+        TypedResponse<String> response = new TypedResponse<>(200, "Consulta concluída.", "resultado");
+
+        assertThat(objectMapper.writeValueAsString(response))
+                .isEqualTo("{\"data\":\"resultado\"}");
+    }
+
+    @Test
+    void serializaSomenteMensagemEmCasoDeErro() throws JsonProcessingException {
+        TypedResponse<Void> response = new TypedResponse<>(
+                401, "Não autenticado.", null, ErrorCode.AUTHENTICATION_REQUIRED);
+
+        assertThat(objectMapper.writeValueAsString(response))
+                .isEqualTo("{\"message\":\"Não autenticado.\"}");
     }
 
     @Test
