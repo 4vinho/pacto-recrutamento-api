@@ -35,7 +35,10 @@ tabela. Perguntas e requisitos pertencem a `vaga`; respostas pertencem a
 - Identificadores UUID; datas em UTC e enums persistidos como texto.
 - Exclusão lógica quando o histórico precisar ser preservado.
 - Dependências seguem `web -> app -> core`; `infra` implementa portas de `app`.
-- `core` não depende de Spring, JPA, HTTP, MinIO ou bibliotecas JWT.
+- `core` concentra as entidades do domínio e seus mapeamentos JPA, sem depender
+  de `infra`, HTTP, MinIO ou bibliotecas JWT.
+- Services dependem de interfaces em `app/ports`; implementações que acessam
+  banco, storage ou outros sistemas externos ficam em `infra`.
 - Toda entrada externa deve ser validada e erros devem usar o contrato HTTP comum.
 - A implementação deve começar por testes e entregar somente fluxos funcionais.
 

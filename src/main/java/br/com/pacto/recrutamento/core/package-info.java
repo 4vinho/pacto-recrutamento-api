@@ -1,4 +1,4 @@
 /**
- * Regras e modelos do domínio, sem dependências de frameworks.
+ * Entidades, mapeamentos JPA e regras do domínio.
  */
 package br.com.pacto.recrutamento.core;

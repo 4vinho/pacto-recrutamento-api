@@ -1,7 +1,7 @@
 # Requisitos de entidades
 
-Define o modelo de domínio e as invariantes, sem detalhes de controller, JPA ou
-integrações externas.
+Define o modelo de domínio, as invariantes e os mapeamentos JPA das entidades,
+sem detalhes de controller ou integrações externas.
 
 - [Usuário](usuario/README.md)
 - [Candidato](candidato/README.md)
