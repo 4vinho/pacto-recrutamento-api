@@ -24,6 +24,8 @@ public class UsuarioService implements UsuarioUseCase {
     private static final long MINUTOS_ACCESS_TOKEN = 15;
     private static final long DIAS_REFRESH_TOKEN = 7;
     private static final long MINUTOS_RECUPERACAO_SENHA = 30;
+    private static final int TAMANHO_MINIMO_SENHA = 8;
+    private static final int TAMANHO_MAXIMO_SENHA = 72;
     private final UsuarioPort usuarios;
     private final PapelPort papeis;
     private final RefreshTokenPort refreshTokens;
@@ -165,7 +167,8 @@ public class UsuarioService implements UsuarioUseCase {
     }
 
     private boolean senhaInvalida(String senha) {
-        return senha == null || senha.trim().isEmpty();
+        return senha == null || senha.length() < TAMANHO_MINIMO_SENHA
+                || senha.length() > TAMANHO_MAXIMO_SENHA;
     }
 
     private boolean tokenInvalido(String token) {
