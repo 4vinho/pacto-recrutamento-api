@@ -3,8 +3,10 @@ package br.com.pacto.recrutamento.infra.adapters.candidatura;
 import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
+import br.com.pacto.recrutamento.core.entities.RespostaRequisitoCandidatura;
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.CandidaturaJpaRepository;
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.RespostaCandidaturaJpaRepository;
+import br.com.pacto.recrutamento.infra.repositorys.candidatura.RespostaRequisitoCandidaturaJpaRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,15 +19,22 @@ import java.util.UUID;
 public class CandidaturaJpaAdapter implements CandidaturaPort {
     private final CandidaturaJpaRepository candidaturas;
     private final RespostaCandidaturaJpaRepository respostas;
+    private final RespostaRequisitoCandidaturaJpaRepository respostasRequisitos;
 
     public CandidaturaJpaAdapter(CandidaturaJpaRepository candidaturas,
-                                 RespostaCandidaturaJpaRepository respostas) {
+                                 RespostaCandidaturaJpaRepository respostas,
+                                 RespostaRequisitoCandidaturaJpaRepository respostasRequisitos) {
         this.candidaturas = candidaturas;
         this.respostas = respostas;
+        this.respostasRequisitos = respostasRequisitos;
     }
 
     public Optional<Candidatura> buscarPorId(UUID id) {
         return candidaturas.findById(id);
+    }
+
+    public Optional<Candidatura> buscarPorIdParaAtualizacao(UUID id) {
+        return candidaturas.findByIdForUpdate(id);
     }
 
     public boolean existePorCandidatoIdEVagaId(UUID candidatoId, UUID vagaId) {
@@ -42,14 +51,26 @@ public class CandidaturaJpaAdapter implements CandidaturaPort {
     }
 
     @Transactional
-    public void finalizarComRespostasAtomicamente(Candidatura candidatura,
-                                                   List<RespostaCandidatura> lote) {
+    public void registrarRespostasPerguntasAtomicamente(Candidatura candidatura,
+                                                         List<RespostaCandidatura> lote) {
         try {
             respostas.saveAllAndFlush(lote);
-            candidatura.setStatus(br.com.pacto.recrutamento.core.enums.StatusCandidatura.ENVIADA);
+            candidatura.registrarPerguntasRespondidas();
             candidaturas.saveAndFlush(candidatura);
         } catch (DataIntegrityViolationException ex) {
             throw new RespostasDuplicadasException();
+        }
+    }
+
+    @Transactional
+    public void registrarRespostasRequisitosAtomicamente(Candidatura candidatura,
+            List<RespostaRequisitoCandidatura> lote) {
+        try {
+            respostasRequisitos.saveAllAndFlush(lote);
+            candidatura.registrarRequisitosRespondidos();
+            candidaturas.saveAndFlush(candidatura);
+        } catch (DataIntegrityViolationException ex) {
+            throw new RequisitosJaRespondidosException();
         }
     }
 }

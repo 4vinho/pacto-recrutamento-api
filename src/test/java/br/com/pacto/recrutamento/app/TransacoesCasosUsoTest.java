@@ -5,6 +5,7 @@ import br.com.pacto.recrutamento.app.dtos.candidatura.CancelarCandidaturaDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.ConsultarCandidaturaDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.CriarCandidaturaDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.RegistrarRespostasDTO;
+import br.com.pacto.recrutamento.app.dtos.candidatura.RegistrarRequisitosDTO;
 import br.com.pacto.recrutamento.app.dtos.notificacao.CandidaturaCriadaDTO;
 import br.com.pacto.recrutamento.app.dtos.notificacao.StatusCandidaturaAlteradoDTO;
 import br.com.pacto.recrutamento.app.dtos.usuario.EncerrarSessaoDTO;
@@ -32,6 +33,7 @@ class TransacoesCasosUsoTest {
     void mutacoesDeCandidaturaSaoTransacionais() throws Exception {
         assertTransacional(CandidaturaService.class, "criarCandidatura", CriarCandidaturaDTO.class);
         assertTransacional(CandidaturaService.class, "registrarRespostas", RegistrarRespostasDTO.class);
+        assertTransacional(CandidaturaService.class, "registrarRequisitos", RegistrarRequisitosDTO.class);
         assertTransacional(CandidaturaService.class, "atualizarStatusCandidatura",
                 AtualizarStatusCandidaturaDTO.class);
         assertTransacional(CandidaturaService.class, "cancelarCandidatura",

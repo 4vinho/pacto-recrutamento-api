@@ -8,6 +8,7 @@ import br.com.pacto.recrutamento.app.dtos.candidatura.*;
 import br.com.pacto.recrutamento.app.ports.in.candidatura.CandidaturaUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
+import br.com.pacto.recrutamento.core.enums.NivelAtendimentoRequisito;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,19 @@ public class CandidaturaController {
                 AuthenticatedUser.id(authentication), candidaturaId, respostas)));
     }
 
+    @PostMapping("/candidaturas/{candidaturaId}/requisitos")
+    public ResponseEntity<TypedResponse<CandidaturaDTO>> responderRequisitos(
+            Authentication authentication, @PathVariable UUID candidaturaId,
+            @Valid @RequestBody RequisitosRequest request) {
+        List<RespostaRequisitoCandidaturaDTO> respostas = new ArrayList<>();
+        for (RespostaRequisitoRequest resposta : request.respostas) {
+            respostas.add(new RespostaRequisitoCandidaturaDTO(
+                    resposta.requisitoId, resposta.nivel));
+        }
+        return HttpResponses.from(service.registrarRequisitos(new RegistrarRequisitosDTO(
+                AuthenticatedUser.id(authentication), candidaturaId, respostas)));
+    }
+
     @PatchMapping("/candidaturas/{candidaturaId}/status")
     public ResponseEntity<TypedResponse<CandidaturaDTO>> atualizarStatus(
             Authentication authentication, @PathVariable UUID candidaturaId,
@@ -82,6 +96,19 @@ public class CandidaturaController {
         public UUID perguntaId;
         @NotBlank
         public String valor;
+    }
+
+    public static class RequisitosRequest {
+        @NotEmpty
+        @Valid
+        public List<RespostaRequisitoRequest> respostas;
+    }
+
+    public static class RespostaRequisitoRequest {
+        @NotNull
+        public UUID requisitoId;
+        @NotNull
+        public NivelAtendimentoRequisito nivel;
     }
 
     public static class StatusRequest {

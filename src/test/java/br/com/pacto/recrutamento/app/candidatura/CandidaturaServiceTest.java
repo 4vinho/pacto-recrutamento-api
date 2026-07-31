@@ -10,6 +10,7 @@ import br.com.pacto.recrutamento.core.entities.*;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import br.com.pacto.recrutamento.core.enums.StatusVaga;
 import br.com.pacto.recrutamento.core.enums.TipoResposta;
+import br.com.pacto.recrutamento.core.enums.NivelAtendimentoRequisito;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -25,9 +26,10 @@ class CandidaturaServiceTest {
     private final Candidaturas candidaturas = new Candidaturas();
     private final Vagas vagas = new Vagas();
     private final Perguntas perguntas = new Perguntas();
+    private final Requisitos requisitos = new Requisitos();
     private final Eventos eventos = new Eventos();
     private final CandidaturaService service = new CandidaturaService(candidatos,
-            candidaturas, vagas, perguntas, new Autorizacao(), eventos);
+            candidaturas, vagas, perguntas, requisitos, new Autorizacao(), eventos);
 
     @Test
     void criaCandidaturaEnviadaParaCandidatoEmVagaAbertaEPublicaEventoAposSalvar() {
@@ -66,6 +68,67 @@ class CandidaturaServiceTest {
         assertEquals(200, enviada.getStatusCode());
         assertEquals(StatusCandidatura.ENVIADA, enviada.getData().getStatus());
         assertEquals(1, eventos.criadas);
+    }
+
+    @Test
+    void enviaSomenteDepoisDePerguntasERequisitosRespondidosEmQualquerOrdem() {
+        Vaga vaga = vagaPublicada();
+        vagas.salvar(vaga);
+        PerguntaVaga pergunta = pergunta(vaga.getId());
+        pergunta.setObrigatoria(true);
+        perguntas.salvar(pergunta);
+        RequisitoVaga requisito = requisito(vaga.getId(), true);
+        requisitos.salvar(requisito);
+        CandidaturaDTO criada = service.criarCandidatura(
+                new CriarCandidaturaDTO(usuarioCandidato, vaga.getId())).getData();
+
+        TypedResponse<CandidaturaDTO> perguntasRegistradas = service.registrarRespostas(
+                new RegistrarRespostasDTO(usuarioCandidato, criada.getId(),
+                        Collections.singletonList(new RespostaCandidaturaDTO(
+                                pergunta.getId(), "sim"))));
+
+        assertEquals(StatusCandidatura.RASCUNHO, perguntasRegistradas.getData().getStatus());
+        assertTrue(perguntasRegistradas.getData().isPerguntasRespondidas());
+        assertFalse(perguntasRegistradas.getData().isRequisitosRespondidos());
+        assertEquals(0, eventos.criadas);
+
+        TypedResponse<CandidaturaDTO> requisitosRegistrados = service.registrarRequisitos(
+                new RegistrarRequisitosDTO(usuarioCandidato, criada.getId(),
+                        Collections.singletonList(new RespostaRequisitoCandidaturaDTO(
+                                requisito.getId(), NivelAtendimentoRequisito.ALTO))));
+
+        assertEquals(StatusCandidatura.ENVIADA, requisitosRegistrados.getData().getStatus());
+        assertEquals(1, candidaturas.respostasRequisitos.size());
+        assertEquals(1, eventos.criadas);
+    }
+
+    @Test
+    void rejeitaRequisitoObrigatorioAusenteDuplicadoOuDeOutraVaga() {
+        Candidatura candidatura = new Candidatura(candidatoId, UUID.randomUUID());
+        candidatura.configurarEtapas(false, true);
+        candidaturas.salvar(candidatura);
+        RequisitoVaga obrigatorio = requisito(candidatura.getVagaId(), true);
+        RequisitoVaga opcional = requisito(candidatura.getVagaId(), false);
+        RequisitoVaga outraVaga = requisito(UUID.randomUUID(), true);
+        requisitos.salvar(obrigatorio);
+        requisitos.salvar(opcional);
+        requisitos.salvar(outraVaga);
+
+        assertEquals(422, service.registrarRequisitos(new RegistrarRequisitosDTO(
+                usuarioCandidato, candidatura.getId(), Collections.singletonList(
+                new RespostaRequisitoCandidaturaDTO(opcional.getId(),
+                        NivelAtendimentoRequisito.BAIXO)))).getStatusCode());
+        assertEquals(422, service.registrarRequisitos(new RegistrarRequisitosDTO(
+                usuarioCandidato, candidatura.getId(), Collections.singletonList(
+                new RespostaRequisitoCandidaturaDTO(outraVaga.getId(),
+                        NivelAtendimentoRequisito.ALTO)))).getStatusCode());
+        assertEquals(422, service.registrarRequisitos(new RegistrarRequisitosDTO(
+                usuarioCandidato, candidatura.getId(), Arrays.asList(
+                new RespostaRequisitoCandidaturaDTO(obrigatorio.getId(),
+                        NivelAtendimentoRequisito.ALTO),
+                new RespostaRequisitoCandidaturaDTO(obrigatorio.getId(),
+                        NivelAtendimentoRequisito.MUITO_ALTO)))).getStatusCode());
+        assertTrue(candidaturas.respostasRequisitos.isEmpty());
     }
 
     @Test
@@ -240,7 +303,9 @@ class CandidaturaServiceTest {
     }
 
     private Candidatura candidatura() {
-        return new Candidatura(candidatoId, UUID.randomUUID());
+        Candidatura candidatura = new Candidatura(candidatoId, UUID.randomUUID());
+        candidatura.configurarEtapas(true, false);
+        return candidatura;
     }
 
     private Vaga vagaPublicada() {
@@ -261,6 +326,14 @@ class CandidaturaServiceTest {
         pergunta.setTipoResposta(TipoResposta.TEXTO);
         pergunta.setOrdem(1);
         return pergunta;
+    }
+
+    private RequisitoVaga requisito(UUID vagaId, boolean obrigatorio) {
+        RequisitoVaga requisito = new RequisitoVaga();
+        requisito.setVagaId(vagaId);
+        requisito.setDescricao("Experiencia");
+        requisito.setObrigatorio(obrigatorio);
+        return requisito;
     }
 
     private String chave(UUID candidato, UUID vaga) {
@@ -329,16 +402,37 @@ class CandidaturaServiceTest {
         }
     }
 
+    private static final class Requisitos implements RequisitoCandidaturaPort {
+        private final Map<UUID, RequisitoVaga> dados = new HashMap<>();
+
+        public List<RequisitoVaga> listarAtivosPorVagaId(UUID vagaId) {
+            List<RequisitoVaga> resultado = new ArrayList<>();
+            for (RequisitoVaga requisito : dados.values()) {
+                if (vagaId.equals(requisito.getVagaId()) && requisito.getExcluidoEm() == null) {
+                    resultado.add(requisito);
+                }
+            }
+            return resultado;
+        }
+
+        void salvar(RequisitoVaga requisito) { dados.put(requisito.getId(), requisito); }
+    }
+
     private final class Candidaturas implements CandidaturaPort {
         private final Map<UUID, Candidatura> dados = new HashMap<>();
         private final Set<String> chavesExistentes = new HashSet<>();
         private final List<RespostaCandidatura> respostas = new ArrayList<>();
+        private final List<RespostaRequisitoCandidatura> respostasRequisitos = new ArrayList<>();
         private boolean falharPorUnicidade;
         private boolean falharRespostasPorUnicidade;
         private boolean salvouAntesDoEvento;
 
         public Optional<Candidatura> buscarPorId(UUID id) {
             return Optional.ofNullable(dados.get(id));
+        }
+
+        public Optional<Candidatura> buscarPorIdParaAtualizacao(UUID id) {
+            return buscarPorId(id);
         }
 
         public boolean existePorCandidatoIdEVagaId(UUID c, UUID v) {
@@ -353,11 +447,18 @@ class CandidaturaServiceTest {
             return c;
         }
 
-        public void finalizarComRespostasAtomicamente(Candidatura candidatura,
-                                                       List<RespostaCandidatura> lote) {
+        public void registrarRespostasPerguntasAtomicamente(Candidatura candidatura,
+                                                             List<RespostaCandidatura> lote) {
             if (falharRespostasPorUnicidade) throw new CandidaturaPort.RespostasDuplicadasException();
             respostas.addAll(lote);
-            candidatura.setStatus(StatusCandidatura.ENVIADA);
+            candidatura.registrarPerguntasRespondidas();
+            dados.put(candidatura.getId(), candidatura);
+        }
+
+        public void registrarRespostasRequisitosAtomicamente(Candidatura candidatura,
+                List<RespostaRequisitoCandidatura> lote) {
+            respostasRequisitos.addAll(lote);
+            candidatura.registrarRequisitosRespondidos();
             dados.put(candidatura.getId(), candidatura);
         }
     }

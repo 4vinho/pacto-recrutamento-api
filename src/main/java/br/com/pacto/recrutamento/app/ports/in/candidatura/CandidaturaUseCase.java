@@ -8,6 +8,8 @@ public interface CandidaturaUseCase {
 
     TypedResponse<CandidaturaDTO> registrarRespostas(RegistrarRespostasDTO command);
 
+    TypedResponse<CandidaturaDTO> registrarRequisitos(RegistrarRequisitosDTO command);
+
     TypedResponse<CandidaturaDTO> atualizarStatusCandidatura(
             AtualizarStatusCandidaturaDTO command);
 

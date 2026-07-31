@@ -24,6 +24,7 @@ public class CandidaturaService implements CandidaturaUseCase {
     private final CandidaturaPort candidaturas;
     private final VagaCandidaturaPort vagas;
     private final PerguntaCandidaturaPort perguntas;
+    private final RequisitoCandidaturaPort requisitos;
     private final AutorizacaoResponsavelCandidaturaPort autorizacao;
     private final EventosCandidaturaPort eventos;
 
@@ -31,12 +32,14 @@ public class CandidaturaService implements CandidaturaUseCase {
                               CandidaturaPort candidaturas,
                               VagaCandidaturaPort vagas,
                               PerguntaCandidaturaPort perguntas,
+                              RequisitoCandidaturaPort requisitos,
                               AutorizacaoResponsavelCandidaturaPort autorizacao,
                               EventosCandidaturaPort eventos) {
         this.candidatos = candidatos;
         this.candidaturas = candidaturas;
         this.vagas = vagas;
         this.perguntas = perguntas;
+        this.requisitos = requisitos;
         this.autorizacao = autorizacao;
         this.eventos = eventos;
     }
@@ -62,20 +65,19 @@ public class CandidaturaService implements CandidaturaUseCase {
             return erro(409, CANDIDATURA_DUPLICADA);
         }
         Candidatura candidatura = new Candidatura(candidato.getId(), vaga.getId());
-        boolean exigeRespostas = !perguntas.listarAtivasPorVagaId(vaga.getId()).isEmpty();
-        if (!exigeRespostas) {
-            candidatura.setStatus(StatusCandidatura.ENVIADA);
-        }
+        boolean possuiPerguntas = !perguntas.listarAtivasPorVagaId(vaga.getId()).isEmpty();
+        boolean possuiRequisitos = !requisitos.listarAtivosPorVagaId(vaga.getId()).isEmpty();
+        candidatura.configurarEtapas(possuiPerguntas, possuiRequisitos);
         try {
             candidaturas.salvar(candidatura);
         } catch (CandidaturaPort.CandidaturaDuplicadaException ex) {
             return erro(409, CANDIDATURA_DUPLICADA);
         }
-        if (!exigeRespostas) {
+        if (candidatura.getStatus() == StatusCandidatura.ENVIADA) {
             publicarCriacao(candidatura);
         }
-        String mensagem = exigeRespostas ? "Candidatura criada como rascunho"
-                : "Candidatura criada";
+        String mensagem = candidatura.getStatus() == StatusCandidatura.RASCUNHO
+                ? "Candidatura criada como rascunho" : "Candidatura criada";
         return new TypedResponse<>(201, mensagem, paraDto(candidatura));
     }
 
@@ -86,7 +88,8 @@ public class CandidaturaService implements CandidaturaUseCase {
                 || command.getRespostas() == null || command.getRespostas().isEmpty()) {
             return erro(400, LOTE_RESPOSTAS_INVALIDO);
         }
-        Candidatura candidatura = candidaturas.buscarPorId(command.getCandidaturaId()).orElse(null);
+        Candidatura candidatura = candidaturas.buscarPorIdParaAtualizacao(
+                command.getCandidaturaId()).orElse(null);
         if (candidatura == null) {
             return erro(404, CANDIDATURA_NAO_ENCONTRADA);
         }
@@ -95,6 +98,9 @@ public class CandidaturaService implements CandidaturaUseCase {
         }
         if (candidatura.getStatus() != StatusCandidatura.RASCUNHO) {
             return erro(422, TRANSICAO_CANDIDATURA_INVALIDA);
+        }
+        if (candidatura.isPerguntasRespondidas()) {
+            return erro(409, PERGUNTAS_JA_RESPONDIDAS);
         }
         if (!estruturaDoLoteValida(command.getRespostas())) {
             return erro(400, LOTE_RESPOSTAS_INVALIDO);
@@ -106,12 +112,45 @@ public class CandidaturaService implements CandidaturaUseCase {
             return erro(422, LOTE_RESPOSTAS_INCOMPATIVEL);
         }
         try {
-            candidaturas.finalizarComRespostasAtomicamente(candidatura, lote);
+            candidaturas.registrarRespostasPerguntasAtomicamente(candidatura, lote);
         } catch (CandidaturaPort.RespostasDuplicadasException ex) {
             return erro(409, PERGUNTAS_JA_RESPONDIDAS);
         }
-        publicarCriacao(candidatura);
+        if (candidatura.getStatus() == StatusCandidatura.ENVIADA) publicarCriacao(candidatura);
         return new TypedResponse<>(200, "Respostas registradas", paraDto(candidatura));
+    }
+
+    @Override
+    @Transactional
+    public TypedResponse<CandidaturaDTO> registrarRequisitos(RegistrarRequisitosDTO command) {
+        if (command == null || command.getUsuarioId() == null || command.getCandidaturaId() == null
+                || command.getRespostas() == null || command.getRespostas().isEmpty()) {
+            return erro(400, LOTE_REQUISITOS_INVALIDO);
+        }
+        Candidatura candidatura = candidaturas.buscarPorIdParaAtualizacao(
+                command.getCandidaturaId()).orElse(null);
+        if (candidatura == null) return erro(404, CANDIDATURA_NAO_ENCONTRADA);
+        if (!pertenceAoUsuario(candidatura, command.getUsuarioId())) {
+            return erro(403, CANDIDATURA_NAO_PERTENCE_AO_CANDIDATO);
+        }
+        if (candidatura.getStatus() != StatusCandidatura.RASCUNHO) {
+            return erro(422, TRANSICAO_CANDIDATURA_INVALIDA);
+        }
+        if (candidatura.isRequisitosRespondidos()) {
+            return erro(409, REQUISITOS_JA_RESPONDIDOS);
+        }
+        List<RequisitoVaga> requisitosDaVaga = requisitos.listarAtivosPorVagaId(
+                candidatura.getVagaId());
+        List<RespostaRequisitoCandidatura> lote = validarRequisitos(
+                candidatura, command.getRespostas(), requisitosDaVaga);
+        if (lote == null) return erro(422, LOTE_REQUISITOS_INCOMPATIVEL);
+        try {
+            candidaturas.registrarRespostasRequisitosAtomicamente(candidatura, lote);
+        } catch (CandidaturaPort.RequisitosJaRespondidosException ex) {
+            return erro(409, REQUISITOS_JA_RESPONDIDOS);
+        }
+        if (candidatura.getStatus() == StatusCandidatura.ENVIADA) publicarCriacao(candidatura);
+        return new TypedResponse<>(200, "Requisitos registrados", paraDto(candidatura));
     }
 
     @Override
@@ -121,7 +160,8 @@ public class CandidaturaService implements CandidaturaUseCase {
                 || command.getStatus() == null) {
             return erro(400, DADOS_ATUALIZACAO_INVALIDOS);
         }
-        Candidatura candidatura = candidaturas.buscarPorId(command.getCandidaturaId()).orElse(null);
+        Candidatura candidatura = candidaturas.buscarPorIdParaAtualizacao(
+                command.getCandidaturaId()).orElse(null);
         if (candidatura == null) {
             return erro(404, CANDIDATURA_NAO_ENCONTRADA);
         }
@@ -151,7 +191,8 @@ public class CandidaturaService implements CandidaturaUseCase {
         if (command == null || command.getUsuarioId() == null || command.getCandidaturaId() == null) {
             return erro(400, DADOS_CANCELAMENTO_INVALIDOS);
         }
-        Candidatura candidatura = candidaturas.buscarPorId(command.getCandidaturaId()).orElse(null);
+        Candidatura candidatura = candidaturas.buscarPorIdParaAtualizacao(
+                command.getCandidaturaId()).orElse(null);
         if (candidatura == null) {
             return erro(404, CANDIDATURA_NAO_ENCONTRADA);
         }
@@ -250,6 +291,26 @@ public class CandidaturaService implements CandidaturaUseCase {
         }
     }
 
+    private List<RespostaRequisitoCandidatura> validarRequisitos(
+            Candidatura candidatura, List<RespostaRequisitoCandidaturaDTO> respostas,
+            List<RequisitoVaga> requisitosDaVaga) {
+        Map<UUID, RequisitoVaga> requisitosPorId = new HashMap<>();
+        for (RequisitoVaga requisito : requisitosDaVaga) requisitosPorId.put(requisito.getId(), requisito);
+        Set<UUID> respondidos = new HashSet<>();
+        List<RespostaRequisitoCandidatura> lote = new ArrayList<>();
+        for (RespostaRequisitoCandidaturaDTO resposta : respostas) {
+            if (resposta == null || resposta.getRequisitoId() == null || resposta.getNivel() == null
+                    || !respondidos.add(resposta.getRequisitoId())
+                    || !requisitosPorId.containsKey(resposta.getRequisitoId())) return null;
+            lote.add(new RespostaRequisitoCandidatura(candidatura.getId(),
+                    resposta.getRequisitoId(), resposta.getNivel()));
+        }
+        for (RequisitoVaga requisito : requisitosDaVaga) {
+            if (requisito.isObrigatorio() && !respondidos.contains(requisito.getId())) return null;
+        }
+        return lote;
+    }
+
     private boolean estruturaDoLoteValida(List<RespostaCandidaturaDTO> respostas) {
         Set<UUID> perguntasDoLote = new HashSet<>();
         for (RespostaCandidaturaDTO resposta : respostas) {
@@ -283,6 +344,7 @@ public class CandidaturaService implements CandidaturaUseCase {
 
     private CandidaturaDTO paraDto(Candidatura candidatura) {
         return new CandidaturaDTO(candidatura.getId(), candidatura.getCandidatoId(), candidatura.getVagaId(),
-                candidatura.getStatus(), candidatura.getCriadoEm());
+                candidatura.getStatus(), candidatura.getCriadoEm(), candidatura.isPerguntasRespondidas(),
+                candidatura.isRequisitosRespondidos());
     }
 }

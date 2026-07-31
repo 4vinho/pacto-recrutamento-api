@@ -5,12 +5,15 @@ import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.CandidaturaJpaRepository;
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.RespostaCandidaturaJpaRepository;
+import br.com.pacto.recrutamento.infra.repositorys.candidatura.RespostaRequisitoCandidaturaJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.repository.Lock;
 
+import javax.persistence.LockModeType;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -18,7 +21,10 @@ import static org.mockito.Mockito.when;
 class CandidaturaJpaAdapterTest {
     private final CandidaturaJpaRepository candidaturas = mock(CandidaturaJpaRepository.class);
     private final RespostaCandidaturaJpaRepository respostas = mock(RespostaCandidaturaJpaRepository.class);
-    private final CandidaturaJpaAdapter adapter = new CandidaturaJpaAdapter(candidaturas, respostas);
+    private final RespostaRequisitoCandidaturaJpaRepository respostasRequisitos =
+            mock(RespostaRequisitoCandidaturaJpaRepository.class);
+    private final CandidaturaJpaAdapter adapter = new CandidaturaJpaAdapter(
+            candidaturas, respostas, respostasRequisitos);
 
     @Test
     void traduzUnicidadeConcorrenteDaCandidatura() {
@@ -33,8 +39,17 @@ class CandidaturaJpaAdapterTest {
         RespostaCandidatura resposta = new RespostaCandidatura(java.util.UUID.randomUUID(),
                 java.util.UUID.randomUUID(), "valor");
         assertThrows(CandidaturaPort.RespostasDuplicadasException.class,
-                () -> adapter.finalizarComRespostasAtomicamente(
+                () -> adapter.registrarRespostasPerguntasAtomicamente(
                         new Candidatura(java.util.UUID.randomUUID(), java.util.UUID.randomUUID()),
                         Collections.singletonList(resposta)));
+    }
+
+    @Test
+    void atualizacaoDoRascunhoUsaBloqueioPessimista() throws Exception {
+        Lock lock = CandidaturaJpaRepository.class.getMethod("findByIdForUpdate",
+                java.util.UUID.class).getAnnotation(Lock.class);
+
+        assertNotNull(lock);
+        assertEquals(LockModeType.PESSIMISTIC_WRITE, lock.value());
     }
 }

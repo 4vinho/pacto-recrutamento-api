@@ -43,6 +43,9 @@ public final class ErrorMessages {
     public static final String PERFIL_CANDIDATO_NAO_ENCONTRADO = "Perfil de candidato nao encontrado";
     public static final String PERGUNTA_NAO_ENCONTRADA = "Pergunta nao encontrada";
     public static final String PERGUNTAS_JA_RESPONDIDAS = "Uma ou mais perguntas ja foram respondidas";
+    public static final String REQUISITOS_JA_RESPONDIDOS = "Um ou mais requisitos ja foram respondidos";
+    public static final String LOTE_REQUISITOS_INVALIDO = "Lote de requisitos invalido";
+    public static final String LOTE_REQUISITOS_INCOMPATIVEL = "Lote de requisitos incompativel com a vaga";
     public static final String REQUISICAO_INVALIDA = "Requisição inválida.";
     public static final String REFRESH_TOKEN_INVALIDO = "Refresh token inválido.";
     public static final String REQUISITO_NAO_ENCONTRADO = "Requisito nao encontrado";

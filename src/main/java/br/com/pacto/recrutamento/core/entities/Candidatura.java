@@ -25,6 +25,10 @@ public class Candidatura {
     private OffsetDateTime atualizadoEm;
     @Column(name = "cancelado_em")
     private OffsetDateTime canceladoEm;
+    @Column(name = "perguntas_respondidas", nullable = false)
+    private boolean perguntasRespondidas;
+    @Column(name = "requisitos_respondidos", nullable = false)
+    private boolean requisitosRespondidos;
 
     public Candidatura() {
         id = UUID.randomUUID();
@@ -58,6 +62,30 @@ public class Candidatura {
         }
         setStatus(StatusCandidatura.CANCELADA);
         canceladoEm = data;
+    }
+
+    public void configurarEtapas(boolean possuiPerguntas, boolean possuiRequisitos) {
+        perguntasRespondidas = !possuiPerguntas;
+        requisitosRespondidos = !possuiRequisitos;
+        enviarSeCompleta();
+    }
+
+    public void registrarPerguntasRespondidas() {
+        if (perguntasRespondidas) throw new IllegalStateException("Perguntas ja respondidas");
+        perguntasRespondidas = true;
+        enviarSeCompleta();
+    }
+
+    public void registrarRequisitosRespondidos() {
+        if (requisitosRespondidos) throw new IllegalStateException("Requisitos ja respondidos");
+        requisitosRespondidos = true;
+        enviarSeCompleta();
+    }
+
+    private void enviarSeCompleta() {
+        if (status == StatusCandidatura.RASCUNHO && perguntasRespondidas && requisitosRespondidos) {
+            setStatus(StatusCandidatura.ENVIADA);
+        }
     }
 
     public UUID getId() {
@@ -144,5 +172,17 @@ public class Candidatura {
 
     public void setAtualizadoEm(OffsetDateTime atualizadoEm) {
         this.atualizadoEm = atualizadoEm;
+    }
+
+    public boolean isPerguntasRespondidas() { return perguntasRespondidas; }
+
+    public boolean isRequisitosRespondidos() { return requisitosRespondidos; }
+
+    public void setPerguntasRespondidas(boolean perguntasRespondidas) {
+        this.perguntasRespondidas = perguntasRespondidas;
+    }
+
+    public void setRequisitosRespondidos(boolean requisitosRespondidos) {
+        this.requisitosRespondidos = requisitosRespondidos;
     }
 }
