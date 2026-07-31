@@ -37,7 +37,12 @@ public class PerguntaVaga extends EntidadeAuditavel {
     public boolean isObrigatoria() { return obrigatoria; }
     public void setObrigatoria(boolean obrigatoria) { this.obrigatoria = obrigatoria; }
     public int getOrdem() { return ordem; }
-    public void setOrdem(int ordem) { this.ordem = ordem; }
+    public void setOrdem(int ordem) {
+        if (ordem <= 0) {
+            throw new IllegalArgumentException("A ordem da pergunta deve ser positiva");
+        }
+        this.ordem = ordem;
+    }
     public OffsetDateTime getExcluidoEm() { return excluidoEm; }
     public void setExcluidoEm(OffsetDateTime excluidoEm) { this.excluidoEm = excluidoEm; }
 }

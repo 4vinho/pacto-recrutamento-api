@@ -33,7 +33,10 @@ public class Candidatura extends EntidadeAuditavel {
     }
 
     public void cancelar(OffsetDateTime data) {
-        status = StatusCandidatura.CANCELADA;
+        if (data == null) {
+            throw new IllegalArgumentException("A data de cancelamento é obrigatória");
+        }
+        setStatus(StatusCandidatura.CANCELADA);
         canceladoEm = data;
     }
     public UUID getCandidatoId() { return candidatoId; }
@@ -41,7 +44,35 @@ public class Candidatura extends EntidadeAuditavel {
     public UUID getVagaId() { return vagaId; }
     public void setVagaId(UUID vagaId) { this.vagaId = vagaId; }
     public StatusCandidatura getStatus() { return status; }
-    public void setStatus(StatusCandidatura status) { this.status = status; }
+    public void setStatus(StatusCandidatura novoStatus) {
+        if (novoStatus == null) {
+            throw new IllegalArgumentException("O status da candidatura é obrigatório");
+        }
+        if (novoStatus == status) {
+            return;
+        }
+        if (!permiteTransicaoPara(novoStatus)) {
+            throw new IllegalStateException(
+                    "Transição de candidatura inválida: " + status + " -> " + novoStatus);
+        }
+        status = novoStatus;
+        if (novoStatus == StatusCandidatura.CANCELADA && canceladoEm == null) {
+            canceladoEm = OffsetDateTime.now();
+        }
+    }
+
+    private boolean permiteTransicaoPara(StatusCandidatura novoStatus) {
+        if (status == StatusCandidatura.ENVIADA) {
+            return novoStatus == StatusCandidatura.EM_ANALISE
+                    || novoStatus == StatusCandidatura.CANCELADA;
+        }
+        if (status == StatusCandidatura.EM_ANALISE) {
+            return novoStatus == StatusCandidatura.APROVADA
+                    || novoStatus == StatusCandidatura.REJEITADA
+                    || novoStatus == StatusCandidatura.CANCELADA;
+        }
+        return false;
+    }
     public OffsetDateTime getCanceladoEm() { return canceladoEm; }
     public void setCanceladoEm(OffsetDateTime canceladoEm) { this.canceladoEm = canceladoEm; }
 }

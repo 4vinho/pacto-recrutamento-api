@@ -8,6 +8,8 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 class EntidadesTest {
 
@@ -38,5 +40,41 @@ class EntidadesTest {
         token.revogar(OffsetDateTime.now());
 
         assertThat(token.podeCriarSessao(OffsetDateTime.now())).isFalse();
+    }
+
+    @Test
+    void vagaEncerradaNaoPodeSerPublicadaNovamente() {
+        Vaga vaga = new Vaga(UUID.randomUUID(), "Desenvolvedor", "Descrição");
+        vaga.setStatus(StatusVaga.PUBLICADA);
+        vaga.setStatus(StatusVaga.ENCERRADA);
+
+        assertThatIllegalStateException()
+                .isThrownBy(() -> vaga.setStatus(StatusVaga.PUBLICADA));
+    }
+
+    @Test
+    void candidaturaAprovadaNaoPodeVoltarParaAnalise() {
+        Candidatura candidatura = new Candidatura(UUID.randomUUID(), UUID.randomUUID());
+        candidatura.setStatus(StatusCandidatura.EM_ANALISE);
+        candidatura.setStatus(StatusCandidatura.APROVADA);
+
+        assertThatIllegalStateException()
+                .isThrownBy(() -> candidatura.setStatus(StatusCandidatura.EM_ANALISE));
+    }
+
+    @Test
+    void perguntaRejeitaOrdemNaoPositiva() {
+        PerguntaVaga pergunta = new PerguntaVaga();
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> pergunta.setOrdem(0));
+    }
+
+    @Test
+    void curriculoRejeitaArquivoMaiorQueCincoMegabytes() {
+        Curriculo curriculo = new Curriculo();
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> curriculo.setTamanhoBytes(5L * 1024 * 1024 + 1));
     }
 }

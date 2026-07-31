@@ -10,6 +10,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "curriculos", uniqueConstraints = @UniqueConstraint(name = "uk_curriculos_storage_key", columnNames = "storage_key"))
 public class Curriculo extends EntidadeAuditavel {
+    private static final long TAMANHO_MAXIMO_BYTES = 5L * 1024 * 1024;
+
     @Column(name = "candidato_id", nullable = false)
     private UUID candidatoId;
     @Column(name = "storage_key", nullable = false, length = 500)
@@ -33,7 +35,7 @@ public class Curriculo extends EntidadeAuditavel {
         this.storageKey = storageKey;
         this.nomeOriginal = nomeOriginal;
         this.contentType = contentType;
-        this.tamanhoBytes = tamanhoBytes;
+        setTamanhoBytes(tamanhoBytes);
         this.checksumSha256 = checksumSha256;
     }
 
@@ -46,7 +48,12 @@ public class Curriculo extends EntidadeAuditavel {
     public String getContentType() { return contentType; }
     public void setContentType(String contentType) { this.contentType = contentType; }
     public long getTamanhoBytes() { return tamanhoBytes; }
-    public void setTamanhoBytes(long tamanhoBytes) { this.tamanhoBytes = tamanhoBytes; }
+    public void setTamanhoBytes(long tamanhoBytes) {
+        if (tamanhoBytes <= 0 || tamanhoBytes > TAMANHO_MAXIMO_BYTES) {
+            throw new IllegalArgumentException("O currículo deve possuir entre 1 byte e 5 MB");
+        }
+        this.tamanhoBytes = tamanhoBytes;
+    }
     public String getChecksumSha256() { return checksumSha256; }
     public void setChecksumSha256(String checksumSha256) { this.checksumSha256 = checksumSha256; }
     public OffsetDateTime getExcluidoEm() { return excluidoEm; }

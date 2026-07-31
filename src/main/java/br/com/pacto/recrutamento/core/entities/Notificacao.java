@@ -62,13 +62,23 @@ public class Notificacao extends Entidade {
     public String getMensagem() { return mensagem; }
     public void setMensagem(String mensagem) { this.mensagem = mensagem; }
     public StatusNotificacao getStatus() { return status; }
-    public void setStatus(StatusNotificacao status) { this.status = status; }
+    public void setStatus(StatusNotificacao status) {
+        if (status == null) {
+            throw new IllegalArgumentException("O status da notificação é obrigatório");
+        }
+        this.status = status;
+    }
     public int getTentativas() { return tentativas; }
     public void setTentativas(int tentativas) { this.tentativas = tentativas; }
     public OffsetDateTime getLidaEm() { return lidaEm; }
     public void setLidaEm(OffsetDateTime lidaEm) { this.lidaEm = lidaEm; }
     public OffsetDateTime getCriadoEm() { return criadoEm; }
-    public void setCriadoEm(OffsetDateTime criadoEm) { this.criadoEm = criadoEm; }
+    public void setCriadoEm(OffsetDateTime criadoEm) {
+        if (criadoEm == null) {
+            throw new IllegalArgumentException("A data de criação da notificação é obrigatória");
+        }
+        this.criadoEm = criadoEm;
+    }
     public String getUltimoErro() { return ultimoErro; }
     public void setUltimoErro(String ultimoErro) { this.ultimoErro = ultimoErro; }
 }

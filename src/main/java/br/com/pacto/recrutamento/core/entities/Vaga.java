@@ -43,7 +43,29 @@ public class Vaga extends EntidadeAuditavel {
     public String getDescricao() { return descricao; }
     public void setDescricao(String descricao) { this.descricao = descricao; }
     public StatusVaga getStatus() { return status; }
-    public void setStatus(StatusVaga status) { this.status = status; }
+    public void setStatus(StatusVaga novoStatus) {
+        if (novoStatus == null) {
+            throw new IllegalArgumentException("O status da vaga é obrigatório");
+        }
+        if (novoStatus == status) {
+            return;
+        }
+        if (!permiteTransicaoPara(novoStatus)) {
+            throw new IllegalStateException(
+                    "Transição de vaga inválida: " + status + " -> " + novoStatus);
+        }
+        status = novoStatus;
+    }
+
+    private boolean permiteTransicaoPara(StatusVaga novoStatus) {
+        if (status == StatusVaga.RASCUNHO) {
+            return novoStatus == StatusVaga.PUBLICADA || novoStatus == StatusVaga.CANCELADA;
+        }
+        if (status == StatusVaga.PUBLICADA) {
+            return novoStatus == StatusVaga.ENCERRADA || novoStatus == StatusVaga.CANCELADA;
+        }
+        return false;
+    }
     public OffsetDateTime getExcluidoEm() { return excluidoEm; }
     public void setExcluidoEm(OffsetDateTime excluidoEm) { this.excluidoEm = excluidoEm; }
 }
