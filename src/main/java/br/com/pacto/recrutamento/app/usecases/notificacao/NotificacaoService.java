@@ -13,7 +13,7 @@ import br.com.pacto.recrutamento.core.enums.TipoNotificacao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,7 +38,9 @@ public class NotificacaoService implements NotificacaoUseCase {
         if (!encontrados.isPresent()) {
             return resposta(202);
         }
-        for (UUID usuarioId : Arrays.asList(encontrados.get().getResponsavelId(), encontrados.get().getCandidatoId())) {
+        LinkedHashSet<UUID> usuarios = new LinkedHashSet<>(encontrados.get().getResponsaveisIds());
+        usuarios.add(encontrados.get().getCandidatoId());
+        for (UUID usuarioId : usuarios) {
             processar(evento.getEventoId(), usuarioId, TipoNotificacao.CANDIDATURA_CRIADA, "Nova candidatura", "Uma candidatura foi criada.");
         }
         return resposta(202);

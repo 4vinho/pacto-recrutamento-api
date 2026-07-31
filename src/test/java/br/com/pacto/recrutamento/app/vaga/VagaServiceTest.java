@@ -14,6 +14,8 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,24 +25,30 @@ import static org.junit.jupiter.api.Assertions.*;
 class VagaServiceTest {
     private final UUID administrador = UUID.randomUUID();
     private final UUID naoAutorizado = UUID.randomUUID();
+    private final UUID segundoResponsavel = UUID.randomUUID();
     private final MemoriaVagas vagas = new MemoriaVagas();
     private final MemoriaPerguntas perguntas = new MemoriaPerguntas();
     private final MemoriaRequisitos requisitos = new MemoriaRequisitos();
     private final VagaService service = new VagaService(vagas, perguntas, requisitos,
-            usuarioId -> administrador.equals(usuarioId), Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC));
+            usuarioId -> administrador.equals(usuarioId) || segundoResponsavel.equals(usuarioId),
+            Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC));
 
     @Test
     void criaVagaParaResponsavelAutorizado() {
-        TypedResponse<VagaDTO> resposta = service.criarVaga(new CriarVagaDTO(administrador, "Dev Java", "Descricao"));
+        TypedResponse<VagaDTO> resposta = service.criarVaga(new CriarVagaDTO(administrador,
+                Arrays.asList(administrador, segundoResponsavel), "Dev Java", "Descricao"));
 
         assertEquals(201, resposta.getStatusCode());
-        assertEquals(administrador, resposta.getData().getResponsavelId());
+        assertEquals(2, resposta.getData().getResponsaveisIds().size());
+        assertTrue(resposta.getData().getResponsaveisIds().contains(administrador));
+        assertTrue(resposta.getData().getResponsaveisIds().contains(segundoResponsavel));
         assertEquals(StatusVaga.RASCUNHO, resposta.getData().getStatus());
     }
 
     @Test
     void rejeitaCriacaoPorUsuarioSemPapelAutorizado() {
-        TypedResponse<VagaDTO> resposta = service.criarVaga(new CriarVagaDTO(naoAutorizado, "Dev Java", "Descricao"));
+        TypedResponse<VagaDTO> resposta = service.criarVaga(new CriarVagaDTO(naoAutorizado,
+                Collections.singleton(administrador), "Dev Java", "Descricao"));
 
         assertEquals(403, resposta.getStatusCode());
         assertNull(resposta.getData());
@@ -51,10 +59,12 @@ class VagaServiceTest {
         Vaga vaga = vaga();
         vagas.salvar(vaga);
 
-        TypedResponse<VagaDTO> resposta = service.atualizarVaga(new AtualizarVagaDTO(administrador, vaga.getId(), "Novo", "Nova descricao"));
+        TypedResponse<VagaDTO> resposta = service.atualizarVaga(new AtualizarVagaDTO(administrador,
+                vaga.getId(), Collections.singleton(segundoResponsavel), "Novo", "Nova descricao"));
 
         assertEquals(200, resposta.getStatusCode());
         assertEquals("Novo", vaga.getTitulo());
+        assertTrue(vaga.possuiResponsavel(segundoResponsavel));
     }
 
     @Test
@@ -75,7 +85,8 @@ class VagaServiceTest {
 
         assertEquals(204, service.excluirVaga(new ExcluirVagaDTO(administrador, vaga.getId())).getStatusCode());
         assertNotNull(vaga.getExcluidoEm());
-        assertEquals(404, service.atualizarVaga(new AtualizarVagaDTO(administrador, vaga.getId(), "Novo", "Descricao")).getStatusCode());
+        assertEquals(404, service.atualizarVaga(new AtualizarVagaDTO(administrador, vaga.getId(),
+                Collections.singleton(administrador), "Novo", "Descricao")).getStatusCode());
     }
 
     @Test

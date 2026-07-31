@@ -4,6 +4,10 @@ import br.com.pacto.recrutamento.core.enums.StatusVaga;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -11,8 +15,10 @@ import java.util.UUID;
 public class Vaga {
     @Id
     private UUID id;
-    @Column(name = "responsavel_id", nullable = false)
-    private UUID responsavelId;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "vagas_responsaveis", joinColumns = @JoinColumn(name = "vaga_id"))
+    @Column(name = "usuario_id", nullable = false)
+    private Set<UUID> responsaveisIds = new LinkedHashSet<>();
     @Column(nullable = false, length = 150)
     private String titulo;
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -31,11 +37,15 @@ public class Vaga {
         id = UUID.randomUUID();
     }
 
-    public Vaga(UUID responsavelId, String titulo, String descricao) {
+    public Vaga(Collection<UUID> responsaveisIds, String titulo, String descricao) {
         this();
-        this.responsavelId = responsavelId;
+        setResponsaveisIds(responsaveisIds);
         this.titulo = titulo;
         this.descricao = descricao;
+    }
+
+    public Vaga(UUID responsavelId, String titulo, String descricao) {
+        this(Collections.singleton(responsavelId), titulo, descricao);
     }
 
     public static Vaga restaurar(UUID id, UUID responsavelId, String titulo, String descricao,
@@ -74,12 +84,20 @@ public class Vaga {
         this.id = id;
     }
 
-    public UUID getResponsavelId() {
-        return responsavelId;
+    public Set<UUID> getResponsaveisIds() {
+        return Collections.unmodifiableSet(responsaveisIds);
     }
 
-    public void setResponsavelId(UUID responsavelId) {
-        this.responsavelId = responsavelId;
+    public void setResponsaveisIds(Collection<UUID> responsaveisIds) {
+        if (responsaveisIds == null || responsaveisIds.isEmpty() || responsaveisIds.contains(null)) {
+            throw new IllegalArgumentException("A vaga deve possuir ao menos um responsavel");
+        }
+        this.responsaveisIds.clear();
+        this.responsaveisIds.addAll(responsaveisIds);
+    }
+
+    public boolean possuiResponsavel(UUID usuarioId) {
+        return usuarioId != null && responsaveisIds.contains(usuarioId);
     }
 
     public String getTitulo() {

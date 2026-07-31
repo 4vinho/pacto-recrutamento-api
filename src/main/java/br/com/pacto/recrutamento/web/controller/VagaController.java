@@ -17,6 +17,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -33,14 +35,16 @@ public class VagaController {
     public ResponseEntity<TypedResponse<VagaDTO>> criar(
             Authentication auth, @Valid @RequestBody VagaRequest request) {
         return HttpResponses.from(service.criarVaga(
-                new CriarVagaDTO(AuthenticatedUser.id(auth), request.titulo, request.descricao)));
+                new CriarVagaDTO(AuthenticatedUser.id(auth), request.responsaveisIds,
+                        request.titulo, request.descricao)));
     }
 
     @PutMapping("/{vagaId}")
     public ResponseEntity<TypedResponse<VagaDTO>> atualizar(
             Authentication auth, @PathVariable UUID vagaId, @Valid @RequestBody VagaRequest request) {
         return HttpResponses.from(service.atualizarVaga(new AtualizarVagaDTO(
-                AuthenticatedUser.id(auth), vagaId, request.titulo, request.descricao)));
+                AuthenticatedUser.id(auth), vagaId, request.responsaveisIds,
+                request.titulo, request.descricao)));
     }
 
     @PatchMapping("/{vagaId}/status")
@@ -113,6 +117,8 @@ public class VagaController {
     }
 
     public static class VagaRequest {
+        @NotEmpty
+        public Set<@NotNull UUID> responsaveisIds;
         @NotBlank
         public String titulo;
         @NotBlank

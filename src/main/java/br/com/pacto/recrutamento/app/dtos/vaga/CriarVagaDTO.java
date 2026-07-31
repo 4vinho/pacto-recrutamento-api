@@ -1,20 +1,28 @@
 package br.com.pacto.recrutamento.app.dtos.vaga;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public class CriarVagaDTO {
-    private final UUID responsavelId;
+    private final UUID usuarioSolicitanteId;
+    private final Collection<UUID> responsaveisIds;
     private final String titulo;
     private final String descricao;
 
-    public CriarVagaDTO(UUID responsavelId, String titulo, String descricao) {
-        this.responsavelId = responsavelId;
+    public CriarVagaDTO(UUID usuarioSolicitanteId, Collection<UUID> responsaveisIds,
+                        String titulo, String descricao) {
+        this.usuarioSolicitanteId = usuarioSolicitanteId;
+        this.responsaveisIds = responsaveisIds;
         this.titulo = titulo;
         this.descricao = descricao;
     }
 
-    public UUID getResponsavelId() {
-        return responsavelId;
+    public UUID getUsuarioSolicitanteId() {
+        return usuarioSolicitanteId;
+    }
+
+    public Collection<UUID> getResponsaveisIds() {
+        return responsaveisIds;
     }
 
     public String getTitulo() {

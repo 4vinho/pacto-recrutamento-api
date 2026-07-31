@@ -5,6 +5,8 @@ import br.com.pacto.recrutamento.app.ports.out.notificacao.model.DestinatariosCa
 import br.com.pacto.recrutamento.infra.repositorys.notificacao.DestinatariosCandidaturaRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,10 +19,14 @@ public class DestinatariosCandidaturaJpaAdapter implements DestinatariosCandidat
     }
 
     public Optional<DestinatariosCandidatura> buscarPorCandidatura(UUID candidaturaId) {
-        return repository.buscarPorCandidatura(candidaturaId)
-                .map(projecao -> new DestinatariosCandidatura(
-                        projecao.getResponsavelId(),
-                        projecao.getCandidatoId()
-                ));
+        List<br.com.pacto.recrutamento.infra.projections.DestinatariosCandidaturaProjection> projecoes =
+                repository.buscarPorCandidatura(candidaturaId);
+        if (projecoes.isEmpty()) return Optional.empty();
+        LinkedHashSet<UUID> responsaveis = new LinkedHashSet<>();
+        for (br.com.pacto.recrutamento.infra.projections.DestinatariosCandidaturaProjection projecao : projecoes) {
+            responsaveis.add(projecao.getResponsavelId());
+        }
+        return Optional.of(new DestinatariosCandidatura(
+                responsaveis, projecoes.get(0).getCandidatoId()));
     }
 }

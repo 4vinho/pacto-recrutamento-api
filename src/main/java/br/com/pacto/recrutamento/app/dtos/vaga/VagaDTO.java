@@ -2,19 +2,20 @@ package br.com.pacto.recrutamento.app.dtos.vaga;
 
 import br.com.pacto.recrutamento.core.enums.StatusVaga;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public class VagaDTO {
     private final UUID id;
-    private final UUID responsavelId;
+    private final Collection<UUID> responsaveisIds;
     private final String titulo;
     private final String descricao;
     private final StatusVaga status;
 
-    public VagaDTO(UUID id, UUID responsavelId, String titulo,
+    public VagaDTO(UUID id, Collection<UUID> responsaveisIds, String titulo,
                    String descricao, StatusVaga status) {
         this.id = id;
-        this.responsavelId = responsavelId;
+        this.responsaveisIds = responsaveisIds;
         this.titulo = titulo;
         this.descricao = descricao;
         this.status = status;
@@ -24,8 +25,8 @@ public class VagaDTO {
         return id;
     }
 
-    public UUID getResponsavelId() {
-        return responsavelId;
+    public Collection<UUID> getResponsaveisIds() {
+        return responsaveisIds;
     }
 
     public String getTitulo() {

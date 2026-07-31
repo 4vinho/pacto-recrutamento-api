@@ -6,10 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 public interface DestinatariosCandidaturaRepository extends Repository<Candidatura, UUID> {
-    @Query(value = "select v.responsavel_id as responsavelId, c.usuario_id as candidatoId from candidaturas ca join vagas v on v.id = ca.vaga_id join candidatos c on c.id = ca.candidato_id where ca.id = :candidaturaId", nativeQuery = true)
-    Optional<DestinatariosCandidaturaProjection> buscarPorCandidatura(@Param("candidaturaId") UUID candidaturaId);
+    @Query(value = "select vr.usuario_id as responsavelId, c.usuario_id as candidatoId "
+            + "from candidaturas ca join vagas_responsaveis vr on vr.vaga_id = ca.vaga_id "
+            + "join candidatos c on c.id = ca.candidato_id where ca.id = :candidaturaId",
+            nativeQuery = true)
+    List<DestinatariosCandidaturaProjection> buscarPorCandidatura(@Param("candidaturaId") UUID candidaturaId);
 }

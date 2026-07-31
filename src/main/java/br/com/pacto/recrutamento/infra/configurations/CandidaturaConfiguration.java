@@ -8,6 +8,6 @@ import org.springframework.context.annotation.Configuration;
 class CandidaturaConfiguration {
     @Bean
     AutorizacaoResponsavelCandidaturaPort autorizacaoResponsavelCandidatura() {
-        return (usuarioId, vaga) -> usuarioId != null && usuarioId.equals(vaga.getResponsavelId());
+        return (usuarioId, vaga) -> vaga != null && vaga.possuiResponsavel(usuarioId);
     }
 }

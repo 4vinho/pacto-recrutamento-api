@@ -39,22 +39,27 @@ public class VagaService implements VagaUseCase {
 
     @Override
     public TypedResponse<VagaDTO> criarVaga(CriarVagaDTO command) {
-        if (command == null || command.getResponsavelId() == null || camposVagaInvalidos(command.getTitulo(), command.getDescricao()))
+        if (command == null || responsaveisInvalidos(command.getResponsaveisIds())
+                || camposVagaInvalidos(command.getTitulo(), command.getDescricao()))
             return vagaErro(400, DADOS_VAGA_INVALIDOS);
-        if (!autorizacao.podeManterVagas(command.getResponsavelId())) return vagaErro(403, ACESSO_NAO_AUTORIZADO);
-        return vagaResposta(201, "Vaga criada", vagas.salvar(new Vaga(command.getResponsavelId(), command.getTitulo(), command.getDescricao())));
+        if (!autorizacao.podeManterVagas(command.getUsuarioSolicitanteId())) return vagaErro(403, ACESSO_NAO_AUTORIZADO);
+        if (!responsaveisAutorizados(command.getResponsaveisIds())) return vagaErro(422, RESPONSAVEL_VAGA_INVALIDO);
+        return vagaResposta(201, "Vaga criada", vagas.salvar(new Vaga(command.getResponsaveisIds(), command.getTitulo(), command.getDescricao())));
     }
 
     @Override
     public TypedResponse<VagaDTO> atualizarVaga(AtualizarVagaDTO command) {
-        if (command == null || camposVagaInvalidos(command.getTitulo(), command.getDescricao()))
+        if (command == null || responsaveisInvalidos(command.getResponsaveisIds())
+                || camposVagaInvalidos(command.getTitulo(), command.getDescricao()))
             return vagaErro(400, DADOS_VAGA_INVALIDOS);
         TypedResponse<VagaDTO> acesso = validarAcesso(command.getUsuarioSolicitanteId());
         if (acesso != null) return acesso;
+        if (!responsaveisAutorizados(command.getResponsaveisIds())) return vagaErro(422, RESPONSAVEL_VAGA_INVALIDO);
         Optional<Vaga> vaga = vagas.buscarAtivaPorId(command.getVagaId());
         if (!vaga.isPresent()) return vagaErro(404, VAGA_NAO_ENCONTRADA);
         vaga.get().setTitulo(command.getTitulo());
         vaga.get().setDescricao(command.getDescricao());
+        vaga.get().setResponsaveisIds(command.getResponsaveisIds());
         return vagaResposta(200, "Vaga atualizada", vagas.salvar(vaga.get()));
     }
 
@@ -179,6 +184,17 @@ public class VagaService implements VagaUseCase {
         return valor == null || valor.trim().isEmpty();
     }
 
+    private boolean responsaveisInvalidos(java.util.Collection<UUID> responsaveisIds) {
+        return responsaveisIds == null || responsaveisIds.isEmpty() || responsaveisIds.contains(null);
+    }
+
+    private boolean responsaveisAutorizados(java.util.Collection<UUID> responsaveisIds) {
+        for (UUID responsavelId : responsaveisIds) {
+            if (!autorizacao.podeManterVagas(responsavelId)) return false;
+        }
+        return true;
+    }
+
     private OffsetDateTime agora() {
         return OffsetDateTime.now(clock);
     }
@@ -218,7 +234,7 @@ public class VagaService implements VagaUseCase {
     }
 
     private TypedResponse<VagaDTO> vagaResposta(int status, String mensagem, Vaga vaga) {
-        return new TypedResponse<VagaDTO>(status, mensagem, new VagaDTO(vaga.getId(), vaga.getResponsavelId(), vaga.getTitulo(), vaga.getDescricao(), vaga.getStatus()));
+        return new TypedResponse<VagaDTO>(status, mensagem, new VagaDTO(vaga.getId(), vaga.getResponsaveisIds(), vaga.getTitulo(), vaga.getDescricao(), vaga.getStatus()));
     }
 
     private TypedResponse<PerguntaVagaDTO> perguntaResposta(int status, String mensagem, PerguntaVaga pergunta) {

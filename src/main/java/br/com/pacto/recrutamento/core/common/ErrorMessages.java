@@ -49,6 +49,7 @@ public final class ErrorMessages {
     public static final String REQUISICAO_INVALIDA = "Requisição inválida.";
     public static final String REFRESH_TOKEN_INVALIDO = "Refresh token inválido.";
     public static final String REQUISITO_NAO_ENCONTRADO = "Requisito nao encontrado";
+    public static final String RESPONSAVEL_VAGA_INVALIDO = "Um ou mais responsaveis da vaga sao invalidos";
     public static final String STATUS_CANDIDATURA_INVALIDO = "Status da candidatura invalido";
     public static final String STATUS_VAGA_OBRIGATORIO = "Status da vaga obrigatorio";
     public static final String SUBSTITUICAO_CURRICULO_FALHOU = "Não foi possível substituir o currículo";

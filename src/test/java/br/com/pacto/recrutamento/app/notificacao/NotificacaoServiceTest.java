@@ -25,6 +25,7 @@ class NotificacaoServiceTest {
         assertThat(response.getStatusCode()).isEqualTo(202);
         assertThat(memoria.statusesPersistidos).containsExactly(
                 StatusNotificacao.PENDENTE, StatusNotificacao.ENVIADA,
+                StatusNotificacao.PENDENTE, StatusNotificacao.ENVIADA,
                 StatusNotificacao.PENDENTE, StatusNotificacao.ENVIADA);
     }
 
@@ -50,7 +51,8 @@ class NotificacaoServiceTest {
         private boolean falhar;
 
         public Optional<DestinatariosCandidatura> buscarPorCandidatura(UUID id) {
-            return Optional.of(new DestinatariosCandidatura(UUID.randomUUID(), UUID.randomUUID()));
+            return Optional.of(new DestinatariosCandidatura(
+                    Arrays.asList(UUID.randomUUID(), UUID.randomUUID()), UUID.randomUUID()));
         }
 
         public Optional<Notificacao> buscarPorEventoEDestinatario(UUID evento, UUID usuario) {

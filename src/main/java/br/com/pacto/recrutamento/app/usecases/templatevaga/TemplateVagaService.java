@@ -264,7 +264,7 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     }
 
     private TypedResponse<VagaDTO> respostaVaga(Vaga vaga) {
-        return new TypedResponse<VagaDTO>(201, "Vaga criada a partir do template", new VagaDTO(vaga.getId(), vaga.getResponsavelId(), vaga.getTitulo(), vaga.getDescricao(), vaga.getStatus()));
+        return new TypedResponse<VagaDTO>(201, "Vaga criada a partir do template", new VagaDTO(vaga.getId(), vaga.getResponsaveisIds(), vaga.getTitulo(), vaga.getDescricao(), vaga.getStatus()));
     }
 
     private <T> TypedResponse<T> erro(int status, String mensagem) {

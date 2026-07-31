@@ -465,7 +465,7 @@ class CandidaturaServiceTest {
 
     private final class Autorizacao implements AutorizacaoResponsavelCandidaturaPort {
         public boolean podeGerenciar(UUID usuarioId, Vaga vaga) {
-            return responsavel.equals(usuarioId) && responsavel.equals(vaga.getResponsavelId());
+            return responsavel.equals(usuarioId) && vaga.possuiResponsavel(responsavel);
         }
     }
 
