@@ -16,21 +16,21 @@ import java.util.UUID;
 
 @Service
 public class TemplateVagaServiceImpl implements TemplateVagaService {
-    private final TemplateVagaRepositorio templates;
-    private final PerguntaTemplateVagaRepositorio perguntas;
-    private final RequisitoTemplateVagaRepositorio requisitos;
-    private final VagaTemplateRepositorio vagas;
-    private final PerguntaVagaTemplateRepositorio perguntasVaga;
-    private final RequisitoVagaTemplateRepositorio requisitosVaga;
+    private final TemplateVagaAdapter templates;
+    private final PerguntaTemplateVagaAdapter perguntas;
+    private final RequisitoTemplateVagaAdapter requisitos;
+    private final VagaTemplateAdapter vagas;
+    private final PerguntaVagaTemplateAdapter perguntasVaga;
+    private final RequisitoVagaTemplateAdapter requisitosVaga;
     private final AutorizacaoTemplateVaga autorizacao;
     private final Clock clock;
 
-    public TemplateVagaServiceImpl(TemplateVagaRepositorio templates,
-                                   PerguntaTemplateVagaRepositorio perguntas,
-                                   RequisitoTemplateVagaRepositorio requisitos,
-                                   VagaTemplateRepositorio vagas,
-                                   PerguntaVagaTemplateRepositorio perguntasVaga,
-                                   RequisitoVagaTemplateRepositorio requisitosVaga,
+    public TemplateVagaServiceImpl(TemplateVagaAdapter templates,
+                                   PerguntaTemplateVagaAdapter perguntas,
+                                   RequisitoTemplateVagaAdapter requisitos,
+                                   VagaTemplateAdapter vagas,
+                                   PerguntaVagaTemplateAdapter perguntasVaga,
+                                   RequisitoVagaTemplateAdapter requisitosVaga,
                                    AutorizacaoTemplateVaga autorizacao,
                                    Clock clock) {
         this.templates = templates;

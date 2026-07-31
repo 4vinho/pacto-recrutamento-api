@@ -6,7 +6,7 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface CurriculoRepositorio {
+public interface CurriculoAdapter {
     Optional<Curriculo> buscarAtivoPorCandidato(UUID candidatoId);
 
     Optional<Curriculo> buscarAtivoPorId(UUID curriculoId);

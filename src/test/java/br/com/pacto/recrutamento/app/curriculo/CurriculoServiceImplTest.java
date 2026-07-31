@@ -20,7 +20,7 @@ class CurriculoServiceImplTest {
     private static final byte[] PDF = "%PDF-1.7\nconteudo".getBytes();
     private static final UUID USUARIO = UUID.randomUUID();
     private static final UUID CANDIDATO = UUID.randomUUID();
-    private final CurriculoRepositorio repositorio = mock(CurriculoRepositorio.class);
+    private final CurriculoAdapter repositorio = mock(CurriculoAdapter.class);
     private final ArquivoStorage storage = mock(ArquivoStorage.class);
     private final CandidatoConsulta candidatos = mock(CandidatoConsulta.class);
     private final Clock clock = Clock.fixed(Instant.parse("2026-07-30T12:00:00Z"), ZoneOffset.UTC);

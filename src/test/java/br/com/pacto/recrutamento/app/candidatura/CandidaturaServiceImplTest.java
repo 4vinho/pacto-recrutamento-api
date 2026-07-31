@@ -1,7 +1,7 @@
 package br.com.pacto.recrutamento.app.ports.candidatura;
 
 import br.com.pacto.recrutamento.app.dtos.candidatura.*;
-import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
+import br.com.pacto.recrutamento.app.ports.candidato.CandidatoAdapter;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
 import br.com.pacto.recrutamento.app.serviceImpl.CandidaturaServiceImpl;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
@@ -217,7 +217,7 @@ class CandidaturaServiceImplTest {
         return candidato + ":" + vaga;
     }
 
-    private static final class Candidatos implements CandidatoRepository {
+    private static final class Candidatos implements CandidatoAdapter {
         private final Map<UUID, Candidato> dados = new HashMap<>();
 
         private Candidatos(UUID usuarioId, UUID candidatoId) {
@@ -245,7 +245,7 @@ class CandidaturaServiceImplTest {
         }
     }
 
-    private static final class Vagas implements VagaCandidaturaRepositorio {
+    private static final class Vagas implements VagaCandidaturaAdapter {
         private final Map<UUID, Vaga> dados = new HashMap<>();
 
         public Optional<Vaga> buscarPorId(UUID id) {
@@ -257,7 +257,7 @@ class CandidaturaServiceImplTest {
         }
     }
 
-    private static final class Perguntas implements PerguntaCandidaturaRepositorio {
+    private static final class Perguntas implements PerguntaCandidaturaAdapter {
         private final Map<UUID, PerguntaVaga> dados = new HashMap<>();
 
         public Optional<PerguntaVaga> buscarAtivaPorId(UUID id) {
@@ -269,7 +269,7 @@ class CandidaturaServiceImplTest {
         }
     }
 
-    private final class Candidaturas implements CandidaturaRepositorio {
+    private final class Candidaturas implements CandidaturaAdapter {
         private final Map<UUID, Candidatura> dados = new HashMap<>();
         private final Set<String> chavesExistentes = new HashSet<>();
         private final List<RespostaCandidatura> respostas = new ArrayList<>();
@@ -286,7 +286,7 @@ class CandidaturaServiceImplTest {
         }
 
         public Candidatura salvar(Candidatura c) {
-            if (falharPorUnicidade) throw new CandidaturaRepositorio.CandidaturaDuplicadaException();
+            if (falharPorUnicidade) throw new CandidaturaAdapter.CandidaturaDuplicadaException();
             dados.put(c.getId(), c);
             chavesExistentes.add(chave(c.getCandidatoId(), c.getVagaId()));
             salvouAntesDoEvento = true;
@@ -294,7 +294,7 @@ class CandidaturaServiceImplTest {
         }
 
         public void salvarRespostasAtomicamente(List<RespostaCandidatura> lote) {
-            if (falharRespostasPorUnicidade) throw new CandidaturaRepositorio.RespostasDuplicadasException();
+            if (falharRespostasPorUnicidade) throw new CandidaturaAdapter.RespostasDuplicadasException();
             respostas.addAll(lote);
         }
     }

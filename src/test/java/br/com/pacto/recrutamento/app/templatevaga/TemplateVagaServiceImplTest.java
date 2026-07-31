@@ -81,7 +81,7 @@ class TemplateVagaServiceImplTest {
         }
     }
 
-    static class Templates implements TemplateVagaRepositorio {
+    static class Templates implements TemplateVagaAdapter {
         Map<UUID, TemplateVaga> valores = new HashMap<>();
 
         public Optional<TemplateVaga> buscarAtivoPorId(UUID id) {
@@ -94,7 +94,7 @@ class TemplateVagaServiceImplTest {
         }
     }
 
-    static class Perguntas implements PerguntaTemplateVagaRepositorio {
+    static class Perguntas implements PerguntaTemplateVagaAdapter {
         Map<UUID, PerguntaTemplateVaga> valores = new HashMap<>();
 
         public Optional<PerguntaTemplateVaga> buscarAtivaPorId(UUID id) {
@@ -114,7 +114,7 @@ class TemplateVagaServiceImplTest {
         }
     }
 
-    static class Requisitos implements RequisitoTemplateVagaRepositorio {
+    static class Requisitos implements RequisitoTemplateVagaAdapter {
         Map<UUID, RequisitoTemplateVaga> valores = new HashMap<>();
 
         public Optional<RequisitoTemplateVaga> buscarAtivoPorId(UUID id) {
@@ -134,7 +134,7 @@ class TemplateVagaServiceImplTest {
         }
     }
 
-    static class Vagas implements VagaTemplateRepositorio {
+    static class Vagas implements VagaTemplateAdapter {
         Map<UUID, Vaga> valores = new HashMap<>();
 
         public Vaga salvar(Vaga x) {
@@ -143,7 +143,7 @@ class TemplateVagaServiceImplTest {
         }
     }
 
-    static class PerguntasVaga implements PerguntaVagaTemplateRepositorio {
+    static class PerguntasVaga implements PerguntaVagaTemplateAdapter {
         Map<UUID, PerguntaVaga> valores = new HashMap<>();
 
         public PerguntaVaga salvar(PerguntaVaga x) {
@@ -152,7 +152,7 @@ class TemplateVagaServiceImplTest {
         }
     }
 
-    static class RequisitosVaga implements RequisitoVagaTemplateRepositorio {
+    static class RequisitosVaga implements RequisitoVagaTemplateAdapter {
         Map<UUID, RequisitoVaga> valores = new HashMap<>();
 
         public RequisitoVaga salvar(RequisitoVaga x) {

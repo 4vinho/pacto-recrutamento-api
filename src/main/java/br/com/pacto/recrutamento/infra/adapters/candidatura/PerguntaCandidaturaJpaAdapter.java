@@ -4,7 +4,7 @@ import br.com.pacto.recrutamento.infra.repositorys.candidatura.PerguntaCandidatu
 
 import br.com.pacto.recrutamento.infra.projections.PerguntaCandidaturaProjection;
 
-import br.com.pacto.recrutamento.app.ports.candidatura.PerguntaCandidaturaRepositorio;
+import br.com.pacto.recrutamento.app.ports.candidatura.PerguntaCandidaturaAdapter;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-class PerguntaCandidaturaJpaAdapter implements PerguntaCandidaturaRepositorio {
+class PerguntaCandidaturaJpaAdapter implements PerguntaCandidaturaAdapter {
     private final PerguntaCandidaturaJpaRepository repository;
 
     PerguntaCandidaturaJpaAdapter(PerguntaCandidaturaJpaRepository repository) {

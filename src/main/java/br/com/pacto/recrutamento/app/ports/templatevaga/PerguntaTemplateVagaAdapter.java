@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface PerguntaTemplateVagaRepositorio {
+public interface PerguntaTemplateVagaAdapter {
     Optional<PerguntaTemplateVaga> buscarAtivaPorId(UUID id);
 
     List<PerguntaTemplateVaga> listarAtivasDoTemplate(UUID templateId);

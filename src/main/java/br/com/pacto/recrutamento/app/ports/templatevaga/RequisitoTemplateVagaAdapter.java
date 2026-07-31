@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface RequisitoTemplateVagaRepositorio {
+public interface RequisitoTemplateVagaAdapter {
     Optional<RequisitoTemplateVaga> buscarAtivoPorId(UUID id);
 
     List<RequisitoTemplateVaga> listarAtivosDoTemplate(UUID templateId);

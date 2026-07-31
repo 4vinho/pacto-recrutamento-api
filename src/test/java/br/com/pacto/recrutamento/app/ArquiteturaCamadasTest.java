@@ -24,6 +24,8 @@ class ArquiteturaCamadasTest {
             "br.com.pacto.recrutamento.app.ports.";
     private static final Path APP =
             Paths.get("src/main/java/br/com/pacto/recrutamento/app");
+    private static final Path PORTS =
+            Paths.get("src/main/java/br/com/pacto/recrutamento/app/ports");
     private static final Path CORE =
             Paths.get("src/main/java/br/com/pacto/recrutamento/core");
     private static final Path INFRA =
@@ -59,6 +61,16 @@ class ArquiteturaCamadasTest {
                     .filter(Class::isInterface)
                     .map(type -> type.getPackage().getName()))
                     .allMatch(pacote -> pacote.startsWith(PACOTE_PORTAS));
+        }
+    }
+
+    @Test
+    void portsDeSaidaSaoNomeadosComoAdapters() throws IOException {
+        try (Stream<Path> arquivos = Files.walk(PORTS)) {
+            assertThat(arquivos
+                    .filter(Files::isRegularFile)
+                    .map(path -> path.getFileName().toString()))
+                    .noneMatch(nome -> nome.contains("Repository") || nome.contains("Repositorio"));
         }
     }
 

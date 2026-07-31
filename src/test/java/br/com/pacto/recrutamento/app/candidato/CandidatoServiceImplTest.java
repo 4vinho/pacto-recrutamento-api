@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CandidatoServiceImplTest {
 
-    private final CandidatoRepository repository = new CandidatoRepositoryFalso();
+    private final CandidatoAdapter repository = new CandidatoRepositoryFalso();
     private final CandidatoServiceImpl service = new CandidatoServiceImpl(repository);
 
     @Test
@@ -122,7 +122,7 @@ class CandidatoServiceImplTest {
         assertThat(resposta.getPageSize()).isEqualTo(1);
     }
 
-    private static class CandidatoRepositoryFalso implements CandidatoRepository {
+    private static class CandidatoRepositoryFalso implements CandidatoAdapter {
         private final java.util.Map<UUID, Candidato> perfis = new java.util.HashMap<>();
         private UUID ultimoUsuarioConsultado;
         private PaginaGenerico<CandidaturaDoCandidato> pagina =

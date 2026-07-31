@@ -6,7 +6,7 @@ import br.com.pacto.recrutamento.core.entities.Candidato;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface CandidatoRepository {
+public interface CandidatoAdapter {
     boolean existePorUsuarioId(UUID usuarioId);
 
     Candidato salvar(Candidato candidato);

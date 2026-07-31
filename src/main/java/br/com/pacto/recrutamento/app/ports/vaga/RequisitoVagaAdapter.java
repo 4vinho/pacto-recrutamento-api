@@ -5,7 +5,7 @@ import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface RequisitoVagaRepositorio {
+public interface RequisitoVagaAdapter {
     Optional<RequisitoVaga> buscarAtivoPorId(UUID id);
 
     RequisitoVaga salvar(RequisitoVaga requisito);

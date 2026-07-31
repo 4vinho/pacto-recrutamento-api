@@ -10,7 +10,7 @@ class CurriculoAdaptersArchitectureTest {
 
     @Test
     void persistenciaDeCurriculoFicaNaInfraestrutura() {
-        assertThat(CurriculoRepositorio.class)
+        assertThat(CurriculoAdapter.class)
                 .isAssignableFrom(CurriculoRepositorioJpaAdapter.class);
         assertThat(CandidatoConsulta.class)
                 .isAssignableFrom(CandidatoConsultaJpaAdapter.class);

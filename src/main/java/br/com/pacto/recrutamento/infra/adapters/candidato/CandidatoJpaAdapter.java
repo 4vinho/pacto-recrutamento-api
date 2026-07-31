@@ -4,7 +4,7 @@ import br.com.pacto.recrutamento.infra.repositorys.candidato.CandidatoJpaReposit
 
 import br.com.pacto.recrutamento.infra.projections.CandidaturaPainelProjection;
 
-import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
+import br.com.pacto.recrutamento.app.ports.candidato.CandidatoAdapter;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.entities.Candidato;
@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository
-public class CandidatoJpaAdapter implements CandidatoRepository {
+public class CandidatoJpaAdapter implements CandidatoAdapter {
     private final CandidatoJpaRepository repository;
 
     public CandidatoJpaAdapter(CandidatoJpaRepository repository) {

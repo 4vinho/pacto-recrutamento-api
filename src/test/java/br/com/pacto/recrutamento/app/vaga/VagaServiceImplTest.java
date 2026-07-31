@@ -177,7 +177,7 @@ class VagaServiceImplTest {
         return requisito;
     }
 
-    private static final class MemoriaVagas implements VagaRepositorio {
+    private static final class MemoriaVagas implements VagaAdapter {
         private final Map<UUID, Vaga> dados = new HashMap<>();
 
         public Optional<Vaga> buscarAtivaPorId(UUID id) {
@@ -190,7 +190,7 @@ class VagaServiceImplTest {
         }
     }
 
-    private static final class MemoriaPerguntas implements PerguntaVagaRepositorio {
+    private static final class MemoriaPerguntas implements PerguntaVagaAdapter {
         private final Map<UUID, PerguntaVaga> dados = new HashMap<>();
 
         public Optional<PerguntaVaga> buscarAtivaPorId(UUID id) {
@@ -204,7 +204,7 @@ class VagaServiceImplTest {
         }
     }
 
-    private static final class MemoriaRequisitos implements RequisitoVagaRepositorio {
+    private static final class MemoriaRequisitos implements RequisitoVagaAdapter {
         private final Map<UUID, RequisitoVaga> dados = new HashMap<>();
 
         public Optional<RequisitoVaga> buscarAtivoPorId(UUID id) {

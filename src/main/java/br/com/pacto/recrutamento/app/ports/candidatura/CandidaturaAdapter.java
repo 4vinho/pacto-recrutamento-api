@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface CandidaturaRepositorio {
+public interface CandidaturaAdapter {
     Optional<Candidatura> buscarPorId(UUID candidaturaId);
 
     boolean existePorCandidatoIdEVagaId(UUID candidatoId, UUID vagaId);

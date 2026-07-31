@@ -12,9 +12,9 @@ class ArquiteturaCandidatoTest {
 
     @Test
     void aplicacaoDefinePortaSemConhecerJpaEAdapterFicaNaInfraestrutura() {
-        assertThat(CandidatoRepository.class.getPackage().getName())
+        assertThat(CandidatoAdapter.class.getPackage().getName())
                 .isEqualTo("br.com.pacto.recrutamento.app.ports.candidato");
-        assertThat(CandidatoRepository.class.isAnnotationPresent(Entity.class)).isFalse();
+        assertThat(CandidatoAdapter.class.isAnnotationPresent(Entity.class)).isFalse();
         assertThat(CandidatoJpaAdapter.class.getPackage().getName())
                 .isEqualTo("br.com.pacto.recrutamento.infra.adapters.candidato");
         assertThat(Candidato.class).hasAnnotation(Entity.class);
@@ -22,7 +22,7 @@ class ArquiteturaCandidatoTest {
 
     @Test
     void repositoryPersisteDiretamenteAEntidadeDoCore() throws NoSuchMethodException {
-        assertThat(CandidatoRepository.class.getMethod("salvar", Candidato.class).getReturnType())
+        assertThat(CandidatoAdapter.class.getMethod("salvar", Candidato.class).getReturnType())
                 .isEqualTo(Candidato.class);
     }
 }

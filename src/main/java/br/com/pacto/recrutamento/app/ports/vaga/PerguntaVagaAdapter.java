@@ -5,7 +5,7 @@ import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface PerguntaVagaRepositorio {
+public interface PerguntaVagaAdapter {
     Optional<PerguntaVaga> buscarAtivaPorId(UUID id);
 
     PerguntaVaga salvar(PerguntaVaga pergunta);
