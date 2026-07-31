@@ -22,6 +22,10 @@ public class RefreshTokenJpaAdapter implements RefreshTokenPort {
         return repository.findByTokenHash(hash);
     }
 
+    public Optional<RefreshToken> buscarPorHashParaAtualizacao(String hash) {
+        return repository.findByTokenHashForUpdate(hash);
+    }
+
     public void salvar(RefreshToken token) {
         repository.save(token);
     }

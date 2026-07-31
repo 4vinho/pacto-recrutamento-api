@@ -11,6 +11,7 @@ import br.com.pacto.recrutamento.core.entities.RefreshToken;
 import br.com.pacto.recrutamento.core.entities.Usuario;
 import br.com.pacto.recrutamento.core.enums.NomePapel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
@@ -72,10 +73,12 @@ public class UsuarioService implements UsuarioUseCase {
     }
 
     @Override
+    @Transactional
     public TypedResponse<SessaoDTO> renovarSessao(RenovarSessaoDTO command) {
         if (command == null || tokenInvalido(command.getRefreshToken()))
             return resposta(401, REFRESH_TOKEN_INVALIDO, null);
-        Optional<RefreshToken> encontrado = refreshTokens.buscarPorHash(tokens.calcularHash(command.getRefreshToken()));
+        Optional<RefreshToken> encontrado = refreshTokens.buscarPorHashParaAtualizacao(
+                tokens.calcularHash(command.getRefreshToken()));
         if (!encontrado.isPresent()) return resposta(401, REFRESH_TOKEN_INVALIDO, null);
         RefreshToken refresh = encontrado.get();
         OffsetDateTime agora = agora();

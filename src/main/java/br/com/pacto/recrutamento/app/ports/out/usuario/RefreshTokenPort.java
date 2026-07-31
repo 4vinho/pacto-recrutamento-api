@@ -9,6 +9,8 @@ import java.util.UUID;
 public interface RefreshTokenPort {
     Optional<RefreshToken> buscarPorHash(String hash);
 
+    Optional<RefreshToken> buscarPorHashParaAtualizacao(String hash);
+
     void salvar(RefreshToken token);
 
     void revogarFamilia(UUID familiaId, OffsetDateTime data);
