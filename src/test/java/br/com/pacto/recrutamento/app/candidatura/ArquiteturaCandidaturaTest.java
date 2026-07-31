@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.ports.candidatura;
+package br.com.pacto.recrutamento.app.ports.out.candidatura;
 
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;

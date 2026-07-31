@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.adapters.curriculo;
 
-import br.com.pacto.recrutamento.app.ports.curriculo.CurriculoAdapter;
+import br.com.pacto.recrutamento.app.ports.out.curriculo.CurriculoPort;
 import br.com.pacto.recrutamento.core.entities.Curriculo;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class CurriculoRepositorioJpaAdapter implements CurriculoAdapter {
+public class CurriculoRepositorioJpaAdapter implements CurriculoPort {
     private final EntityManager entityManager;
 
     public CurriculoRepositorioJpaAdapter(EntityManager entityManager) {

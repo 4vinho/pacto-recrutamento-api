@@ -1,7 +1,8 @@
-package br.com.pacto.recrutamento.app.ports.candidato;
+package br.com.pacto.recrutamento.app.ports.out.candidato;
 
 import br.com.pacto.recrutamento.app.dtos.candidato.*;
 import br.com.pacto.recrutamento.app.serviceImpl.CandidatoServiceImpl;
+import br.com.pacto.recrutamento.app.ports.out.candidato.model.CandidaturaDoCandidato;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
@@ -19,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CandidatoServiceImplTest {
 
-    private final CandidatoAdapter repository = new CandidatoRepositoryFalso();
+    private final CandidatoPort repository = new CandidatoRepositoryFalso();
     private final CandidatoServiceImpl service = new CandidatoServiceImpl(repository);
 
     @Test
@@ -122,7 +123,7 @@ class CandidatoServiceImplTest {
         assertThat(resposta.getPageSize()).isEqualTo(1);
     }
 
-    private static class CandidatoRepositoryFalso implements CandidatoAdapter {
+    private static class CandidatoRepositoryFalso implements CandidatoPort {
         private final java.util.Map<UUID, Candidato> perfis = new java.util.HashMap<>();
         private UUID ultimoUsuarioConsultado;
         private PaginaGenerico<CandidaturaDoCandidato> pagina =

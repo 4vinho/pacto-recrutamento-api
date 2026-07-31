@@ -4,7 +4,7 @@ import br.com.pacto.recrutamento.infra.repositorys.candidatura.RespostaCandidatu
 
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.CandidaturaJpaRepository;
 
-import br.com.pacto.recrutamento.app.ports.candidatura.CandidaturaAdapter;
+import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class CandidaturaJpaAdapterTest {
     @Test
     void traduzUnicidadeConcorrenteDaCandidatura() {
         when(candidaturas.saveAndFlush(any())).thenThrow(new DataIntegrityViolationException("uk"));
-        assertThrows(CandidaturaAdapter.CandidaturaDuplicadaException.class,
+        assertThrows(CandidaturaPort.CandidaturaDuplicadaException.class,
                 () -> adapter.salvar(new Candidatura(java.util.UUID.randomUUID(), java.util.UUID.randomUUID())));
     }
 
@@ -34,7 +34,7 @@ class CandidaturaJpaAdapterTest {
         when(respostas.saveAllAndFlush(any())).thenThrow(new DataIntegrityViolationException("uk"));
         RespostaCandidatura resposta = new RespostaCandidatura(java.util.UUID.randomUUID(),
                 java.util.UUID.randomUUID(), "valor");
-        assertThrows(CandidaturaAdapter.RespostasDuplicadasException.class,
+        assertThrows(CandidaturaPort.RespostasDuplicadasException.class,
                 () -> adapter.salvarRespostasAtomicamente(Collections.singletonList(resposta)));
     }
 }

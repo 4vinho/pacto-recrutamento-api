@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.security.usuario;
 
-import br.com.pacto.recrutamento.app.ports.usuario.GeradorToken;
+import br.com.pacto.recrutamento.app.ports.out.usuario.GeradorTokenPort;
 import br.com.pacto.recrutamento.core.entities.Papel;
 import br.com.pacto.recrutamento.core.entities.Usuario;
 import io.jsonwebtoken.Jwts;
@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class GeradorTokenJwt implements GeradorToken {
+public class GeradorTokenJwt implements GeradorTokenPort {
     private final SecretKey chave;
     private final SecureRandom aleatorio = new SecureRandom();
 

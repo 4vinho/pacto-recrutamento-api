@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.ports.templatevaga;
+package br.com.pacto.recrutamento.app.ports.out.templatevaga;
 
 import br.com.pacto.recrutamento.app.serviceImpl.TemplateVagaServiceImpl;
 import br.com.pacto.recrutamento.core.entities.PerguntaTemplateVaga;
@@ -15,12 +15,12 @@ class ArquiteturaTemplateVagaTest {
     @Test
     void aplicacaoNaoDependeDeInfraEEntidadesDoCoreSaoJpa() throws Exception {
         assertThat(Class.forName("br.com.pacto.recrutamento.app.serviceImpl.TemplateVagaServiceImpl")).isNotNull();
-        assertThat(Class.forName("br.com.pacto.recrutamento.app.ports.templatevaga.TemplateVagaAdapter")).isNotNull();
+        assertThat(Class.forName("br.com.pacto.recrutamento.app.ports.out.templatevaga.TemplateVagaPort")).isNotNull();
         assertThat(TemplateVaga.class.isAnnotationPresent(Entity.class)).isTrue();
         assertThat(PerguntaTemplateVaga.class.isAnnotationPresent(Entity.class)).isTrue();
         assertThat(RequisitoTemplateVaga.class.isAnnotationPresent(Entity.class)).isTrue();
-        for (Class<?> type : new Class<?>[]{TemplateVagaServiceImpl.class, TemplateVagaAdapter.class,
-                PerguntaTemplateVagaAdapter.class, RequisitoTemplateVagaAdapter.class}) {
+        for (Class<?> type : new Class<?>[]{TemplateVagaServiceImpl.class, TemplateVagaPort.class,
+                PerguntaTemplateVagaPort.class, RequisitoTemplateVagaPort.class}) {
             for (Class<?> dependency : type.getInterfaces()) assertThat(dependency.getName()).doesNotContain("infra");
             assertThat(type.getPackage().getName()).doesNotContain("infra");
         }

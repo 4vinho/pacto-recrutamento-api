@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.ports.templatevaga;
+package br.com.pacto.recrutamento.app.ports.out.templatevaga;
 
 import br.com.pacto.recrutamento.app.dtos.templatevaga.CriarTemplateVagaDTO;
 import br.com.pacto.recrutamento.app.dtos.templatevaga.CriarVagaAPartirDoTemplateDTO;
@@ -81,7 +81,7 @@ class TemplateVagaServiceImplTest {
         }
     }
 
-    static class Templates implements TemplateVagaAdapter {
+    static class Templates implements TemplateVagaPort {
         Map<UUID, TemplateVaga> valores = new HashMap<>();
 
         public Optional<TemplateVaga> buscarAtivoPorId(UUID id) {
@@ -94,7 +94,7 @@ class TemplateVagaServiceImplTest {
         }
     }
 
-    static class Perguntas implements PerguntaTemplateVagaAdapter {
+    static class Perguntas implements PerguntaTemplateVagaPort {
         Map<UUID, PerguntaTemplateVaga> valores = new HashMap<>();
 
         public Optional<PerguntaTemplateVaga> buscarAtivaPorId(UUID id) {
@@ -114,7 +114,7 @@ class TemplateVagaServiceImplTest {
         }
     }
 
-    static class Requisitos implements RequisitoTemplateVagaAdapter {
+    static class Requisitos implements RequisitoTemplateVagaPort {
         Map<UUID, RequisitoTemplateVaga> valores = new HashMap<>();
 
         public Optional<RequisitoTemplateVaga> buscarAtivoPorId(UUID id) {
@@ -134,7 +134,7 @@ class TemplateVagaServiceImplTest {
         }
     }
 
-    static class Vagas implements VagaTemplateAdapter {
+    static class Vagas implements VagaTemplatePort {
         Map<UUID, Vaga> valores = new HashMap<>();
 
         public Vaga salvar(Vaga x) {
@@ -143,7 +143,7 @@ class TemplateVagaServiceImplTest {
         }
     }
 
-    static class PerguntasVaga implements PerguntaVagaTemplateAdapter {
+    static class PerguntasVaga implements PerguntaVagaTemplatePort {
         Map<UUID, PerguntaVaga> valores = new HashMap<>();
 
         public PerguntaVaga salvar(PerguntaVaga x) {
@@ -152,7 +152,7 @@ class TemplateVagaServiceImplTest {
         }
     }
 
-    static class RequisitosVaga implements RequisitoVagaTemplateAdapter {
+    static class RequisitosVaga implements RequisitoVagaTemplatePort {
         Map<UUID, RequisitoVaga> valores = new HashMap<>();
 
         public RequisitoVaga salvar(RequisitoVaga x) {

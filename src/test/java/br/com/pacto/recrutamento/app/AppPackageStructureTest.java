@@ -1,12 +1,12 @@
 package br.com.pacto.recrutamento.app;
 
-import br.com.pacto.recrutamento.app.ports.candidato.CandidatoAdapter;
-import br.com.pacto.recrutamento.app.ports.candidatura.CandidaturaAdapter;
-import br.com.pacto.recrutamento.app.ports.curriculo.CurriculoAdapter;
-import br.com.pacto.recrutamento.app.ports.notificacao.NotificacaoPort;
-import br.com.pacto.recrutamento.app.ports.templatevaga.TemplateVagaAdapter;
-import br.com.pacto.recrutamento.app.ports.usuario.UsuarioPort;
-import br.com.pacto.recrutamento.app.ports.vaga.VagaAdapter;
+import br.com.pacto.recrutamento.app.ports.out.candidato.CandidatoPort;
+import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
+import br.com.pacto.recrutamento.app.ports.out.curriculo.CurriculoPort;
+import br.com.pacto.recrutamento.app.ports.out.notificacao.NotificacaoPort;
+import br.com.pacto.recrutamento.app.ports.out.templatevaga.TemplateVagaPort;
+import br.com.pacto.recrutamento.app.ports.out.usuario.UsuarioPort;
+import br.com.pacto.recrutamento.app.ports.out.vaga.VagaPort;
 import br.com.pacto.recrutamento.app.serviceImpl.*;
 import org.junit.jupiter.api.Test;
 
@@ -28,20 +28,20 @@ class AppPackageStructureTest {
 
     @Test
     void portasFicamSeparadasPorEntidade() {
-        assertPackage("br.com.pacto.recrutamento.app.ports.candidato",
-                CandidatoAdapter.class);
-        assertPackage("br.com.pacto.recrutamento.app.ports.candidatura",
-                CandidaturaAdapter.class);
-        assertPackage("br.com.pacto.recrutamento.app.ports.curriculo",
-                CurriculoAdapter.class);
-        assertPackage("br.com.pacto.recrutamento.app.ports.notificacao",
+        assertPackage("br.com.pacto.recrutamento.app.ports.out.candidato",
+                CandidatoPort.class);
+        assertPackage("br.com.pacto.recrutamento.app.ports.out.candidatura",
+                CandidaturaPort.class);
+        assertPackage("br.com.pacto.recrutamento.app.ports.out.curriculo",
+                CurriculoPort.class);
+        assertPackage("br.com.pacto.recrutamento.app.ports.out.notificacao",
                 NotificacaoPort.class);
-        assertPackage("br.com.pacto.recrutamento.app.ports.templatevaga",
-                TemplateVagaAdapter.class);
-        assertPackage("br.com.pacto.recrutamento.app.ports.usuario",
+        assertPackage("br.com.pacto.recrutamento.app.ports.out.templatevaga",
+                TemplateVagaPort.class);
+        assertPackage("br.com.pacto.recrutamento.app.ports.out.usuario",
                 UsuarioPort.class);
-        assertPackage("br.com.pacto.recrutamento.app.ports.vaga",
-                VagaAdapter.class);
+        assertPackage("br.com.pacto.recrutamento.app.ports.out.vaga",
+                VagaPort.class);
     }
 
     private void assertPackage(String esperado, Class<?>... tipos) {

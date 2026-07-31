@@ -1,7 +1,7 @@
 package br.com.pacto.recrutamento.web;
 
 import br.com.pacto.recrutamento.app.dtos.vaga.*;
-import br.com.pacto.recrutamento.app.services.VagaService;
+import br.com.pacto.recrutamento.app.ports.in.vaga.VagaUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.enums.StatusVaga;
 import br.com.pacto.recrutamento.core.enums.TipoResposta;
@@ -19,9 +19,9 @@ import java.util.UUID;
 @RequestMapping("/vagas")
 @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTH)
 public class VagaController {
-    private final VagaService service;
+    private final VagaUseCase service;
 
-    public VagaController(VagaService service) {
+    public VagaController(VagaUseCase service) {
         this.service = service;
     }
 

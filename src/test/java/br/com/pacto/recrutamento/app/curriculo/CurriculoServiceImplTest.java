@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.ports.curriculo;
+package br.com.pacto.recrutamento.app.ports.out.curriculo;
 
 import br.com.pacto.recrutamento.app.dtos.curriculo.EnviarCurriculoDTO;
 import br.com.pacto.recrutamento.app.dtos.curriculo.GerarUrlTemporariaCurriculoDTO;
@@ -20,9 +20,9 @@ class CurriculoServiceImplTest {
     private static final byte[] PDF = "%PDF-1.7\nconteudo".getBytes();
     private static final UUID USUARIO = UUID.randomUUID();
     private static final UUID CANDIDATO = UUID.randomUUID();
-    private final CurriculoAdapter repositorio = mock(CurriculoAdapter.class);
-    private final ArquivoStorage storage = mock(ArquivoStorage.class);
-    private final CandidatoConsulta candidatos = mock(CandidatoConsulta.class);
+    private final CurriculoPort repositorio = mock(CurriculoPort.class);
+    private final ArquivoStoragePort storage = mock(ArquivoStoragePort.class);
+    private final CandidatoConsultaPort candidatos = mock(CandidatoConsultaPort.class);
     private final Clock clock = Clock.fixed(Instant.parse("2026-07-30T12:00:00Z"), ZoneOffset.UTC);
     private final CurriculoServiceImpl service = new CurriculoServiceImpl(
             repositorio, storage, candidatos, clock);

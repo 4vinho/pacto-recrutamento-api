@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.ports.candidato;
+package br.com.pacto.recrutamento.app.ports.out.candidato;
 
 import br.com.pacto.recrutamento.core.entities.Candidato;
 import br.com.pacto.recrutamento.infra.adapters.candidato.CandidatoJpaAdapter;
@@ -12,9 +12,9 @@ class ArquiteturaCandidatoTest {
 
     @Test
     void aplicacaoDefinePortaSemConhecerJpaEAdapterFicaNaInfraestrutura() {
-        assertThat(CandidatoAdapter.class.getPackage().getName())
-                .isEqualTo("br.com.pacto.recrutamento.app.ports.candidato");
-        assertThat(CandidatoAdapter.class.isAnnotationPresent(Entity.class)).isFalse();
+        assertThat(CandidatoPort.class.getPackage().getName())
+                .isEqualTo("br.com.pacto.recrutamento.app.ports.out.candidato");
+        assertThat(CandidatoPort.class.isAnnotationPresent(Entity.class)).isFalse();
         assertThat(CandidatoJpaAdapter.class.getPackage().getName())
                 .isEqualTo("br.com.pacto.recrutamento.infra.adapters.candidato");
         assertThat(Candidato.class).hasAnnotation(Entity.class);
@@ -22,7 +22,7 @@ class ArquiteturaCandidatoTest {
 
     @Test
     void repositoryPersisteDiretamenteAEntidadeDoCore() throws NoSuchMethodException {
-        assertThat(CandidatoAdapter.class.getMethod("salvar", Candidato.class).getReturnType())
+        assertThat(CandidatoPort.class.getMethod("salvar", Candidato.class).getReturnType())
                 .isEqualTo(Candidato.class);
     }
 }

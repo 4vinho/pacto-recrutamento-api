@@ -2,7 +2,7 @@ package br.com.pacto.recrutamento.web;
 
 import br.com.pacto.recrutamento.app.dtos.templatevaga.*;
 import br.com.pacto.recrutamento.app.dtos.vaga.VagaDTO;
-import br.com.pacto.recrutamento.app.services.TemplateVagaService;
+import br.com.pacto.recrutamento.app.ports.in.templatevaga.TemplateVagaUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.enums.TipoResposta;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +19,9 @@ import java.util.UUID;
 @RequestMapping("/templates-vaga")
 @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTH)
 public class TemplateVagaController {
-    private final TemplateVagaService service;
+    private final TemplateVagaUseCase service;
 
-    public TemplateVagaController(TemplateVagaService service) {
+    public TemplateVagaController(TemplateVagaUseCase service) {
         this.service = service;
     }
 

@@ -1,8 +1,8 @@
-package br.com.pacto.recrutamento.app.ports.candidatura;
+package br.com.pacto.recrutamento.app.ports.out.candidatura;
 
 import br.com.pacto.recrutamento.app.dtos.candidatura.*;
-import br.com.pacto.recrutamento.app.ports.candidato.CandidatoAdapter;
-import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
+import br.com.pacto.recrutamento.app.ports.out.candidato.CandidatoPort;
+import br.com.pacto.recrutamento.app.ports.out.candidato.model.CandidaturaDoCandidato;
 import br.com.pacto.recrutamento.app.serviceImpl.CandidaturaServiceImpl;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
@@ -217,7 +217,7 @@ class CandidaturaServiceImplTest {
         return candidato + ":" + vaga;
     }
 
-    private static final class Candidatos implements CandidatoAdapter {
+    private static final class Candidatos implements CandidatoPort {
         private final Map<UUID, Candidato> dados = new HashMap<>();
 
         private Candidatos(UUID usuarioId, UUID candidatoId) {
@@ -245,7 +245,7 @@ class CandidaturaServiceImplTest {
         }
     }
 
-    private static final class Vagas implements VagaCandidaturaAdapter {
+    private static final class Vagas implements VagaCandidaturaPort {
         private final Map<UUID, Vaga> dados = new HashMap<>();
 
         public Optional<Vaga> buscarPorId(UUID id) {
@@ -257,7 +257,7 @@ class CandidaturaServiceImplTest {
         }
     }
 
-    private static final class Perguntas implements PerguntaCandidaturaAdapter {
+    private static final class Perguntas implements PerguntaCandidaturaPort {
         private final Map<UUID, PerguntaVaga> dados = new HashMap<>();
 
         public Optional<PerguntaVaga> buscarAtivaPorId(UUID id) {
@@ -269,7 +269,7 @@ class CandidaturaServiceImplTest {
         }
     }
 
-    private final class Candidaturas implements CandidaturaAdapter {
+    private final class Candidaturas implements CandidaturaPort {
         private final Map<UUID, Candidatura> dados = new HashMap<>();
         private final Set<String> chavesExistentes = new HashSet<>();
         private final List<RespostaCandidatura> respostas = new ArrayList<>();
@@ -286,7 +286,7 @@ class CandidaturaServiceImplTest {
         }
 
         public Candidatura salvar(Candidatura c) {
-            if (falharPorUnicidade) throw new CandidaturaAdapter.CandidaturaDuplicadaException();
+            if (falharPorUnicidade) throw new CandidaturaPort.CandidaturaDuplicadaException();
             dados.put(c.getId(), c);
             chavesExistentes.add(chave(c.getCandidatoId(), c.getVagaId()));
             salvouAntesDoEvento = true;
@@ -294,18 +294,18 @@ class CandidaturaServiceImplTest {
         }
 
         public void salvarRespostasAtomicamente(List<RespostaCandidatura> lote) {
-            if (falharRespostasPorUnicidade) throw new CandidaturaAdapter.RespostasDuplicadasException();
+            if (falharRespostasPorUnicidade) throw new CandidaturaPort.RespostasDuplicadasException();
             respostas.addAll(lote);
         }
     }
 
-    private final class Autorizacao implements AutorizacaoResponsavelCandidatura {
+    private final class Autorizacao implements AutorizacaoResponsavelCandidaturaPort {
         public boolean podeGerenciar(UUID usuarioId, Vaga vaga) {
             return responsavel.equals(usuarioId) && responsavel.equals(vaga.getResponsavelId());
         }
     }
 
-    private final class Eventos implements EventosCandidatura {
+    private final class Eventos implements EventosCandidaturaPort {
         private int criadas;
         private int statusAlterados;
         private boolean falhar;

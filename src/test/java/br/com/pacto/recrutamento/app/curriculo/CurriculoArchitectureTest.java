@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.ports.curriculo;
+package br.com.pacto.recrutamento.app.ports.out.curriculo;
 
 import br.com.pacto.recrutamento.app.serviceImpl.CurriculoServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ class CurriculoArchitectureTest {
                 .map(Field::getType)
                 .filter(Class::isInterface)
                 .map(type -> type.getPackage().getName()))
-                .allMatch("br.com.pacto.recrutamento.app.ports.curriculo"::equals);
+                .allMatch("br.com.pacto.recrutamento.app.ports.out.curriculo"::equals);
     }
 
 }

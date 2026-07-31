@@ -2,11 +2,11 @@ package br.com.pacto.recrutamento.app.serviceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.notificacao.CandidaturaCriadaDTO;
 import br.com.pacto.recrutamento.app.dtos.notificacao.StatusCandidaturaAlteradoDTO;
-import br.com.pacto.recrutamento.app.ports.notificacao.CanalNotificacao;
-import br.com.pacto.recrutamento.app.ports.notificacao.DestinatariosCandidatura;
-import br.com.pacto.recrutamento.app.ports.notificacao.DestinatariosCandidaturaPort;
-import br.com.pacto.recrutamento.app.ports.notificacao.NotificacaoPort;
-import br.com.pacto.recrutamento.app.services.NotificacaoService;
+import br.com.pacto.recrutamento.app.ports.out.notificacao.CanalNotificacaoPort;
+import br.com.pacto.recrutamento.app.ports.out.notificacao.model.DestinatariosCandidatura;
+import br.com.pacto.recrutamento.app.ports.out.notificacao.DestinatariosCandidaturaPort;
+import br.com.pacto.recrutamento.app.ports.out.notificacao.NotificacaoPort;
+import br.com.pacto.recrutamento.app.ports.in.notificacao.NotificacaoUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Notificacao;
 import br.com.pacto.recrutamento.core.enums.TipoNotificacao;
@@ -17,12 +17,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class NotificacaoServiceImpl implements NotificacaoService {
+public class NotificacaoServiceImpl implements NotificacaoUseCase {
     private final DestinatariosCandidaturaPort destinatarios;
     private final NotificacaoPort notificacoes;
-    private final CanalNotificacao canal;
+    private final CanalNotificacaoPort canal;
 
-    public NotificacaoServiceImpl(DestinatariosCandidaturaPort destinatarios, NotificacaoPort notificacoes, CanalNotificacao canal) {
+    public NotificacaoServiceImpl(DestinatariosCandidaturaPort destinatarios, NotificacaoPort notificacoes, CanalNotificacaoPort canal) {
         this.destinatarios = destinatarios;
         this.notificacoes = notificacoes;
         this.canal = canal;

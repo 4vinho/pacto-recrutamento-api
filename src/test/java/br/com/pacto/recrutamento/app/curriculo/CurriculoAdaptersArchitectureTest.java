@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.ports.curriculo;
+package br.com.pacto.recrutamento.app.ports.out.curriculo;
 
 import br.com.pacto.recrutamento.infra.adapters.curriculo.CandidatoConsultaJpaAdapter;
 import br.com.pacto.recrutamento.infra.adapters.curriculo.CurriculoRepositorioJpaAdapter;
@@ -10,9 +10,9 @@ class CurriculoAdaptersArchitectureTest {
 
     @Test
     void persistenciaDeCurriculoFicaNaInfraestrutura() {
-        assertThat(CurriculoAdapter.class)
+        assertThat(CurriculoPort.class)
                 .isAssignableFrom(CurriculoRepositorioJpaAdapter.class);
-        assertThat(CandidatoConsulta.class)
+        assertThat(CandidatoConsultaPort.class)
                 .isAssignableFrom(CandidatoConsultaJpaAdapter.class);
     }
 }

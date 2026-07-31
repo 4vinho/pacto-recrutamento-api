@@ -1,11 +1,11 @@
 package br.com.pacto.recrutamento.app.serviceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.vaga.*;
-import br.com.pacto.recrutamento.app.ports.vaga.AutorizacaoVaga;
-import br.com.pacto.recrutamento.app.ports.vaga.PerguntaVagaAdapter;
-import br.com.pacto.recrutamento.app.ports.vaga.RequisitoVagaAdapter;
-import br.com.pacto.recrutamento.app.ports.vaga.VagaAdapter;
-import br.com.pacto.recrutamento.app.services.VagaService;
+import br.com.pacto.recrutamento.app.ports.out.vaga.AutorizacaoVagaPort;
+import br.com.pacto.recrutamento.app.ports.out.vaga.PerguntaVagaPort;
+import br.com.pacto.recrutamento.app.ports.out.vaga.RequisitoVagaPort;
+import br.com.pacto.recrutamento.app.ports.out.vaga.VagaPort;
+import br.com.pacto.recrutamento.app.ports.in.vaga.VagaUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
@@ -18,15 +18,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class VagaServiceImpl implements VagaService {
-    private final VagaAdapter vagas;
-    private final PerguntaVagaAdapter perguntas;
-    private final RequisitoVagaAdapter requisitos;
-    private final AutorizacaoVaga autorizacao;
+public class VagaServiceImpl implements VagaUseCase {
+    private final VagaPort vagas;
+    private final PerguntaVagaPort perguntas;
+    private final RequisitoVagaPort requisitos;
+    private final AutorizacaoVagaPort autorizacao;
     private final Clock clock;
 
-    public VagaServiceImpl(VagaAdapter vagas, PerguntaVagaAdapter perguntas,
-                           RequisitoVagaAdapter requisitos, AutorizacaoVaga autorizacao,
+    public VagaServiceImpl(VagaPort vagas, PerguntaVagaPort perguntas,
+                           RequisitoVagaPort requisitos, AutorizacaoVagaPort autorizacao,
                            Clock clock) {
         this.vagas = vagas;
         this.perguntas = perguntas;

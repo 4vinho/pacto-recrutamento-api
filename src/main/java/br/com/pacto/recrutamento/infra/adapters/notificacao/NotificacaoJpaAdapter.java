@@ -2,7 +2,7 @@ package br.com.pacto.recrutamento.infra.adapters.notificacao;
 
 import br.com.pacto.recrutamento.infra.repositorys.notificacao.NotificacaoJpaRepository;
 
-import br.com.pacto.recrutamento.app.ports.notificacao.NotificacaoPort;
+import br.com.pacto.recrutamento.app.ports.out.notificacao.NotificacaoPort;
 import br.com.pacto.recrutamento.core.entities.Notificacao;
 import org.springframework.stereotype.Repository;
 

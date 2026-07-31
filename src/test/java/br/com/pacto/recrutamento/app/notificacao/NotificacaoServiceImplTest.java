@@ -1,7 +1,8 @@
-package br.com.pacto.recrutamento.app.ports.notificacao;
+package br.com.pacto.recrutamento.app.ports.out.notificacao;
 
 import br.com.pacto.recrutamento.app.dtos.notificacao.CandidaturaCriadaDTO;
 import br.com.pacto.recrutamento.app.serviceImpl.NotificacaoServiceImpl;
+import br.com.pacto.recrutamento.app.ports.out.notificacao.model.DestinatariosCandidatura;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Notificacao;
 import br.com.pacto.recrutamento.core.enums.StatusNotificacao;
@@ -41,7 +42,7 @@ class NotificacaoServiceImplTest {
         assertThat(memoria.persistidas.get(1).getUltimoErro()).doesNotContain("RuntimeException");
     }
 
-    private static class Memoria implements DestinatariosCandidaturaPort, NotificacaoPort, CanalNotificacao {
+    private static class Memoria implements DestinatariosCandidaturaPort, NotificacaoPort, CanalNotificacaoPort {
         private final UUID candidaturaId = UUID.randomUUID();
         private final Map<String, Notificacao> dados = new HashMap<>();
         private final List<Notificacao> persistidas = new ArrayList<>();

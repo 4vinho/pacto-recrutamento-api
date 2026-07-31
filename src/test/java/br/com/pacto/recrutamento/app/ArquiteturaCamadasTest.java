@@ -20,16 +20,21 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ArquiteturaCamadasTest {
-    private static final String PACOTE_PORTAS =
-            "br.com.pacto.recrutamento.app.ports.";
+    private static final String PACOTE_PORTAS_ENTRADA =
+            "br.com.pacto.recrutamento.app.ports.in.";
+    private static final String PACOTE_PORTAS_SAIDA =
+            "br.com.pacto.recrutamento.app.ports.out.";
     private static final Path APP =
             Paths.get("src/main/java/br/com/pacto/recrutamento/app");
     private static final Path PORTS =
             Paths.get("src/main/java/br/com/pacto/recrutamento/app/ports");
+    private static final Path PORTS_SAIDA = PORTS.resolve("out");
     private static final Path CORE =
             Paths.get("src/main/java/br/com/pacto/recrutamento/core");
     private static final Path INFRA =
             Paths.get("src/main/java/br/com/pacto/recrutamento/infra");
+    private static final Path WEB =
+            Paths.get("src/main/java/br/com/pacto/recrutamento/web");
 
     @Test
     void appNaoConheceInfraNemFrameworksDeIntegracao() throws IOException {
@@ -43,7 +48,7 @@ class ArquiteturaCamadasTest {
     }
 
     @Test
-    void servicesDependemDeInterfacesDefinidasEmPorts() {
+    void casosDeUsoImplementamPortasDeEntradaEDependemDePortasDeSaida() {
         Class<?>[] services = {
                 CandidatoServiceImpl.class,
                 CandidaturaServiceImpl.class,
@@ -55,23 +60,36 @@ class ArquiteturaCamadasTest {
         };
 
         for (Class<?> service : services) {
+            assertThat(Stream.of(service.getInterfaces())
+                    .map(type -> type.getPackage().getName()))
+                    .allMatch(pacote -> pacote.startsWith(PACOTE_PORTAS_ENTRADA));
+
             assertThat(Stream.of(service.getDeclaredFields())
                     .filter(field -> !Modifier.isStatic(field.getModifiers()))
                     .map(field -> field.getType())
                     .filter(Class::isInterface)
                     .map(type -> type.getPackage().getName()))
-                    .allMatch(pacote -> pacote.startsWith(PACOTE_PORTAS));
+                    .allMatch(pacote -> pacote.startsWith(PACOTE_PORTAS_SAIDA));
         }
     }
 
     @Test
-    void portsDeSaidaSaoNomeadosComoAdapters() throws IOException {
-        try (Stream<Path> arquivos = Files.walk(PORTS)) {
+    void portasDeSaidaPossuemNomesDePortas() throws IOException {
+        try (Stream<Path> arquivos = Files.walk(PORTS_SAIDA)) {
             assertThat(arquivos
                     .filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".java"))
+                    .filter(path -> !path.toString().contains("model"))
                     .map(path -> path.getFileName().toString()))
-                    .noneMatch(nome -> nome.contains("Repository") || nome.contains("Repositorio"));
+                    .allMatch(nome -> nome.endsWith("Port.java"));
         }
+    }
+
+    @Test
+    void webConheceApenasPortasDeEntrada() throws IOException {
+        assertThat(fontes(WEB))
+                .allSatisfy(fonte -> assertThat(fonte)
+                        .doesNotContain(PACOTE_PORTAS_SAIDA));
     }
 
     @Test

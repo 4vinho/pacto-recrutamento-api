@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.adapters.curriculo;
 
-import br.com.pacto.recrutamento.app.ports.curriculo.CandidatoConsulta;
+import br.com.pacto.recrutamento.app.ports.out.curriculo.CandidatoConsultaPort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class CandidatoConsultaJpaAdapter implements CandidatoConsulta {
+public class CandidatoConsultaJpaAdapter implements CandidatoConsultaPort {
     private final EntityManager entityManager;
 
     public CandidatoConsultaJpaAdapter(EntityManager entityManager) {

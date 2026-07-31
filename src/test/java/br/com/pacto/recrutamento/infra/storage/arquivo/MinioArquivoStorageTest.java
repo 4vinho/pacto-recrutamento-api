@@ -2,7 +2,7 @@ package br.com.pacto.recrutamento.infra.storage.arquivo;
 
 import br.com.pacto.recrutamento.infra.configurations.arquivo.MinioProperties;
 
-import br.com.pacto.recrutamento.app.ports.curriculo.ArquivoStorage;
+import br.com.pacto.recrutamento.app.ports.out.curriculo.ArquivoStoragePort;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 class MinioArquivoStorageTest {
     private final MinioClient client = mock(MinioClient.class);
-    private final ArquivoStorage storage =
+    private final ArquivoStoragePort storage =
             new MinioArquivoStorage(client, new MinioProperties("curriculos"));
 
     @Test

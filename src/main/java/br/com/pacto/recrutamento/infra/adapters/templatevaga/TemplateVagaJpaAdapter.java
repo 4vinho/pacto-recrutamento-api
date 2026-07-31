@@ -2,7 +2,7 @@ package br.com.pacto.recrutamento.infra.adapters.templatevaga;
 
 import br.com.pacto.recrutamento.infra.repositorys.templatevaga.TemplateVagaJpaRepository;
 
-import br.com.pacto.recrutamento.app.ports.templatevaga.TemplateVagaAdapter;
+import br.com.pacto.recrutamento.app.ports.out.templatevaga.TemplateVagaPort;
 import br.com.pacto.recrutamento.core.entities.TemplateVaga;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-class TemplateVagaJpaAdapter implements TemplateVagaAdapter {
+class TemplateVagaJpaAdapter implements TemplateVagaPort {
     private final TemplateVagaJpaRepository repository;
 
     TemplateVagaJpaAdapter(TemplateVagaJpaRepository repository) {

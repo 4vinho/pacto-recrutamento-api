@@ -2,7 +2,7 @@ package br.com.pacto.recrutamento.infra.adapters.usuario;
 
 import br.com.pacto.recrutamento.infra.repositorys.usuario.PapelJpaRepository;
 
-import br.com.pacto.recrutamento.app.ports.usuario.PapelPort;
+import br.com.pacto.recrutamento.app.ports.out.usuario.PapelPort;
 import br.com.pacto.recrutamento.core.entities.Papel;
 import br.com.pacto.recrutamento.core.enums.NomePapel;
 import org.springframework.stereotype.Component;

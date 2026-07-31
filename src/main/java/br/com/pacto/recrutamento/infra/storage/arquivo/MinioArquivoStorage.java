@@ -2,7 +2,7 @@ package br.com.pacto.recrutamento.infra.storage.arquivo;
 
 import br.com.pacto.recrutamento.infra.configurations.arquivo.MinioProperties;
 
-import br.com.pacto.recrutamento.app.ports.curriculo.ArquivoStorage;
+import br.com.pacto.recrutamento.app.ports.out.curriculo.ArquivoStoragePort;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.Http.Method;
 import io.minio.MinioClient;
@@ -15,7 +15,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @Component
-public class MinioArquivoStorage implements ArquivoStorage {
+public class MinioArquivoStorage implements ArquivoStoragePort {
     private final MinioClient client;
     private final String bucket;
 

@@ -1,7 +1,7 @@
 package br.com.pacto.recrutamento.web;
 
 import br.com.pacto.recrutamento.app.dtos.candidato.*;
-import br.com.pacto.recrutamento.app.services.CandidatoService;
+import br.com.pacto.recrutamento.app.ports.in.candidato.CandidatoUseCase;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +16,9 @@ import java.time.LocalDate;
 @RequestMapping("/candidatos")
 @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTH)
 public class CandidatoController {
-    private final CandidatoService service;
+    private final CandidatoUseCase service;
 
-    public CandidatoController(CandidatoService service) {
+    public CandidatoController(CandidatoUseCase service) {
         this.service = service;
     }
 

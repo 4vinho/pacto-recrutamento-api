@@ -1,7 +1,7 @@
 package br.com.pacto.recrutamento.web;
 
 import br.com.pacto.recrutamento.app.dtos.usuario.*;
-import br.com.pacto.recrutamento.app.services.UsuarioService;
+import br.com.pacto.recrutamento.app.ports.in.usuario.UsuarioUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -14,9 +14,9 @@ import javax.validation.constraints.NotBlank;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private final UsuarioService service;
+    private final UsuarioUseCase service;
 
-    public AuthController(UsuarioService service) {
+    public AuthController(UsuarioUseCase service) {
         this.service = service;
     }
 

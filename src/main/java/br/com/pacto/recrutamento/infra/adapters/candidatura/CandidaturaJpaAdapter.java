@@ -4,7 +4,7 @@ import br.com.pacto.recrutamento.infra.repositorys.candidatura.RespostaCandidatu
 
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.CandidaturaJpaRepository;
 
-import br.com.pacto.recrutamento.app.ports.candidatura.CandidaturaAdapter;
+import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class CandidaturaJpaAdapter implements CandidaturaAdapter {
+public class CandidaturaJpaAdapter implements CandidaturaPort {
     private final CandidaturaJpaRepository candidaturas;
     private final RespostaCandidaturaJpaRepository respostas;
 

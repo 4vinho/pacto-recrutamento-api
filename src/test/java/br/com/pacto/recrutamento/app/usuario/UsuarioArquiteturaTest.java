@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.ports.usuario;
+package br.com.pacto.recrutamento.app.ports.out.usuario;
 
 import br.com.pacto.recrutamento.app.serviceImpl.UsuarioServiceImpl;
 import br.com.pacto.recrutamento.infra.security.usuario.BCryptCodificadorSenha;
@@ -14,12 +14,12 @@ class UsuarioArquiteturaTest {
     @Test
     void casoDeUsoEPortasDeUsuarioPermanecemNaCamadaAppDaFuncionalidade() {
         assertThat(UsuarioServiceImpl.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.serviceImpl");
-        assertThat(UsuarioPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.usuario");
-        assertThat(PapelPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.usuario");
-        assertThat(RefreshTokenPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.usuario");
-        assertThat(CodificadorSenha.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.usuario");
-        assertThat(GeradorToken.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.usuario");
-        assertThat(RecuperacaoSenhaPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.usuario");
+        assertThat(UsuarioPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.out.usuario");
+        assertThat(PapelPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.out.usuario");
+        assertThat(RefreshTokenPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.out.usuario");
+        assertThat(CodificadorSenhaPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.out.usuario");
+        assertThat(GeradorTokenPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.out.usuario");
+        assertThat(RecuperacaoSenhaPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.out.usuario");
     }
 
     @Test

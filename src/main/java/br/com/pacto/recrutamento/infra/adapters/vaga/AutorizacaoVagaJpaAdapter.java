@@ -2,7 +2,7 @@ package br.com.pacto.recrutamento.infra.adapters.vaga;
 
 import br.com.pacto.recrutamento.infra.repositorys.vaga.AutorizacaoVagaJpaRepository;
 
-import br.com.pacto.recrutamento.app.ports.vaga.AutorizacaoVaga;
+import br.com.pacto.recrutamento.app.ports.out.vaga.AutorizacaoVagaPort;
 import br.com.pacto.recrutamento.core.enums.NomePapel;
 
 import java.util.Collection;
@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-public class AutorizacaoVagaJpaAdapter implements AutorizacaoVaga {
+public class AutorizacaoVagaJpaAdapter implements AutorizacaoVagaPort {
     private final AutorizacaoVagaJpaRepository repository;
     private final Collection<NomePapel> papeisPermitidos;
 

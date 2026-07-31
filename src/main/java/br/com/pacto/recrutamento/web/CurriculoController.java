@@ -1,7 +1,7 @@
 package br.com.pacto.recrutamento.web;
 
 import br.com.pacto.recrutamento.app.dtos.curriculo.*;
-import br.com.pacto.recrutamento.app.services.CurriculoService;
+import br.com.pacto.recrutamento.app.ports.in.curriculo.CurriculoUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +17,9 @@ import java.util.UUID;
 @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTH)
 public class CurriculoController {
     private static final long TAMANHO_MAXIMO = 5L * 1024L * 1024L;
-    private final CurriculoService service;
+    private final CurriculoUseCase service;
 
-    public CurriculoController(CurriculoService service) {
+    public CurriculoController(CurriculoUseCase service) {
         this.service = service;
     }
 

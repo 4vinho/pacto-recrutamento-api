@@ -2,8 +2,8 @@ package br.com.pacto.recrutamento.app.serviceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.templatevaga.*;
 import br.com.pacto.recrutamento.app.dtos.vaga.VagaDTO;
-import br.com.pacto.recrutamento.app.ports.templatevaga.*;
-import br.com.pacto.recrutamento.app.services.TemplateVagaService;
+import br.com.pacto.recrutamento.app.ports.out.templatevaga.*;
+import br.com.pacto.recrutamento.app.ports.in.templatevaga.TemplateVagaUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.*;
 import org.springframework.stereotype.Service;
@@ -15,23 +15,23 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class TemplateVagaServiceImpl implements TemplateVagaService {
-    private final TemplateVagaAdapter templates;
-    private final PerguntaTemplateVagaAdapter perguntas;
-    private final RequisitoTemplateVagaAdapter requisitos;
-    private final VagaTemplateAdapter vagas;
-    private final PerguntaVagaTemplateAdapter perguntasVaga;
-    private final RequisitoVagaTemplateAdapter requisitosVaga;
-    private final AutorizacaoTemplateVaga autorizacao;
+public class TemplateVagaServiceImpl implements TemplateVagaUseCase {
+    private final TemplateVagaPort templates;
+    private final PerguntaTemplateVagaPort perguntas;
+    private final RequisitoTemplateVagaPort requisitos;
+    private final VagaTemplatePort vagas;
+    private final PerguntaVagaTemplatePort perguntasVaga;
+    private final RequisitoVagaTemplatePort requisitosVaga;
+    private final AutorizacaoTemplateVagaPort autorizacao;
     private final Clock clock;
 
-    public TemplateVagaServiceImpl(TemplateVagaAdapter templates,
-                                   PerguntaTemplateVagaAdapter perguntas,
-                                   RequisitoTemplateVagaAdapter requisitos,
-                                   VagaTemplateAdapter vagas,
-                                   PerguntaVagaTemplateAdapter perguntasVaga,
-                                   RequisitoVagaTemplateAdapter requisitosVaga,
-                                   AutorizacaoTemplateVaga autorizacao,
+    public TemplateVagaServiceImpl(TemplateVagaPort templates,
+                                   PerguntaTemplateVagaPort perguntas,
+                                   RequisitoTemplateVagaPort requisitos,
+                                   VagaTemplatePort vagas,
+                                   PerguntaVagaTemplatePort perguntasVaga,
+                                   RequisitoVagaTemplatePort requisitosVaga,
+                                   AutorizacaoTemplateVagaPort autorizacao,
                                    Clock clock) {
         this.templates = templates;
         this.perguntas = perguntas;

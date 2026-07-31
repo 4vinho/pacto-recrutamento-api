@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.ports.vaga;
+package br.com.pacto.recrutamento.app.ports.out.vaga;
 
 import br.com.pacto.recrutamento.app.dtos.vaga.*;
 import br.com.pacto.recrutamento.app.serviceImpl.VagaServiceImpl;
@@ -177,7 +177,7 @@ class VagaServiceImplTest {
         return requisito;
     }
 
-    private static final class MemoriaVagas implements VagaAdapter {
+    private static final class MemoriaVagas implements VagaPort {
         private final Map<UUID, Vaga> dados = new HashMap<>();
 
         public Optional<Vaga> buscarAtivaPorId(UUID id) {
@@ -190,7 +190,7 @@ class VagaServiceImplTest {
         }
     }
 
-    private static final class MemoriaPerguntas implements PerguntaVagaAdapter {
+    private static final class MemoriaPerguntas implements PerguntaVagaPort {
         private final Map<UUID, PerguntaVaga> dados = new HashMap<>();
 
         public Optional<PerguntaVaga> buscarAtivaPorId(UUID id) {
@@ -204,7 +204,7 @@ class VagaServiceImplTest {
         }
     }
 
-    private static final class MemoriaRequisitos implements RequisitoVagaAdapter {
+    private static final class MemoriaRequisitos implements RequisitoVagaPort {
         private final Map<UUID, RequisitoVaga> dados = new HashMap<>();
 
         public Optional<RequisitoVaga> buscarAtivoPorId(UUID id) {

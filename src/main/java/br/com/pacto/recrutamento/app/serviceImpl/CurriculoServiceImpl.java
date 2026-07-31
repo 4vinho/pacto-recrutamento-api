@@ -1,10 +1,10 @@
 package br.com.pacto.recrutamento.app.serviceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.curriculo.*;
-import br.com.pacto.recrutamento.app.ports.curriculo.ArquivoStorage;
-import br.com.pacto.recrutamento.app.ports.curriculo.CandidatoConsulta;
-import br.com.pacto.recrutamento.app.ports.curriculo.CurriculoAdapter;
-import br.com.pacto.recrutamento.app.services.CurriculoService;
+import br.com.pacto.recrutamento.app.ports.out.curriculo.ArquivoStoragePort;
+import br.com.pacto.recrutamento.app.ports.out.curriculo.CandidatoConsultaPort;
+import br.com.pacto.recrutamento.app.ports.out.curriculo.CurriculoPort;
+import br.com.pacto.recrutamento.app.ports.in.curriculo.CurriculoUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Curriculo;
 import org.slf4j.Logger;
@@ -20,19 +20,19 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class CurriculoServiceImpl implements CurriculoService {
+public class CurriculoServiceImpl implements CurriculoUseCase {
     private static final Logger LOGGER = LoggerFactory.getLogger(CurriculoServiceImpl.class);
     private static final int TAMANHO_MAXIMO_BYTES = 5 * 1024 * 1024;
     private static final Duration DURACAO_URL = Duration.ofMinutes(5);
     private static final String PDF = "application/pdf";
 
-    private final CurriculoAdapter repositorio;
-    private final ArquivoStorage storage;
-    private final CandidatoConsulta candidatos;
+    private final CurriculoPort repositorio;
+    private final ArquivoStoragePort storage;
+    private final CandidatoConsultaPort candidatos;
     private final Clock clock;
 
-    public CurriculoServiceImpl(CurriculoAdapter repositorio, ArquivoStorage storage,
-                                CandidatoConsulta candidatos, Clock clock) {
+    public CurriculoServiceImpl(CurriculoPort repositorio, ArquivoStoragePort storage,
+                                CandidatoConsultaPort candidatos, Clock clock) {
         this.repositorio = repositorio;
         this.storage = storage;
         this.candidatos = candidatos;

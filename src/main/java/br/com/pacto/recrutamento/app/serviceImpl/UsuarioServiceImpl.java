@@ -1,8 +1,8 @@
 package br.com.pacto.recrutamento.app.serviceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.usuario.*;
-import br.com.pacto.recrutamento.app.ports.usuario.*;
-import br.com.pacto.recrutamento.app.services.UsuarioService;
+import br.com.pacto.recrutamento.app.ports.out.usuario.*;
+import br.com.pacto.recrutamento.app.ports.in.usuario.UsuarioUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Papel;
 import br.com.pacto.recrutamento.core.entities.RefreshToken;
@@ -17,20 +17,20 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UsuarioServiceImpl implements UsuarioService {
+public class UsuarioServiceImpl implements UsuarioUseCase {
     private static final long MINUTOS_ACCESS_TOKEN = 15;
     private static final long DIAS_REFRESH_TOKEN = 7;
     private static final long MINUTOS_RECUPERACAO_SENHA = 30;
     private final UsuarioPort usuarios;
     private final PapelPort papeis;
     private final RefreshTokenPort refreshTokens;
-    private final CodificadorSenha senhas;
-    private final GeradorToken tokens;
+    private final CodificadorSenhaPort senhas;
+    private final GeradorTokenPort tokens;
     private final RecuperacaoSenhaPort recuperacoes;
     private final Clock relogio;
 
     public UsuarioServiceImpl(UsuarioPort usuarios, PapelPort papeis, RefreshTokenPort refreshTokens,
-                              CodificadorSenha senhas, GeradorToken tokens,
+                              CodificadorSenhaPort senhas, GeradorTokenPort tokens,
                               RecuperacaoSenhaPort recuperacoes, Clock relogio) {
         this.usuarios = usuarios;
         this.papeis = papeis;

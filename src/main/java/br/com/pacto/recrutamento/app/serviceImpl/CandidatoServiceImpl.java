@@ -1,9 +1,9 @@
 package br.com.pacto.recrutamento.app.serviceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.candidato.*;
-import br.com.pacto.recrutamento.app.ports.candidato.CandidatoAdapter;
-import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
-import br.com.pacto.recrutamento.app.services.CandidatoService;
+import br.com.pacto.recrutamento.app.ports.out.candidato.CandidatoPort;
+import br.com.pacto.recrutamento.app.ports.out.candidato.model.CandidaturaDoCandidato;
+import br.com.pacto.recrutamento.app.ports.in.candidato.CandidatoUseCase;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CandidatoServiceImpl implements CandidatoService {
-    private final CandidatoAdapter candidatoRepository;
+public class CandidatoServiceImpl implements CandidatoUseCase {
+    private final CandidatoPort candidatoRepository;
 
-    public CandidatoServiceImpl(CandidatoAdapter candidatoRepository) {
+    public CandidatoServiceImpl(CandidatoPort candidatoRepository) {
         this.candidatoRepository = candidatoRepository;
     }
 

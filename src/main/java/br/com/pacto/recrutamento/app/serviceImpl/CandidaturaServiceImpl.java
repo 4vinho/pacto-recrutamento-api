@@ -1,9 +1,9 @@
 package br.com.pacto.recrutamento.app.serviceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.candidatura.*;
-import br.com.pacto.recrutamento.app.ports.candidato.CandidatoAdapter;
-import br.com.pacto.recrutamento.app.ports.candidatura.*;
-import br.com.pacto.recrutamento.app.services.CandidaturaService;
+import br.com.pacto.recrutamento.app.ports.out.candidato.CandidatoPort;
+import br.com.pacto.recrutamento.app.ports.out.candidatura.*;
+import br.com.pacto.recrutamento.app.ports.in.candidatura.CandidaturaUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.*;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
@@ -13,20 +13,20 @@ import java.time.OffsetDateTime;
 import java.util.*;
 
 @Service
-public class CandidaturaServiceImpl implements CandidaturaService {
-    private final CandidatoAdapter candidatos;
-    private final CandidaturaAdapter candidaturas;
-    private final VagaCandidaturaAdapter vagas;
-    private final PerguntaCandidaturaAdapter perguntas;
-    private final AutorizacaoResponsavelCandidatura autorizacao;
-    private final EventosCandidatura eventos;
+public class CandidaturaServiceImpl implements CandidaturaUseCase {
+    private final CandidatoPort candidatos;
+    private final CandidaturaPort candidaturas;
+    private final VagaCandidaturaPort vagas;
+    private final PerguntaCandidaturaPort perguntas;
+    private final AutorizacaoResponsavelCandidaturaPort autorizacao;
+    private final EventosCandidaturaPort eventos;
 
-    public CandidaturaServiceImpl(CandidatoAdapter candidatos,
-                                  CandidaturaAdapter candidaturas,
-                                  VagaCandidaturaAdapter vagas,
-                                  PerguntaCandidaturaAdapter perguntas,
-                                  AutorizacaoResponsavelCandidatura autorizacao,
-                                  EventosCandidatura eventos) {
+    public CandidaturaServiceImpl(CandidatoPort candidatos,
+                                  CandidaturaPort candidaturas,
+                                  VagaCandidaturaPort vagas,
+                                  PerguntaCandidaturaPort perguntas,
+                                  AutorizacaoResponsavelCandidaturaPort autorizacao,
+                                  EventosCandidaturaPort eventos) {
         this.candidatos = candidatos;
         this.candidaturas = candidaturas;
         this.vagas = vagas;
@@ -57,7 +57,7 @@ public class CandidaturaServiceImpl implements CandidaturaService {
         Candidatura candidatura = new Candidatura(candidato.getId(), vaga.getId());
         try {
             candidaturas.salvar(candidatura);
-        } catch (CandidaturaAdapter.CandidaturaDuplicadaException ex) {
+        } catch (CandidaturaPort.CandidaturaDuplicadaException ex) {
             return erro(409, "Candidato ja possui candidatura para esta vaga");
         }
         publicarCriacao(candidatura);
@@ -86,7 +86,7 @@ public class CandidaturaServiceImpl implements CandidaturaService {
         }
         try {
             candidaturas.salvarRespostasAtomicamente(lote);
-        } catch (CandidaturaAdapter.RespostasDuplicadasException ex) {
+        } catch (CandidaturaPort.RespostasDuplicadasException ex) {
             return erro(409, "Uma ou mais perguntas ja foram respondidas");
         }
         return new TypedResponse<>(200, "Respostas registradas", paraDto(candidatura));

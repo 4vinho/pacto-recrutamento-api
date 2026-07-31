@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.ports.notificacao;
+package br.com.pacto.recrutamento.app.ports.out.notificacao;
 
 import br.com.pacto.recrutamento.app.serviceImpl.NotificacaoServiceImpl;
 import br.com.pacto.recrutamento.core.entities.Notificacao;
