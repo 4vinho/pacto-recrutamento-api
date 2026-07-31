@@ -22,6 +22,7 @@ import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
 import br.com.pacto.recrutamento.core.entities.Vaga;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
+import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+@Service
 public class CandidaturaServiceImpl implements CandidaturaService {
     private final CandidatoRepository candidatos;
     private final CandidaturaRepositorio candidaturas;

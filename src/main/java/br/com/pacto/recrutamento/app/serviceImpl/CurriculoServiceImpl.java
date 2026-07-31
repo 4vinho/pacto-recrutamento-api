@@ -3,8 +3,6 @@ package br.com.pacto.recrutamento.app.serviceImpl;
 import br.com.pacto.recrutamento.app.ports.curriculo.ArquivoStorage;
 import br.com.pacto.recrutamento.app.ports.curriculo.CandidatoConsulta;
 import br.com.pacto.recrutamento.app.ports.curriculo.CurriculoRepositorio;
-import br.com.pacto.recrutamento.app.ports.curriculo.RemocaoCurriculoPendente;
-
 import br.com.pacto.recrutamento.app.dtos.curriculo.CurriculoDTO;
 import br.com.pacto.recrutamento.app.dtos.curriculo.EnviarCurriculoDTO;
 import br.com.pacto.recrutamento.app.dtos.curriculo.GerarUrlTemporariaCurriculoDTO;
@@ -13,6 +11,9 @@ import br.com.pacto.recrutamento.app.dtos.curriculo.UrlTemporariaCurriculoDTO;
 import br.com.pacto.recrutamento.app.services.CurriculoService;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Curriculo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -23,7 +24,9 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class CurriculoServiceImpl implements CurriculoService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CurriculoServiceImpl.class);
     private static final int TAMANHO_MAXIMO_BYTES = 5 * 1024 * 1024;
     private static final Duration DURACAO_URL = Duration.ofMinutes(5);
     private static final String PDF = "application/pdf";
@@ -31,16 +34,13 @@ public class CurriculoServiceImpl implements CurriculoService {
     private final CurriculoRepositorio repositorio;
     private final ArquivoStorage storage;
     private final CandidatoConsulta candidatos;
-    private final RemocaoCurriculoPendente remocoesPendentes;
     private final Clock clock;
 
     public CurriculoServiceImpl(CurriculoRepositorio repositorio, ArquivoStorage storage,
-                                CandidatoConsulta candidatos,
-                                RemocaoCurriculoPendente remocoesPendentes, Clock clock) {
+                                CandidatoConsulta candidatos, Clock clock) {
         this.repositorio = repositorio;
         this.storage = storage;
         this.candidatos = candidatos;
-        this.remocoesPendentes = remocoesPendentes;
         this.clock = clock;
     }
 
@@ -114,12 +114,16 @@ public class CurriculoServiceImpl implements CurriculoService {
 
     private void compensar(String storageKey) {
         try { storage.remover(storageKey); }
-        catch (RuntimeException e) { remocoesPendentes.registrar(storageKey, e.getMessage()); }
+        catch (RuntimeException e) {
+            LOGGER.error("Não foi possível remover o arquivo {} durante a compensação", storageKey, e);
+        }
     }
 
     private void removerAnterior(String storageKey) {
         try { storage.remover(storageKey); }
-        catch (RuntimeException e) { remocoesPendentes.registrar(storageKey, e.getMessage()); }
+        catch (RuntimeException e) {
+            LOGGER.error("Não foi possível remover o arquivo anterior {}", storageKey, e);
+        }
     }
 
     private OffsetDateTime agora() { return OffsetDateTime.now(clock); }

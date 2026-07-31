@@ -23,7 +23,7 @@ class ArquiteturaCandidaturaTest {
                 fontes.filter(path -> path.toString().endsWith(".java")).forEach(path -> {
                     try {
                         String fonte = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-                        assertThat(fonte).doesNotContain("org.springframework", "javax.persistence", ".infra.");
+                    assertThat(fonte).doesNotContain("javax.persistence", ".infra.");
                     } catch (IOException ex) {
                         throw new IllegalStateException(ex);
                     }

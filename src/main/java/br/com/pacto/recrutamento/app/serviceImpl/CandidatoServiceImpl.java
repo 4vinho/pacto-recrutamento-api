@@ -13,11 +13,13 @@ import br.com.pacto.recrutamento.app.dtos.candidato.ListarMinhasCandidaturasDTO;
 import br.com.pacto.recrutamento.app.services.CandidatoService;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class CandidatoServiceImpl implements CandidatoService {
     private final CandidatoRepository candidatoRepository;
 

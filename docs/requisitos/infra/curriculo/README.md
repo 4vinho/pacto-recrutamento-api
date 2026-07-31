@@ -6,4 +6,4 @@
 - Validar assinatura real do PDF, não apenas extensão ou `Content-Type`.
 - Gerar URL pré-assinada de curta duração.
 - PostgreSQL armazena apenas metadados e índice único parcial do currículo ativo.
-- Rotina reprocessa remoções que falharam.
+- Falhas na remoção são registradas no log e não são reprocessadas.

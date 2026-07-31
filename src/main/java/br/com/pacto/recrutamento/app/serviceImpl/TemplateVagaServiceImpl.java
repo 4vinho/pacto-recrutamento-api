@@ -26,12 +26,15 @@ import br.com.pacto.recrutamento.core.entities.RequisitoTemplateVaga;
 import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
 import br.com.pacto.recrutamento.core.entities.TemplateVaga;
 import br.com.pacto.recrutamento.core.entities.Vaga;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class TemplateVagaServiceImpl implements TemplateVagaService {
     private final TemplateVagaRepositorio templates;
     private final PerguntaTemplateVagaRepositorio perguntas;
@@ -163,6 +166,7 @@ public class TemplateVagaServiceImpl implements TemplateVagaService {
     }
 
     @Override
+    @Transactional
     public TypedResponse<VagaDTO> criarVagaAPartirDoTemplate(CriarVagaAPartirDoTemplateDTO command) {
         if (command == null || command.getTemplateId() == null) return erro(400, "Dados do template invalidos");
         if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, "Acesso nao autorizado");

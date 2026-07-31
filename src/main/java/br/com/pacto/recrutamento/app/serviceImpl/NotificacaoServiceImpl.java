@@ -11,10 +11,12 @@ import br.com.pacto.recrutamento.app.services.NotificacaoService;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Notificacao;
 import br.com.pacto.recrutamento.core.enums.TipoNotificacao;
+import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class NotificacaoServiceImpl implements NotificacaoService {
     private final DestinatariosCandidaturaPort destinatarios;
     private final NotificacaoPort notificacoes;

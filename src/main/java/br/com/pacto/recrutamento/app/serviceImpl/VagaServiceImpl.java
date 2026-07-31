@@ -20,12 +20,14 @@ import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
 import br.com.pacto.recrutamento.core.entities.Vaga;
+import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class VagaServiceImpl implements VagaService {
     private final VagaRepositorio vagas;
     private final PerguntaVagaRepositorio perguntas;

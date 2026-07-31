@@ -32,10 +32,9 @@ class CurriculoServiceImplTest {
     private final CurriculoRepositorio repositorio = mock(CurriculoRepositorio.class);
     private final ArquivoStorage storage = mock(ArquivoStorage.class);
     private final CandidatoConsulta candidatos = mock(CandidatoConsulta.class);
-    private final RemocaoCurriculoPendente remocoesPendentes = mock(RemocaoCurriculoPendente.class);
     private final Clock clock = Clock.fixed(Instant.parse("2026-07-30T12:00:00Z"), ZoneOffset.UTC);
     private final CurriculoServiceImpl service = new CurriculoServiceImpl(
-            repositorio, storage, candidatos, remocoesPendentes, clock);
+            repositorio, storage, candidatos, clock);
 
     @Test
     void enviarRecusaArquivoSemAssinaturaPdfReal() {
@@ -85,6 +84,19 @@ class CurriculoServiceImplTest {
     }
 
     @Test
+    void enviarRetornaErroDoBancoQuandoCompensacaoTambemFalha() {
+        when(candidatos.buscarIdPorUsuario(USUARIO)).thenReturn(Optional.of(CANDIDATO));
+        when(repositorio.buscarAtivoPorCandidato(CANDIDATO)).thenReturn(Optional.<Curriculo>empty());
+        doThrow(new RuntimeException("banco indisponivel")).when(repositorio).salvar(any(Curriculo.class));
+        doThrow(new RuntimeException("minio indisponivel")).when(storage).remover(any(String.class));
+
+        assertThat(service.enviarCurriculo(new EnviarCurriculoDTO(
+                USUARIO, "curriculo.pdf", "application/pdf", PDF)).getStatusCode()).isEqualTo(500);
+
+        verify(storage).remover(any(String.class));
+    }
+
+    @Test
     void substituirMantemAnteriorAtivoQuandoNovoArquivoNaoPodeSerSalvo() {
         Curriculo anterior = curriculo(CANDIDATO);
         when(candidatos.buscarIdPorUsuario(USUARIO)).thenReturn(Optional.of(CANDIDATO));
@@ -99,7 +111,7 @@ class CurriculoServiceImplTest {
     }
 
     @Test
-    void substituirRegistraRemocaoQuandoObjetoAntigoNaoPodeSerRemovido() {
+    void substituirMantemSucessoQuandoObjetoAntigoNaoPodeSerRemovido() {
         Curriculo anterior = curriculo(CANDIDATO);
         when(candidatos.buscarIdPorUsuario(USUARIO)).thenReturn(Optional.of(CANDIDATO));
         when(repositorio.buscarAtivoPorCandidato(CANDIDATO)).thenReturn(Optional.of(anterior));
@@ -109,7 +121,6 @@ class CurriculoServiceImplTest {
                 USUARIO, "novo.pdf", "application/pdf", PDF)).getStatusCode()).isEqualTo(200);
 
         verify(repositorio).substituir(eq(anterior), any(Curriculo.class), any(OffsetDateTime.class));
-        verify(remocoesPendentes).registrar(anterior.getStorageKey(), "falha remocao");
     }
 
     @Test

@@ -10,5 +10,5 @@
 
 - Banco e object storage não compartilham transação; falha ao persistir metadados
   exige remover o novo objeto.
-- Falha ao remover objeto antigo deve ser registrada para reprocessamento.
+- Falha ao remover objeto antigo deve ser registrada no log.
 - URL proposta expira em cinco minutos e nunca é pública permanentemente.

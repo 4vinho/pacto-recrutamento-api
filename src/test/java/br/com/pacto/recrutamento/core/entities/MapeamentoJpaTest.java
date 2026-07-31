@@ -33,9 +33,9 @@ class MapeamentoJpaTest {
 
         assertThat(entidades).containsExactlyInAnyOrder(
                 "Usuario", "Papel", "RefreshToken", "TokenRecuperacaoSenha",
-                "CandidatoJpaEntity", "Curriculo", "VagaJpaEntity",
+                "Candidato", "Curriculo", "VagaJpaEntity",
                 "PerguntaVagaJpaEntity", "RequisitoVagaJpaEntity",
-                "RemocaoArquivoPendente", CandidaturaJpaEntity.class.getSimpleName(),
+                CandidaturaJpaEntity.class.getSimpleName(),
                 RespostaCandidaturaJpaEntity.class.getSimpleName(), "NotificacaoJpaEntity", "TemplateVagaJpaEntity",
                 "PerguntaTemplateVagaJpaEntity", "RequisitoTemplateVagaJpaEntity");
     }

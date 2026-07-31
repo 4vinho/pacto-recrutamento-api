@@ -14,12 +14,14 @@ import br.com.pacto.recrutamento.core.entities.Papel;
 import br.com.pacto.recrutamento.core.entities.RefreshToken;
 import br.com.pacto.recrutamento.core.entities.Usuario;
 import br.com.pacto.recrutamento.core.enums.NomePapel;
+import org.springframework.stereotype.Service;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class UsuarioServiceImpl implements UsuarioService {
     private static final long MINUTOS_ACCESS_TOKEN = 15;
     private static final long DIAS_REFRESH_TOKEN = 7;

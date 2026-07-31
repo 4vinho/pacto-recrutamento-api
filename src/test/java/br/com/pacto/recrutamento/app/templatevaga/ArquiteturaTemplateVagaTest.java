@@ -30,9 +30,8 @@ class ArquiteturaTemplateVagaTest {
     }
 
     @Test
-    void copiaETransacionalNaBordaDeInfraestrutura() throws Exception {
-        Class<?> facade = Class.forName("br.com.pacto.recrutamento.infra.templatevaga.TemplateVagaConfiguration$Transacional");
-        Method metodo = facade.getMethod("criarVagaAPartirDoTemplate",
+    void copiaETransacionalNoServiceDaAplicacao() throws Exception {
+        Method metodo = TemplateVagaServiceImpl.class.getMethod("criarVagaAPartirDoTemplate",
                 br.com.pacto.recrutamento.app.dtos.templatevaga.CriarVagaAPartirDoTemplateDTO.class);
         assertThat(metodo.isAnnotationPresent(org.springframework.transaction.annotation.Transactional.class)).isTrue();
     }

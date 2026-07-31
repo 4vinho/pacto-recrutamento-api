@@ -9,9 +9,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 import java.util.UUID;
 
-interface CandidatoJpaRepository extends JpaRepository<CandidatoJpaEntity, UUID> {
+interface CandidatoJpaRepository extends JpaRepository<br.com.pacto.recrutamento.core.entities.Candidato, UUID> {
     boolean existsByUsuarioId(UUID usuarioId);
-    Optional<CandidatoJpaEntity> findByUsuarioId(UUID usuarioId);
+    Optional<br.com.pacto.recrutamento.core.entities.Candidato> findByUsuarioId(UUID usuarioId);
 
     @Query(value = "SELECT c.id AS candidaturaId, v.id AS vagaId, "
             + "v.titulo AS tituloVaga, c.status AS status, c.criado_em AS criadaEm, "
