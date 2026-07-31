@@ -14,6 +14,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/candidatos/me/curriculo")
+@io.swagger.v3.oas.annotations.security.SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTH)
 public class CurriculoController {
     private static final long TAMANHO_MAXIMO = 5L * 1024L * 1024L;
     private final CurriculoService service;

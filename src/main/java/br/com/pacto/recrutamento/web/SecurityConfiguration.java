@@ -27,6 +27,9 @@ public class SecurityConfiguration {
                         "/auth/refresh",
                         "/auth/recuperacao-senha/solicitacoes",
                         "/auth/recuperacao-senha/confirmacoes",
+                        "/v3/api-docs/**",
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
                         "/actuator/health").permitAll()
                 .anyRequest().authenticated()
                 .and()

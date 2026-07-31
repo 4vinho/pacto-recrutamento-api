@@ -14,6 +14,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/candidatos")
+@io.swagger.v3.oas.annotations.security.SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTH)
 public class CandidatoController {
     private final CandidatoService service;
 
