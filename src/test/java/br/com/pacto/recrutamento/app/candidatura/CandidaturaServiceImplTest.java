@@ -9,12 +9,12 @@ import br.com.pacto.recrutamento.app.dtos.candidatura.ConsultarCandidaturaDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.CriarCandidaturaDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.RegistrarRespostasDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.RespostaCandidaturaDTO;
-import br.com.pacto.recrutamento.app.ports.candidato.CandidatoPersistido;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
 import br.com.pacto.recrutamento.app.ports.candidato.PaginaCandidaturas;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
+import br.com.pacto.recrutamento.core.entities.Candidato;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
 import br.com.pacto.recrutamento.core.entities.Vaga;
@@ -211,12 +211,18 @@ class CandidaturaServiceImplTest {
     private String chave(UUID candidato, UUID vaga) { return candidato + ":" + vaga; }
 
     private static final class Candidatos implements CandidatoRepository {
-        private final Map<UUID, CandidatoPersistido> dados = new HashMap<>();
-        private Candidatos(UUID usuarioId, UUID candidatoId) { dados.put(usuarioId, new CandidatoPersistido(candidatoId, usuarioId, LocalDate.now())); }
+        private final Map<UUID, Candidato> dados = new HashMap<>();
+        private Candidatos(UUID usuarioId, UUID candidatoId) {
+            Candidato candidato = new Candidato(usuarioId, LocalDate.now());
+            candidato.setId(candidatoId);
+            dados.put(usuarioId, candidato);
+        }
         public boolean existePorUsuarioId(UUID usuarioId) { return dados.containsKey(usuarioId); }
-        public CandidatoPersistido salvar(UUID usuarioId, LocalDate data) { CandidatoPersistido p = new CandidatoPersistido(UUID.randomUUID(), usuarioId, data); dados.put(usuarioId, p); return p; }
-        public Optional<CandidatoPersistido> buscarPorUsuarioId(UUID usuarioId) { return Optional.ofNullable(dados.get(usuarioId)); }
-        public CandidatoPersistido atualizar(CandidatoPersistido p, LocalDate d) { return p; }
+        public Candidato salvar(Candidato candidato) {
+            dados.put(candidato.getUsuarioId(), candidato);
+            return candidato;
+        }
+        public Optional<Candidato> buscarPorUsuarioId(UUID usuarioId) { return Optional.ofNullable(dados.get(usuarioId)); }
         public PaginaCandidaturas listarCandidaturasDoUsuario(UUID u, int p, int s) { return new PaginaCandidaturas(Collections.<CandidaturaDoCandidato>emptyList(), 0); }
     }
     private final class Candidaturas implements CandidaturaRepositorio {

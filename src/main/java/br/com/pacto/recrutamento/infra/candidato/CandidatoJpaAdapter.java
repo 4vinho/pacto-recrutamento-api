@@ -1,6 +1,5 @@
 package br.com.pacto.recrutamento.infra.candidato;
 
-import br.com.pacto.recrutamento.app.ports.candidato.CandidatoPersistido;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
 import br.com.pacto.recrutamento.app.ports.candidato.PaginaCandidaturas;
@@ -10,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,21 +27,13 @@ public class CandidatoJpaAdapter implements CandidatoRepository {
     }
 
     @Override
-    public CandidatoPersistido salvar(UUID usuarioId, LocalDate dataAdmissao) {
-        return paraAplicacao(repository.save(new Candidato(usuarioId, dataAdmissao)));
+    public Candidato salvar(Candidato candidato) {
+        return repository.save(candidato);
     }
 
     @Override
-    public Optional<CandidatoPersistido> buscarPorUsuarioId(UUID usuarioId) {
-        return repository.findByUsuarioId(usuarioId).map(this::paraAplicacao);
-    }
-
-    @Override
-    public CandidatoPersistido atualizar(CandidatoPersistido candidato, LocalDate dataAdmissao) {
-        Candidato entity = repository.findById(candidato.getId())
-                .orElseThrow(() -> new IllegalStateException("Candidato nao encontrado durante atualizacao"));
-        entity.setDataAdmissao(dataAdmissao);
-        return paraAplicacao(repository.save(entity));
+    public Optional<Candidato> buscarPorUsuarioId(UUID usuarioId) {
+        return repository.findByUsuarioId(usuarioId);
     }
 
     @Override
@@ -54,11 +44,6 @@ public class CandidatoJpaAdapter implements CandidatoRepository {
                 .map(this::paraAplicacao)
                 .collect(Collectors.toList());
         return new PaginaCandidaturas(itens, resultado.getTotalElements());
-    }
-
-    private CandidatoPersistido paraAplicacao(Candidato candidato) {
-        return new CandidatoPersistido(
-                candidato.getId(), candidato.getUsuarioId(), candidato.getDataAdmissao());
     }
 
     private CandidaturaDoCandidato paraAplicacao(CandidaturaPainelProjection projection) {

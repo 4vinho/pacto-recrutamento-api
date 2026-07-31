@@ -13,11 +13,11 @@ import br.com.pacto.recrutamento.app.dtos.candidatura.ConsultarCandidaturaDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.CriarCandidaturaDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.RegistrarRespostasDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.RespostaCandidaturaDTO;
-import br.com.pacto.recrutamento.app.ports.candidato.CandidatoPersistido;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
 import br.com.pacto.recrutamento.app.services.CandidaturaService;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
+import br.com.pacto.recrutamento.core.entities.Candidato;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
 import br.com.pacto.recrutamento.core.entities.Vaga;
@@ -60,7 +60,7 @@ public class CandidaturaServiceImpl implements CandidaturaService {
         if (command == null || command.getUsuarioId() == null || command.getVagaId() == null) {
             return erro(400, "Dados da candidatura invalidos");
         }
-        CandidatoPersistido candidato = candidatos.buscarPorUsuarioId(command.getUsuarioId()).orElse(null);
+        Candidato candidato = candidatos.buscarPorUsuarioId(command.getUsuarioId()).orElse(null);
         if (candidato == null) {
             return erro(403, "Usuario nao possui perfil de candidato");
         }
@@ -191,7 +191,7 @@ public class CandidaturaServiceImpl implements CandidaturaService {
     }
 
     private boolean pertenceAoUsuario(Candidatura candidatura, UUID usuarioId) {
-        Optional<CandidatoPersistido> candidato = candidatos.buscarPorUsuarioId(usuarioId);
+        Optional<Candidato> candidato = candidatos.buscarPorUsuarioId(usuarioId);
         return candidato.isPresent() && candidatura.getCandidatoId().equals(candidato.get().getId());
     }
 

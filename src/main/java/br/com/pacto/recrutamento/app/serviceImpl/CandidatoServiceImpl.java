@@ -1,6 +1,5 @@
 package br.com.pacto.recrutamento.app.serviceImpl;
 
-import br.com.pacto.recrutamento.app.ports.candidato.CandidatoPersistido;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
 import br.com.pacto.recrutamento.app.ports.candidato.PaginaCandidaturas;
@@ -13,6 +12,7 @@ import br.com.pacto.recrutamento.app.dtos.candidato.ListarMinhasCandidaturasDTO;
 import br.com.pacto.recrutamento.app.services.CandidatoService;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.entities.Candidato;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -35,8 +35,8 @@ public class CandidatoServiceImpl implements CandidatoService {
         if (candidatoRepository.existePorUsuarioId(command.getUsuarioId())) {
             return erro(409, "O usuario ja possui perfil de candidato");
         }
-        CandidatoPersistido candidato = candidatoRepository.salvar(
-                command.getUsuarioId(), command.getDataAdmissao());
+        Candidato candidato = candidatoRepository.salvar(
+                new Candidato(command.getUsuarioId(), command.getDataAdmissao()));
         return new TypedResponse<>(201, "Candidato criado", paraDto(candidato));
     }
 
@@ -45,12 +45,13 @@ public class CandidatoServiceImpl implements CandidatoService {
         if (command == null || command.getUsuarioId() == null) {
             return erro(400, "O usuario autenticado e obrigatorio");
         }
-        CandidatoPersistido candidato = candidatoRepository.buscarPorUsuarioId(command.getUsuarioId())
+        Candidato candidato = candidatoRepository.buscarPorUsuarioId(command.getUsuarioId())
                 .orElse(null);
         if (candidato == null) {
             return erro(404, "Perfil de candidato nao encontrado");
         }
-        CandidatoPersistido atualizado = candidatoRepository.atualizar(candidato, command.getDataAdmissao());
+        candidato.setDataAdmissao(command.getDataAdmissao());
+        Candidato atualizado = candidatoRepository.salvar(candidato);
         return new TypedResponse<>(200, "Candidato atualizado", paraDto(atualizado));
     }
 
@@ -88,7 +89,7 @@ public class CandidatoServiceImpl implements CandidatoService {
         return new TypedResponse<>(statusCode, mensagem, null);
     }
 
-    private CandidatoDTO paraDto(CandidatoPersistido candidato) {
+    private CandidatoDTO paraDto(Candidato candidato) {
         return new CandidatoDTO(candidato.getId(), candidato.getUsuarioId(), candidato.getDataAdmissao());
     }
 

@@ -9,6 +9,7 @@ import br.com.pacto.recrutamento.app.dtos.candidato.CriarCandidatoDTO;
 import br.com.pacto.recrutamento.app.dtos.candidato.ListarMinhasCandidaturasDTO;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.entities.Candidato;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +42,7 @@ class CandidatoServiceImplTest {
     @Test
     void naoCriaSegundoPerfilParaMesmoUsuario() {
         UUID usuarioId = UUID.randomUUID();
-        repository.salvar(usuarioId, LocalDate.of(2019, 1, 1));
+        repository.salvar(new Candidato(usuarioId, LocalDate.of(2019, 1, 1)));
 
         TypedResponse<CandidatoDTO> resposta = service.criarCandidato(
                 new CriarCandidatoDTO(usuarioId, LocalDate.of(2020, 2, 3)));
@@ -54,8 +55,10 @@ class CandidatoServiceImplTest {
     void atualizaApenasPerfilAssociadoAoUsuarioInformado() {
         UUID usuarioId = UUID.randomUUID();
         UUID outroUsuarioId = UUID.randomUUID();
-        CandidatoPersistido perfilDoUsuario = repository.salvar(usuarioId, LocalDate.of(2019, 1, 1));
-        CandidatoPersistido perfilDeOutroUsuario = repository.salvar(outroUsuarioId, LocalDate.of(2018, 1, 1));
+        Candidato perfilDoUsuario = repository.salvar(
+                new Candidato(usuarioId, LocalDate.of(2019, 1, 1)));
+        Candidato perfilDeOutroUsuario = repository.salvar(
+                new Candidato(outroUsuarioId, LocalDate.of(2018, 1, 1)));
 
         TypedResponse<CandidatoDTO> resposta = service.atualizarCandidato(
                 new AtualizarCandidatoDTO(usuarioId, LocalDate.of(2022, 4, 5)));
@@ -124,23 +127,17 @@ class CandidatoServiceImplTest {
     }
 
     private static class CandidatoRepositoryFalso implements CandidatoRepository {
-        private final java.util.Map<UUID, CandidatoPersistido> perfis = new java.util.HashMap<>();
+        private final java.util.Map<UUID, Candidato> perfis = new java.util.HashMap<>();
         private UUID ultimoUsuarioConsultado;
         private PaginaCandidaturas pagina = new PaginaCandidaturas(Collections.<CandidaturaDoCandidato>emptyList(), 0);
 
         @Override public boolean existePorUsuarioId(UUID usuarioId) { return perfis.containsKey(usuarioId); }
-        @Override public CandidatoPersistido salvar(UUID usuarioId, LocalDate dataAdmissao) {
-            CandidatoPersistido perfil = new CandidatoPersistido(UUID.randomUUID(), usuarioId, dataAdmissao);
-            perfis.put(usuarioId, perfil);
-            return perfil;
+        @Override public Candidato salvar(Candidato candidato) {
+            perfis.put(candidato.getUsuarioId(), candidato);
+            return candidato;
         }
-        @Override public Optional<CandidatoPersistido> buscarPorUsuarioId(UUID usuarioId) {
+        @Override public Optional<Candidato> buscarPorUsuarioId(UUID usuarioId) {
             return Optional.ofNullable(perfis.get(usuarioId));
-        }
-        @Override public CandidatoPersistido atualizar(CandidatoPersistido perfil, LocalDate dataAdmissao) {
-            CandidatoPersistido atualizado = new CandidatoPersistido(perfil.getId(), perfil.getUsuarioId(), dataAdmissao);
-            perfis.put(perfil.getUsuarioId(), atualizado);
-            return atualizado;
         }
         @Override public PaginaCandidaturas listarCandidaturasDoUsuario(UUID usuarioId, int page, int pageSize) {
             ultimoUsuarioConsultado = usuarioId;

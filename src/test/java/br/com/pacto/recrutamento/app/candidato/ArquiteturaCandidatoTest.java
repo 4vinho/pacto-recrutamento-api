@@ -19,4 +19,10 @@ class ArquiteturaCandidatoTest {
                 .isEqualTo("br.com.pacto.recrutamento.infra.candidato");
         assertThat(Candidato.class).hasAnnotation(Entity.class);
     }
+
+    @Test
+    void repositoryPersisteDiretamenteAEntidadeDoCore() throws NoSuchMethodException {
+        assertThat(CandidatoRepository.class.getMethod("salvar", Candidato.class).getReturnType())
+                .isEqualTo(Candidato.class);
+    }
 }
