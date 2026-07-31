@@ -11,6 +11,7 @@ import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Notificacao;
 import br.com.pacto.recrutamento.core.enums.TipoNotificacao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -28,6 +29,7 @@ public class NotificacaoService implements NotificacaoUseCase {
         this.canal = canal;
     }
 
+    @Transactional
     public TypedResponse<Void> processarCandidaturaCriada(CandidaturaCriadaDTO evento) {
         if (evento == null || evento.getEventoId() == null || evento.getCandidaturaId() == null) {
             return resposta(400);
@@ -42,6 +44,7 @@ public class NotificacaoService implements NotificacaoUseCase {
         return resposta(202);
     }
 
+    @Transactional
     public TypedResponse<Void> processarStatusCandidaturaAlterado(StatusCandidaturaAlteradoDTO evento) {
         if (evento == null || evento.getEventoId() == null
                 || evento.getCandidaturaId() == null || evento.getNovoStatus() == null) {

@@ -10,6 +10,7 @@ import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.*;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -41,6 +42,7 @@ public class CandidaturaService implements CandidaturaUseCase {
     }
 
     @Override
+    @Transactional
     public TypedResponse<CandidaturaDTO> criarCandidatura(CriarCandidaturaDTO command) {
         if (command == null || command.getUsuarioId() == null || command.getVagaId() == null) {
             return erro(400, DADOS_CANDIDATURA_INVALIDOS);
@@ -78,6 +80,7 @@ public class CandidaturaService implements CandidaturaUseCase {
     }
 
     @Override
+    @Transactional
     public TypedResponse<CandidaturaDTO> registrarRespostas(RegistrarRespostasDTO command) {
         if (command == null || command.getUsuarioId() == null || command.getCandidaturaId() == null
                 || command.getRespostas() == null || command.getRespostas().isEmpty()) {
@@ -112,6 +115,7 @@ public class CandidaturaService implements CandidaturaUseCase {
     }
 
     @Override
+    @Transactional
     public TypedResponse<CandidaturaDTO> atualizarStatusCandidatura(AtualizarStatusCandidaturaDTO command) {
         if (command == null || command.getUsuarioSolicitanteId() == null || command.getCandidaturaId() == null
                 || command.getStatus() == null) {
@@ -142,6 +146,7 @@ public class CandidaturaService implements CandidaturaUseCase {
     }
 
     @Override
+    @Transactional
     public TypedResponse<CandidaturaDTO> cancelarCandidatura(CancelarCandidaturaDTO command) {
         if (command == null || command.getUsuarioId() == null || command.getCandidaturaId() == null) {
             return erro(400, DADOS_CANCELAMENTO_INVALIDOS);
@@ -172,6 +177,7 @@ public class CandidaturaService implements CandidaturaUseCase {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public TypedResponse<CandidaturaDTO> consultarCandidatura(ConsultarCandidaturaDTO query) {
         if (query == null || query.getUsuarioSolicitanteId() == null || query.getCandidaturaId() == null) {
             return erro(400, CONSULTA_CANDIDATURA_INVALIDA);

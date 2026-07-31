@@ -95,6 +95,7 @@ public class UsuarioService implements UsuarioUseCase {
     }
 
     @Override
+    @Transactional
     public TypedResponse<Void> encerrarSessao(EncerrarSessaoDTO command) {
         if (command == null || command.getUsuarioId() == null || tokenInvalido(command.getRefreshToken()))
             return resposta(401, REFRESH_TOKEN_INVALIDO, null);
@@ -121,6 +122,7 @@ public class UsuarioService implements UsuarioUseCase {
     }
 
     @Override
+    @Transactional
     public TypedResponse<Void> redefinirSenha(RedefinirSenhaDTO command) {
         if (command == null) return resposta(400, COMANDO_REDEFINICAO_OBRIGATORIO, null);
         if (senhaInvalida(command.getNovaSenha()))
