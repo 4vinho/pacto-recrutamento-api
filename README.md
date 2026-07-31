@@ -30,6 +30,13 @@ Copy-Item .env.example .env
 docker compose up --build
 ```
 
+Durante o desenvolvimento, execute o Compose Watch para reconstruir e recriar a API
+automaticamente quando houver alterações em `src` ou no `pom.xml`:
+
+```shell
+docker compose watch
+```
+
 Serviços:
 
 - API: `http://localhost:8080`
