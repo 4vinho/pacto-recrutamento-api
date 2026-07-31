@@ -1,0 +1,11 @@
+package br.com.pacto.recrutamento.app.vaga;
+
+import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
+
+import java.util.Optional;
+import java.util.UUID;
+
+public interface RequisitoVagaRepositorio {
+    Optional<RequisitoVaga> buscarAtivoPorId(UUID id);
+    RequisitoVaga salvar(RequisitoVaga requisito);
+}
