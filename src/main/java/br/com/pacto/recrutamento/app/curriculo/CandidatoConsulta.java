@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.ports.curriculo;
+package br.com.pacto.recrutamento.app.curriculo;
 
 import java.util.Optional;
 import java.util.UUID;

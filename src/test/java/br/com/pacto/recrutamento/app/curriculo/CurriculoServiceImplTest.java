@@ -1,12 +1,8 @@
-package br.com.pacto.recrutamento.app.serviceImpl;
+package br.com.pacto.recrutamento.app.curriculo;
 
 import br.com.pacto.recrutamento.app.dtos.curriculo.EnviarCurriculoDTO;
 import br.com.pacto.recrutamento.app.dtos.curriculo.GerarUrlTemporariaCurriculoDTO;
 import br.com.pacto.recrutamento.app.dtos.curriculo.SubstituirCurriculoDTO;
-import br.com.pacto.recrutamento.app.ports.curriculo.ArquivoStorage;
-import br.com.pacto.recrutamento.app.ports.curriculo.CandidatoConsulta;
-import br.com.pacto.recrutamento.app.ports.curriculo.CurriculoRepositorio;
-import br.com.pacto.recrutamento.app.ports.curriculo.RemocaoCurriculoPendente;
 import br.com.pacto.recrutamento.core.entities.Curriculo;
 import org.junit.jupiter.api.Test;
 
@@ -111,7 +107,7 @@ class CurriculoServiceImplTest {
                 USUARIO, "novo.pdf", "application/pdf", PDF)).getStatusCode()).isEqualTo(200);
 
         verify(repositorio).substituir(eq(anterior), any(Curriculo.class), any(OffsetDateTime.class));
-        verify(remocoesPendentes).registrar(anterior.getStorageKey());
+        verify(remocoesPendentes).registrar(anterior.getStorageKey(), "falha remocao");
     }
 
     @Test

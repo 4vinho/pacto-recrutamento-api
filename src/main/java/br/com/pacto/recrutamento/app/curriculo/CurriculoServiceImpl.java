@@ -1,14 +1,10 @@
-package br.com.pacto.recrutamento.app.serviceImpl;
+package br.com.pacto.recrutamento.app.curriculo;
 
 import br.com.pacto.recrutamento.app.dtos.curriculo.CurriculoDTO;
 import br.com.pacto.recrutamento.app.dtos.curriculo.EnviarCurriculoDTO;
 import br.com.pacto.recrutamento.app.dtos.curriculo.GerarUrlTemporariaCurriculoDTO;
 import br.com.pacto.recrutamento.app.dtos.curriculo.SubstituirCurriculoDTO;
 import br.com.pacto.recrutamento.app.dtos.curriculo.UrlTemporariaCurriculoDTO;
-import br.com.pacto.recrutamento.app.ports.curriculo.ArquivoStorage;
-import br.com.pacto.recrutamento.app.ports.curriculo.CandidatoConsulta;
-import br.com.pacto.recrutamento.app.ports.curriculo.CurriculoRepositorio;
-import br.com.pacto.recrutamento.app.ports.curriculo.RemocaoCurriculoPendente;
 import br.com.pacto.recrutamento.app.services.CurriculoService;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Curriculo;
@@ -113,12 +109,12 @@ public class CurriculoServiceImpl implements CurriculoService {
 
     private void compensar(String storageKey) {
         try { storage.remover(storageKey); }
-        catch (RuntimeException e) { remocoesPendentes.registrar(storageKey); }
+        catch (RuntimeException e) { remocoesPendentes.registrar(storageKey, e.getMessage()); }
     }
 
     private void removerAnterior(String storageKey) {
         try { storage.remover(storageKey); }
-        catch (RuntimeException e) { remocoesPendentes.registrar(storageKey); }
+        catch (RuntimeException e) { remocoesPendentes.registrar(storageKey, e.getMessage()); }
     }
 
     private OffsetDateTime agora() { return OffsetDateTime.now(clock); }
