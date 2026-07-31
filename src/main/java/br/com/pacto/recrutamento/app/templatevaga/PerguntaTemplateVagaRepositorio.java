@@ -1,0 +1,1 @@
+package br.com.pacto.recrutamento.app.templatevaga; import br.com.pacto.recrutamento.core.entities.PerguntaTemplateVaga; import java.util.*; public interface PerguntaTemplateVagaRepositorio { Optional<PerguntaTemplateVaga> buscarAtivaPorId(UUID id); List<PerguntaTemplateVaga> listarAtivasDoTemplate(UUID templateId); PerguntaTemplateVaga salvar(PerguntaTemplateVaga pergunta); }

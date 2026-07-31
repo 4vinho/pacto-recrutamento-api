@@ -1,43 +1,4 @@
 package br.com.pacto.recrutamento.core.entities;
-
-import br.com.pacto.recrutamento.core.enums.TipoResposta;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
-import java.time.OffsetDateTime;
-import java.util.UUID;
-
-@Entity
-@Table(name = "perguntas_template_vaga")
-public class PerguntaTemplateVaga extends EntidadeAuditavel {
-    @Column(name = "template_vaga_id", nullable = false)
-    private UUID templateVagaId;
-    @Column(name = "enunciado", nullable = false, columnDefinition = "TEXT")
-    private String enunciado;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_resposta", nullable = false, length = 30)
-    private TipoResposta tipoResposta;
-    @Column(name = "obrigatoria", nullable = false)
-    private boolean obrigatoria;
-    @Column(name = "ordem", nullable = false)
-    private int ordem;
-    @Column(name = "excluido_em")
-    private OffsetDateTime excluidoEm;
-
-    public PerguntaTemplateVaga() {}
-    public UUID getTemplateVagaId() { return templateVagaId; }
-    public void setTemplateVagaId(UUID templateVagaId) { this.templateVagaId = templateVagaId; }
-    public String getEnunciado() { return enunciado; }
-    public void setEnunciado(String enunciado) { this.enunciado = enunciado; }
-    public TipoResposta getTipoResposta() { return tipoResposta; }
-    public void setTipoResposta(TipoResposta tipoResposta) { this.tipoResposta = tipoResposta; }
-    public boolean isObrigatoria() { return obrigatoria; }
-    public void setObrigatoria(boolean obrigatoria) { this.obrigatoria = obrigatoria; }
-    public int getOrdem() { return ordem; }
-    public void setOrdem(int ordem) { this.ordem = ordem; }
-    public OffsetDateTime getExcluidoEm() { return excluidoEm; }
-    public void setExcluidoEm(OffsetDateTime excluidoEm) { this.excluidoEm = excluidoEm; }
-}
+import br.com.pacto.recrutamento.core.enums.TipoResposta; import java.time.OffsetDateTime; import java.util.UUID;
+public class PerguntaTemplateVaga { private UUID id=UUID.randomUUID(), templateVagaId; private String enunciado; private TipoResposta tipoResposta; private boolean obrigatoria; private int ordem; private OffsetDateTime criadoEm,atualizadoEm,excluidoEm;
+ public UUID getId(){return id;} public void setId(UUID x){id=x;} public UUID getTemplateVagaId(){return templateVagaId;} public void setTemplateVagaId(UUID x){templateVagaId=x;} public String getEnunciado(){return enunciado;} public void setEnunciado(String x){enunciado=x;} public TipoResposta getTipoResposta(){return tipoResposta;} public void setTipoResposta(TipoResposta x){tipoResposta=x;} public boolean isObrigatoria(){return obrigatoria;} public void setObrigatoria(boolean x){obrigatoria=x;} public int getOrdem(){return ordem;} public void setOrdem(int x){if(x<=0)throw new IllegalArgumentException("A ordem da pergunta deve ser positiva");ordem=x;} public OffsetDateTime getCriadoEm(){return criadoEm;} public void setCriadoEm(OffsetDateTime x){criadoEm=x;} public OffsetDateTime getAtualizadoEm(){return atualizadoEm;} public void setAtualizadoEm(OffsetDateTime x){atualizadoEm=x;} public OffsetDateTime getExcluidoEm(){return excluidoEm;} public void setExcluidoEm(OffsetDateTime x){excluidoEm=x;} }

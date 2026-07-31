@@ -1,0 +1,1 @@
+package br.com.pacto.recrutamento.app.templatevaga; import br.com.pacto.recrutamento.core.entities.TemplateVaga; import java.util.*; public interface TemplateVagaRepositorio { Optional<TemplateVaga> buscarAtivoPorId(UUID id); TemplateVaga salvar(TemplateVaga template); }

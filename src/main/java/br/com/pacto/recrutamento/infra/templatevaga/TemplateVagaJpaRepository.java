@@ -1,0 +1,1 @@
+package br.com.pacto.recrutamento.infra.templatevaga; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; interface TemplateVagaJpaRepository extends JpaRepository<TemplateVagaJpaEntity,UUID>{Optional<TemplateVagaJpaEntity> findByIdAndExcluidoEmIsNull(UUID id);}
