@@ -1,17 +1,7 @@
 package br.com.pacto.recrutamento.app.ports.vaga;
 
+import br.com.pacto.recrutamento.app.dtos.vaga.*;
 import br.com.pacto.recrutamento.app.serviceImpl.VagaServiceImpl;
-
-import br.com.pacto.recrutamento.app.dtos.vaga.AlterarStatusVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.vaga.AtualizarVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.vaga.CriarVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.vaga.ExcluirItemVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.vaga.ExcluirVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.vaga.PerguntaVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.vaga.RequisitoVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.vaga.SalvarPerguntaVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.vaga.SalvarRequisitoVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.vaga.VagaDTO;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
@@ -28,9 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class VagaServiceImplTest {
     private final UUID administrador = UUID.randomUUID();
@@ -169,31 +157,64 @@ class VagaServiceImplTest {
         assertEquals(0, perguntas.dados.size());
     }
 
-    private Vaga vaga() { return new Vaga(administrador, "Titulo", "Descricao"); }
+    private Vaga vaga() {
+        return new Vaga(administrador, "Titulo", "Descricao");
+    }
+
     private PerguntaVaga pergunta(UUID vagaId) {
         PerguntaVaga pergunta = new PerguntaVaga();
-        pergunta.setVagaId(vagaId); pergunta.setEnunciado("Pergunta"); pergunta.setTipoResposta(TipoResposta.TEXTO); pergunta.setOrdem(1);
+        pergunta.setVagaId(vagaId);
+        pergunta.setEnunciado("Pergunta");
+        pergunta.setTipoResposta(TipoResposta.TEXTO);
+        pergunta.setOrdem(1);
         return pergunta;
     }
+
     private RequisitoVaga requisito(UUID vagaId) {
         RequisitoVaga requisito = new RequisitoVaga();
-        requisito.setVagaId(vagaId); requisito.setDescricao("Java");
+        requisito.setVagaId(vagaId);
+        requisito.setDescricao("Java");
         return requisito;
     }
 
     private static final class MemoriaVagas implements VagaRepositorio {
         private final Map<UUID, Vaga> dados = new HashMap<>();
-        public Optional<Vaga> buscarAtivaPorId(UUID id) { return Optional.ofNullable(dados.get(id)).filter(v -> v.getExcluidoEm() == null); }
-        public Vaga salvar(Vaga vaga) { dados.put(vaga.getId(), vaga); return vaga; }
+
+        public Optional<Vaga> buscarAtivaPorId(UUID id) {
+            return Optional.ofNullable(dados.get(id)).filter(v -> v.getExcluidoEm() == null);
+        }
+
+        public Vaga salvar(Vaga vaga) {
+            dados.put(vaga.getId(), vaga);
+            return vaga;
+        }
     }
+
     private static final class MemoriaPerguntas implements PerguntaVagaRepositorio {
         private final Map<UUID, PerguntaVaga> dados = new HashMap<>();
-        public Optional<PerguntaVaga> buscarAtivaPorId(UUID id) { return Optional.ofNullable(dados.get(id)).filter(p -> p.getExcluidoEm() == null); }
-        public PerguntaVaga salvar(PerguntaVaga pergunta) { if (pergunta.getId() == null) pergunta.setId(UUID.randomUUID()); dados.put(pergunta.getId(), pergunta); return pergunta; }
+
+        public Optional<PerguntaVaga> buscarAtivaPorId(UUID id) {
+            return Optional.ofNullable(dados.get(id)).filter(p -> p.getExcluidoEm() == null);
+        }
+
+        public PerguntaVaga salvar(PerguntaVaga pergunta) {
+            if (pergunta.getId() == null) pergunta.setId(UUID.randomUUID());
+            dados.put(pergunta.getId(), pergunta);
+            return pergunta;
+        }
     }
+
     private static final class MemoriaRequisitos implements RequisitoVagaRepositorio {
         private final Map<UUID, RequisitoVaga> dados = new HashMap<>();
-        public Optional<RequisitoVaga> buscarAtivoPorId(UUID id) { return Optional.ofNullable(dados.get(id)).filter(r -> r.getExcluidoEm() == null); }
-        public RequisitoVaga salvar(RequisitoVaga requisito) { if (requisito.getId() == null) requisito.setId(UUID.randomUUID()); dados.put(requisito.getId(), requisito); return requisito; }
+
+        public Optional<RequisitoVaga> buscarAtivoPorId(UUID id) {
+            return Optional.ofNullable(dados.get(id)).filter(r -> r.getExcluidoEm() == null);
+        }
+
+        public RequisitoVaga salvar(RequisitoVaga requisito) {
+            if (requisito.getId() == null) requisito.setId(UUID.randomUUID());
+            dados.put(requisito.getId(), requisito);
+            return requisito;
+        }
     }
 }

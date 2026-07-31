@@ -1,7 +1,7 @@
 package br.com.pacto.recrutamento.infra.vaga;
 
-import br.com.pacto.recrutamento.app.ports.vaga.RequisitoVagaRepositorio;
 import br.com.pacto.recrutamento.app.ports.templatevaga.RequisitoVagaTemplateRepositorio;
+import br.com.pacto.recrutamento.app.ports.vaga.RequisitoVagaRepositorio;
 import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
 import org.springframework.stereotype.Repository;
 

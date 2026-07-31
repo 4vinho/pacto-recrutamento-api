@@ -6,12 +6,12 @@ faz**, **como é persistido/integrado** e **como é exposto por HTTP**.
 
 ## Como navegar
 
-| Visão | Pergunta respondida |
-|---|---|
-| [Entidades](entidades/README.md) | Quais dados, relacionamentos, estados e invariantes existem? |
-| [Services](services/README.md) | Quais casos de uso e fluxos de negócio devem ser executados? |
+| Visão                             | Pergunta respondida                                                     |
+|-----------------------------------|-------------------------------------------------------------------------|
+| [Entidades](entidades/README.md)  | Quais dados, relacionamentos, estados e invariantes existem?            |
+| [Services](services/README.md)    | Quais casos de uso e fluxos de negócio devem ser executados?            |
 | [Infraestrutura](infra/README.md) | Como banco, segurança, storage e notificações suportam os casos de uso? |
-| [Endpoints](endpoints/README.md) | Quais contratos HTTP a API oferece? |
+| [Endpoints](endpoints/README.md)  | Quais contratos HTTP a API oferece?                                     |
 
 Dentro de cada visão, os requisitos estão agrupados pelo agregado principal ou
 tabela. Perguntas e requisitos pertencem a `vaga`; respostas pertencem a
@@ -19,15 +19,15 @@ tabela. Perguntas e requisitos pertencem a `vaga`; respostas pertencem a
 
 ## Mapa dos agregados
 
-| Agregado | Tabelas principais | Prioridade |
-|---|---|---|
-| Usuário | `usuarios`, `papeis`, `usuarios_papeis`, `refresh_tokens` | Obrigatório |
-| Candidato | `candidatos` | Obrigatório |
-| Currículo | `curriculos` | Complementar |
-| Vaga | `vagas`, `perguntas_vaga`, `requisitos_vaga` | Obrigatório |
-| Candidatura | `candidaturas`, `respostas_candidatura` | Obrigatório |
-| Template de vaga | `templates_vaga`, `perguntas_template_vaga`, `requisitos_template_vaga` | Evolução |
-| Notificação | `notificacoes` | Obrigatório no fluxo de candidatura |
+| Agregado         | Tabelas principais                                                      | Prioridade                          |
+|------------------|-------------------------------------------------------------------------|-------------------------------------|
+| Usuário          | `usuarios`, `papeis`, `usuarios_papeis`, `refresh_tokens`               | Obrigatório                         |
+| Candidato        | `candidatos`                                                            | Obrigatório                         |
+| Currículo        | `curriculos`                                                            | Complementar                        |
+| Vaga             | `vagas`, `perguntas_vaga`, `requisitos_vaga`                            | Obrigatório                         |
+| Candidatura      | `candidaturas`, `respostas_candidatura`                                 | Obrigatório                         |
+| Template de vaga | `templates_vaga`, `perguntas_template_vaga`, `requisitos_template_vaga` | Evolução                            |
+| Notificação      | `notificacoes`                                                          | Obrigatório no fluxo de candidatura |
 
 ## Regras globais
 

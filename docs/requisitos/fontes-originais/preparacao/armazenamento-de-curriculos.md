@@ -23,7 +23,8 @@ MinIO
 Volume persistente
 ```
 
-O MinIO deve ser tratado como detalhe de infraestrutura. Os casos de uso dependem da abstração `ArquivoStorage`, e não do SDK.
+O MinIO deve ser tratado como detalhe de infraestrutura. Os casos de uso dependem da abstração `ArquivoStorage`, e não
+do SDK.
 
 ## Bucket
 
@@ -70,7 +71,8 @@ Fluxo:
 8. Persistir os metadados no PostgreSQL.
 9. Inativar o currículo anterior, quando existir.
 
-O fluxo deve prever compensação: se os metadados não puderem ser persistidos, o novo objeto enviado deve ser removido do storage.
+O fluxo deve prever compensação: se os metadados não puderem ser persistidos, o novo objeto enviado deve ser removido do
+storage.
 
 ## Download
 
@@ -103,7 +105,8 @@ public interface ArquivoStorage {
 }
 ```
 
-Os tipos concretos devem ser definidos durante a implementação, evitando passar `MultipartFile` para `app` ou `core`, pois esse tipo pertence ao Spring Web.
+Os tipos concretos devem ser definidos durante a implementação, evitando passar `MultipartFile` para `app` ou `core`,
+pois esse tipo pertence ao Spring Web.
 
 ## Infraestrutura local
 
@@ -114,7 +117,8 @@ O Docker Compose deverá conter:
 - API.
 - Frontend, quando a conteinerização do frontend for realizada.
 
-O MinIO deve possuir volume persistente. Credenciais, endpoint e nome do bucket devem ser configurados por variáveis de ambiente.
+O MinIO deve possuir volume persistente. Credenciais, endpoint e nome do bucket devem ser configurados por variáveis de
+ambiente.
 
 ## Segurança
 

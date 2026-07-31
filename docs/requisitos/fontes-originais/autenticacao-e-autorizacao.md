@@ -71,5 +71,6 @@ Valida o token temporário e registra uma nova senha.
 
 - Dado um usuário com credenciais válidas, quando ele se autenticar, então o acesso deve ser concedido.
 - Dado um usuário com credenciais inválidas, quando ele tentar se autenticar, então o acesso deve ser negado.
-- Dado um usuário sem o papel exigido, quando ele acessar uma funcionalidade restrita, então a operação deve ser rejeitada.
+- Dado um usuário sem o papel exigido, quando ele acessar uma funcionalidade restrita, então a operação deve ser
+  rejeitada.
 - Dado um token de recuperação válido, quando o usuário informar uma nova senha, então a senha deve ser redefinida.

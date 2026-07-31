@@ -104,7 +104,8 @@ O endpoint deve receber uma coleção contendo uma ou mais respostas:
 }
 ```
 
-A coleção deve conter pelo menos uma resposta. Todas as respostas recebidas na mesma requisição devem ser processadas em uma única transação: se uma delas for inválida, nenhuma deve ser registrada.
+A coleção deve conter pelo menos uma resposta. Todas as respostas recebidas na mesma requisição devem ser processadas em
+uma única transação: se uma delas for inválida, nenhuma deve ser registrada.
 
 ### Atualizar status da candidatura
 
@@ -136,7 +137,9 @@ Permite que o candidato cancele a própria candidatura, quando o estado atual pe
 ## Critérios de aceitação
 
 - Dado um candidato autorizado, quando ele se candidatar a uma vaga aberta, então uma candidatura deve ser registrada.
-- Dado que o candidato já se candidatou a uma vaga, quando tentar se candidatar novamente à mesma vaga, então a operação deve ser rejeitada.
+- Dado que o candidato já se candidatou a uma vaga, quando tentar se candidatar novamente à mesma vaga, então a operação
+  deve ser rejeitada.
 - Dado que a candidatura foi registrada com sucesso, então seu status inicial deve ser `ENVIADA`.
 - Dada uma candidatura válida, quando uma ou mais respostas válidas forem enviadas, então todas devem ser registradas.
-- Dado que uma das respostas enviadas é inválida, quando a operação for processada, então nenhuma resposta da requisição deve ser registrada.
+- Dado que uma das respostas enviadas é inválida, quando a operação for processada, então nenhuma resposta da requisição
+  deve ser registrada.

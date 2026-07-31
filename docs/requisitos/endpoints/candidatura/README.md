@@ -1,12 +1,12 @@
 # Endpoints: candidatura
 
-| Método | Rota | Acesso |
-|---|---|---|
-| POST | `/vagas/{vagaId}/candidaturas` | Candidato |
-| POST | `/candidaturas/{candidaturaId}/respostas` | Candidato proprietário |
-| PATCH | `/candidaturas/{candidaturaId}/status` | Responsável autorizado |
-| POST | `/candidaturas/{candidaturaId}/cancelamento` | Candidato proprietário |
-| GET | `/candidaturas/{candidaturaId}` | Proprietário/responsável autorizado |
+| Método | Rota                                         | Acesso                              |
+|--------|----------------------------------------------|-------------------------------------|
+| POST   | `/vagas/{vagaId}/candidaturas`               | Candidato                           |
+| POST   | `/candidaturas/{candidaturaId}/respostas`    | Candidato proprietário              |
+| PATCH  | `/candidaturas/{candidaturaId}/status`       | Responsável autorizado              |
+| POST   | `/candidaturas/{candidaturaId}/cancelamento` | Candidato proprietário              |
+| GET    | `/candidaturas/{candidaturaId}`              | Proprietário/responsável autorizado |
 
 Formato do lote:
 

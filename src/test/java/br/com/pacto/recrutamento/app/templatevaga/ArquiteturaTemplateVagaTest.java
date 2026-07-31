@@ -1,9 +1,6 @@
 package br.com.pacto.recrutamento.app.ports.templatevaga;
 
-import br.com.pacto.recrutamento.app.serviceImpl.VagaServiceImpl;
-
 import br.com.pacto.recrutamento.app.serviceImpl.TemplateVagaServiceImpl;
-
 import br.com.pacto.recrutamento.core.entities.PerguntaTemplateVaga;
 import br.com.pacto.recrutamento.core.entities.RequisitoTemplateVaga;
 import br.com.pacto.recrutamento.core.entities.TemplateVaga;
@@ -22,8 +19,8 @@ class ArquiteturaTemplateVagaTest {
         assertThat(TemplateVaga.class.isAnnotationPresent(Entity.class)).isTrue();
         assertThat(PerguntaTemplateVaga.class.isAnnotationPresent(Entity.class)).isTrue();
         assertThat(RequisitoTemplateVaga.class.isAnnotationPresent(Entity.class)).isTrue();
-        for (Class<?> type : new Class<?>[] { TemplateVagaServiceImpl.class, TemplateVagaRepositorio.class,
-                PerguntaTemplateVagaRepositorio.class, RequisitoTemplateVagaRepositorio.class }) {
+        for (Class<?> type : new Class<?>[]{TemplateVagaServiceImpl.class, TemplateVagaRepositorio.class,
+                PerguntaTemplateVagaRepositorio.class, RequisitoTemplateVagaRepositorio.class}) {
             for (Class<?> dependency : type.getInterfaces()) assertThat(dependency.getName()).doesNotContain("infra");
             assertThat(type.getPackage().getName()).doesNotContain("infra");
         }

@@ -68,7 +68,8 @@ POST /auth/recuperacao-senha/confirmacoes
 
 ## Logout
 
-O logout deve revogar o refresh token apresentado. O access token continuará válido somente até seu vencimento de, no máximo, 15 minutos.
+O logout deve revogar o refresh token apresentado. O access token continuará válido somente até seu vencimento de, no
+máximo, 15 minutos.
 
 ## Recuperação de senha
 
@@ -88,7 +89,8 @@ Após redefinir a senha, a recomendação é revogar todos os refresh tokens do 
 - `spring-security-test` para testes de autorização.
 - BCrypt fornecido pelo Spring Security.
 
-A biblioteca e sua versão exata devem ser escolhidas no momento da implementação, verificando compatibilidade e manutenção.
+A biblioteca e sua versão exata devem ser escolhidas no momento da implementação, verificando compatibilidade e
+manutenção.
 
 ## Testes obrigatórios
 

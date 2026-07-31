@@ -1,8 +1,10 @@
 package br.com.pacto.recrutamento.infra.notificacao;
 
 import org.junit.jupiter.api.Test;
+
 import java.util.Optional;
 import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class DestinatariosCandidaturaJpaAdapterTest {
@@ -11,8 +13,13 @@ class DestinatariosCandidaturaJpaAdapterTest {
         UUID responsavel = UUID.randomUUID();
         UUID candidato = UUID.randomUUID();
         DestinatariosCandidaturaRepository repository = candidaturaId -> Optional.of(new DestinatariosCandidaturaProjection() {
-            public UUID getResponsavelId() { return responsavel; }
-            public UUID getCandidatoId() { return candidato; }
+            public UUID getResponsavelId() {
+                return responsavel;
+            }
+
+            public UUID getCandidatoId() {
+                return candidato;
+            }
         });
 
         assertThat(new DestinatariosCandidaturaJpaAdapter(repository).buscarPorCandidatura(UUID.randomUUID()))

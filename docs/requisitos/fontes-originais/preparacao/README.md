@@ -4,7 +4,8 @@
 
 Consolidar as decisões técnicas necessárias antes da implementação do backend.
 
-Esta pasta contém somente planejamento. Nenhuma das dependências, migrations, entidades ou classes descritas aqui foi implementada.
+Esta pasta contém somente planejamento. Nenhuma das dependências, migrations, entidades ou classes descritas aqui foi
+implementada.
 
 ## Documentos
 

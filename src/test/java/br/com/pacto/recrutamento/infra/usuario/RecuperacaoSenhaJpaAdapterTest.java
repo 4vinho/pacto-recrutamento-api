@@ -39,7 +39,8 @@ class RecuperacaoSenhaJpaAdapterTest {
                 new Class<?>[]{TokenRecuperacaoSenhaJpaRepository.class},
                 (proxy, method, args) -> {
                     if ("findByTokenHash".equals(method.getName())) return Optional.of(token);
-                    if ("consumirSeValido".equals(method.getName())) return consumido.compareAndSet(false, true) ? 1 : 0;
+                    if ("consumirSeValido".equals(method.getName()))
+                        return consumido.compareAndSet(false, true) ? 1 : 0;
                     if ("save".equals(method.getName())) return args[0];
                     throw new UnsupportedOperationException(method.getName());
                 }

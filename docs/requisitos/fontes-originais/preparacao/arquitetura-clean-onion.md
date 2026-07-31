@@ -2,7 +2,8 @@
 
 ## Objetivo
 
-Separar regras de negócio, casos de uso, infraestrutura e transporte HTTP, mantendo as dependências voltadas para o núcleo.
+Separar regras de negócio, casos de uso, infraestrutura e transporte HTTP, mantendo as dependências voltadas para o
+núcleo.
 
 Os nomes dos pacotes Java devem ser minúsculos:
 
@@ -123,7 +124,8 @@ infra/arquivo/
 └── MinioProperties.java
 ```
 
-As entidades JPA devem permanecer separadas das entidades de domínio para impedir que anotações e comportamento do ORM contaminem o núcleo.
+As entidades JPA devem permanecer separadas das entidades de domínio para impedir que anotações e comportamento do ORM
+contaminem o núcleo.
 
 ## Web
 

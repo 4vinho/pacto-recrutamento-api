@@ -5,9 +5,14 @@ import java.util.UUID;
 
 interface CandidaturaPainelProjection {
     UUID getCandidaturaId();
+
     UUID getVagaId();
+
     String getTituloVaga();
+
     String getStatus();
+
     OffsetDateTime getCriadaEm();
+
     String getFeedback();
 }

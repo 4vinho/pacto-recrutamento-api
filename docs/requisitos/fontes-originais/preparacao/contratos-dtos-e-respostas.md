@@ -23,7 +23,8 @@ ApiResponse<T>
 └── data: T
 ```
 
-O nome do campo deve ser `data`, corrigindo a grafia inicial `tdata`. O `T` representa o tipo genérico na classe Java, não faz parte do nome JSON.
+O nome do campo deve ser `data`, corrigindo a grafia inicial `tdata`. O `T` representa o tipo genérico na classe Java,
+não faz parte do nome JSON.
 
 ## Respostas sem dados
 
@@ -126,4 +127,5 @@ Planejar um componente em `web/shared` para converter exceções em respostas:
 
 ## Observação sobre duplicidade
 
-O campo `statusCode` repete uma informação que já existe no protocolo HTTP. Ele será mantido porque foi definido como requisito do contrato da aplicação.
+O campo `statusCode` repete uma informação que já existe no protocolo HTTP. Ele será mantido porque foi definido como
+requisito do contrato da aplicação.

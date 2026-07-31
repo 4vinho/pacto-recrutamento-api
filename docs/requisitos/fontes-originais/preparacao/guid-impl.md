@@ -2,7 +2,8 @@
 
 ## Objetivo
 
-Servir como roadmap executável para a construção do backend, indicando a ordem das entregas, os resultados esperados e os critérios para avançar.
+Servir como roadmap executável para a construção do backend, indicando a ordem das entregas, os resultados esperados e
+os critérios para avançar.
 
 Este documento não implementa nenhuma etapa. Cada item deve ser realizado e validado antes de seguir para o próximo.
 
@@ -15,7 +16,8 @@ Neste momento, somente a fundação técnica deve ser implementada:
 - Etapa 3 — Estrutura Clean/Onion.
 - Estrutura inicial da Etapa 5 para habilitar o Flyway, ainda sem migrations de domínio.
 
-Endpoints, entidades, JWT funcional, upload de currículos e demais regras de negócio permanecem documentados como trabalho futuro.
+Endpoints, entidades, JWT funcional, upload de currículos e demais regras de negócio permanecem documentados como
+trabalho futuro.
 
 ## Princípios de execução
 
@@ -266,7 +268,8 @@ V8__criar_notificacoes.sql
 V9__criar_templates.sql
 ```
 
-Durante a implementação, criar somente a migration exigida pela fatia atual. Não é necessário escrever todas antecipadamente.
+Durante a implementação, criar somente a migration exigida pela fatia atual. Não é necessário escrever todas
+antecipadamente.
 
 ### Testes
 

@@ -6,5 +6,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CanalNotificacaoSimulado implements CanalNotificacao {
-    public void enviar(Notificacao notificacao) { }
+    public void enviar(Notificacao notificacao) {
+    }
 }

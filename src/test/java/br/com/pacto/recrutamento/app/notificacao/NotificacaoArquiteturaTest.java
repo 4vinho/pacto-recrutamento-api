@@ -1,11 +1,12 @@
 package br.com.pacto.recrutamento.app.ports.notificacao;
 
 import br.com.pacto.recrutamento.app.serviceImpl.NotificacaoServiceImpl;
-
 import br.com.pacto.recrutamento.core.entities.Notificacao;
 import br.com.pacto.recrutamento.infra.notificacao.NotificacaoJpaAdapter;
 import org.junit.jupiter.api.Test;
+
 import javax.persistence.Entity;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class NotificacaoArquiteturaTest {

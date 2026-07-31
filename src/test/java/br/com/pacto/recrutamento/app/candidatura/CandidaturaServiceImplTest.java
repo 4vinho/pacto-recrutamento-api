@@ -1,57 +1,33 @@
 package br.com.pacto.recrutamento.app.ports.candidatura;
 
-import br.com.pacto.recrutamento.app.serviceImpl.CandidaturaServiceImpl;
-
-import br.com.pacto.recrutamento.app.dtos.candidatura.AtualizarStatusCandidaturaDTO;
-import br.com.pacto.recrutamento.app.dtos.candidatura.CancelarCandidaturaDTO;
-import br.com.pacto.recrutamento.app.dtos.candidatura.CandidaturaDTO;
-import br.com.pacto.recrutamento.app.dtos.candidatura.ConsultarCandidaturaDTO;
-import br.com.pacto.recrutamento.app.dtos.candidatura.CriarCandidaturaDTO;
-import br.com.pacto.recrutamento.app.dtos.candidatura.RegistrarRespostasDTO;
-import br.com.pacto.recrutamento.app.dtos.candidatura.RespostaCandidaturaDTO;
+import br.com.pacto.recrutamento.app.dtos.candidatura.*;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
-import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.app.serviceImpl.CandidaturaServiceImpl;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
-import br.com.pacto.recrutamento.core.entities.Candidatura;
-import br.com.pacto.recrutamento.core.entities.Candidato;
-import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
-import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
-import br.com.pacto.recrutamento.core.entities.Vaga;
+import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.entities.*;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import br.com.pacto.recrutamento.core.enums.StatusVaga;
 import br.com.pacto.recrutamento.core.enums.TipoResposta;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CandidaturaServiceImplTest {
     private final UUID usuarioCandidato = UUID.randomUUID();
     private final UUID candidatoId = UUID.randomUUID();
     private final UUID responsavel = UUID.randomUUID();
     private final Candidatos candidatos = new Candidatos(usuarioCandidato, candidatoId);
+    private final CandidaturaServiceImpl service = new CandidaturaServiceImpl(candidatos,
+            candidaturas, vagas, perguntas, new Autorizacao(), eventos);
     private final Candidaturas candidaturas = new Candidaturas();
     private final Vagas vagas = new Vagas();
     private final Perguntas perguntas = new Perguntas();
     private final Eventos eventos = new Eventos();
-    private final CandidaturaServiceImpl service = new CandidaturaServiceImpl(candidatos,
-            candidaturas, vagas, perguntas, new Autorizacao(), eventos);
 
     @Test
     void criaCandidaturaEnviadaParaCandidatoEmVagaAbertaEPublicaEventoAposSalvar() {
@@ -94,7 +70,9 @@ class CandidaturaServiceImplTest {
 
     @Test
     void falhaPosteriorDoPublicadorNaoDesfazCandidaturaConfirmada() {
-        Vaga vaga = vagaPublicada(); vagas.salvar(vaga); eventos.falhar = true;
+        Vaga vaga = vagaPublicada();
+        vagas.salvar(vaga);
+        eventos.falhar = true;
         TypedResponse<CandidaturaDTO> resposta = service.criarCandidatura(
                 new CriarCandidaturaDTO(usuarioCandidato, vaga.getId()));
         assertEquals(201, resposta.getStatusCode());
@@ -107,7 +85,8 @@ class CandidaturaServiceImplTest {
         candidaturas.salvar(candidatura);
         PerguntaVaga primeira = pergunta(candidatura.getVagaId());
         PerguntaVaga segunda = pergunta(candidatura.getVagaId());
-        perguntas.salvar(primeira); perguntas.salvar(segunda);
+        perguntas.salvar(primeira);
+        perguntas.salvar(segunda);
 
         TypedResponse<CandidaturaDTO> resposta = service.registrarRespostas(new RegistrarRespostasDTO(
                 usuarioCandidato, candidatura.getId(), Arrays.asList(
@@ -120,9 +99,12 @@ class CandidaturaServiceImplTest {
 
     @Test
     void invalidaTodoLoteComVazioDuplicadaOutraVagaOuPerguntaInexistente() {
-        Candidatura candidatura = candidatura(); candidaturas.salvar(candidatura);
-        PerguntaVaga pergunta = pergunta(candidatura.getVagaId()); perguntas.salvar(pergunta);
-        PerguntaVaga deOutraVaga = pergunta(UUID.randomUUID()); perguntas.salvar(deOutraVaga);
+        Candidatura candidatura = candidatura();
+        candidaturas.salvar(candidatura);
+        PerguntaVaga pergunta = pergunta(candidatura.getVagaId());
+        perguntas.salvar(pergunta);
+        PerguntaVaga deOutraVaga = pergunta(UUID.randomUUID());
+        perguntas.salvar(deOutraVaga);
 
         assertEquals(400, service.registrarRespostas(new RegistrarRespostasDTO(usuarioCandidato, candidatura.getId(), Collections.<RespostaCandidaturaDTO>emptyList())).getStatusCode());
         assertEquals(400, service.registrarRespostas(new RegistrarRespostasDTO(usuarioCandidato, candidatura.getId(), Arrays.asList(new RespostaCandidaturaDTO(pergunta.getId(), "a"), new RespostaCandidaturaDTO(pergunta.getId(), "b")))).getStatusCode());
@@ -133,7 +115,8 @@ class CandidaturaServiceImplTest {
 
     @Test
     void impedeRegistroDeRespostasPorNaoProprietario() {
-        Candidatura candidatura = candidatura(); candidaturas.salvar(candidatura);
+        Candidatura candidatura = candidatura();
+        candidaturas.salvar(candidatura);
 
         TypedResponse<CandidaturaDTO> resposta = service.registrarRespostas(new RegistrarRespostasDTO(
                 UUID.randomUUID(), candidatura.getId(), Collections.singletonList(
@@ -145,8 +128,10 @@ class CandidaturaServiceImplTest {
 
     @Test
     void traduzRespostaJaPersistidaEmConflitoSemPersistenciaParcial() {
-        Candidatura candidatura = candidatura(); candidaturas.salvar(candidatura);
-        PerguntaVaga pergunta = pergunta(candidatura.getVagaId()); perguntas.salvar(pergunta);
+        Candidatura candidatura = candidatura();
+        candidaturas.salvar(candidatura);
+        PerguntaVaga pergunta = pergunta(candidatura.getVagaId());
+        perguntas.salvar(pergunta);
         candidaturas.falharRespostasPorUnicidade = true;
         TypedResponse<CandidaturaDTO> resposta = service.registrarRespostas(new RegistrarRespostasDTO(
                 usuarioCandidato, candidatura.getId(), Collections.singletonList(
@@ -157,7 +142,8 @@ class CandidaturaServiceImplTest {
 
     @Test
     void responsavelAutorizadoAlteraStatusEmTransicaoPermitidaEPublicaEventoAposSalvar() {
-        Candidatura candidatura = candidatura(); candidaturas.salvar(candidatura);
+        Candidatura candidatura = candidatura();
+        candidaturas.salvar(candidatura);
         vagas.salvar(vagaPublicadaComId(candidatura.getVagaId()));
 
         TypedResponse<CandidaturaDTO> resposta = service.atualizarStatusCandidatura(
@@ -170,7 +156,8 @@ class CandidaturaServiceImplTest {
 
     @Test
     void bloqueiaResponsavelNaoAutorizadoETransicaoInvalidaSemEvento() {
-        Candidatura candidatura = candidatura(); candidaturas.salvar(candidatura);
+        Candidatura candidatura = candidatura();
+        candidaturas.salvar(candidatura);
         vagas.salvar(vagaPublicadaComId(candidatura.getVagaId()));
         assertEquals(403, service.atualizarStatusCandidatura(new AtualizarStatusCandidaturaDTO(UUID.randomUUID(), candidatura.getId(), StatusCandidatura.EM_ANALISE)).getStatusCode());
         assertEquals(422, service.atualizarStatusCandidatura(new AtualizarStatusCandidaturaDTO(responsavel, candidatura.getId(), StatusCandidatura.APROVADA)).getStatusCode());
@@ -179,7 +166,8 @@ class CandidaturaServiceImplTest {
 
     @Test
     void apenasProprietarioCancelaCandidaturaEmEstadoPermitido() {
-        Candidatura candidatura = candidatura(); candidaturas.salvar(candidatura);
+        Candidatura candidatura = candidatura();
+        candidaturas.salvar(candidatura);
         assertEquals(403, service.cancelarCandidatura(new CancelarCandidaturaDTO(UUID.randomUUID(), candidatura.getId())).getStatusCode());
         TypedResponse<CandidaturaDTO> cancelada = service.cancelarCandidatura(new CancelarCandidaturaDTO(usuarioCandidato, candidatura.getId()));
         assertEquals(200, cancelada.getStatusCode());
@@ -191,7 +179,8 @@ class CandidaturaServiceImplTest {
 
     @Test
     void consultaSomentePodeSerFeitaPeloProprietarioOuResponsavelAutorizado() {
-        Candidatura candidatura = candidatura(); candidaturas.salvar(candidatura);
+        Candidatura candidatura = candidatura();
+        candidaturas.salvar(candidatura);
         vagas.salvar(vagaPublicadaComId(candidatura.getVagaId()));
         assertEquals(200, service.consultarCandidatura(new ConsultarCandidaturaDTO(usuarioCandidato, candidatura.getId())).getStatusCode());
         assertEquals(200, service.consultarCandidatura(new ConsultarCandidaturaDTO(responsavel, candidatura.getId())).getStatusCode());
@@ -200,43 +189,136 @@ class CandidaturaServiceImplTest {
         assertNull(negada.getData());
     }
 
-    private Candidatura candidatura() { return new Candidatura(candidatoId, UUID.randomUUID()); }
-    private Vaga vagaPublicada() { return vagaPublicadaComId(UUID.randomUUID()); }
+    private Candidatura candidatura() {
+        return new Candidatura(candidatoId, UUID.randomUUID());
+    }
+
+    private Vaga vagaPublicada() {
+        return vagaPublicadaComId(UUID.randomUUID());
+    }
+
     private Vaga vagaPublicadaComId(UUID id) {
-        Vaga vaga = new Vaga(responsavel, "Java", "Descricao"); vaga.setId(id); vaga.setStatus(StatusVaga.PUBLICADA); return vaga;
+        Vaga vaga = new Vaga(responsavel, "Java", "Descricao");
+        vaga.setId(id);
+        vaga.setStatus(StatusVaga.PUBLICADA);
+        return vaga;
     }
+
     private PerguntaVaga pergunta(UUID vagaId) {
-        PerguntaVaga pergunta = new PerguntaVaga(); pergunta.setVagaId(vagaId); pergunta.setEnunciado("Pergunta"); pergunta.setTipoResposta(TipoResposta.TEXTO); pergunta.setOrdem(1); return pergunta;
+        PerguntaVaga pergunta = new PerguntaVaga();
+        pergunta.setVagaId(vagaId);
+        pergunta.setEnunciado("Pergunta");
+        pergunta.setTipoResposta(TipoResposta.TEXTO);
+        pergunta.setOrdem(1);
+        return pergunta;
     }
-    private String chave(UUID candidato, UUID vaga) { return candidato + ":" + vaga; }
+
+    private String chave(UUID candidato, UUID vaga) {
+        return candidato + ":" + vaga;
+    }
 
     private static final class Candidatos implements CandidatoRepository {
         private final Map<UUID, Candidato> dados = new HashMap<>();
+
         private Candidatos(UUID usuarioId, UUID candidatoId) {
             Candidato candidato = new Candidato(usuarioId, LocalDate.now());
             candidato.setId(candidatoId);
             dados.put(usuarioId, candidato);
         }
-        public boolean existePorUsuarioId(UUID usuarioId) { return dados.containsKey(usuarioId); }
+
+        public boolean existePorUsuarioId(UUID usuarioId) {
+            return dados.containsKey(usuarioId);
+        }
+
         public Candidato salvar(Candidato candidato) {
             dados.put(candidato.getUsuarioId(), candidato);
             return candidato;
         }
-        public Optional<Candidato> buscarPorUsuarioId(UUID usuarioId) { return Optional.ofNullable(dados.get(usuarioId)); }
+
+        public Optional<Candidato> buscarPorUsuarioId(UUID usuarioId) {
+            return Optional.ofNullable(dados.get(usuarioId));
+        }
+
         public PaginaGenerico<CandidaturaDoCandidato> listarCandidaturasDoUsuario(
                 UUID u, int p, int s) {
             return new PaginaGenerico<>(Collections.<CandidaturaDoCandidato>emptyList(), 0);
         }
     }
-    private final class Candidaturas implements CandidaturaRepositorio {
-        private final Map<UUID, Candidatura> dados = new HashMap<>(); private final Set<String> chavesExistentes = new HashSet<>(); private final List<RespostaCandidatura> respostas = new ArrayList<>(); private boolean falharPorUnicidade; private boolean falharRespostasPorUnicidade; private boolean salvouAntesDoEvento;
-        public Optional<Candidatura> buscarPorId(UUID id) { return Optional.ofNullable(dados.get(id)); }
-        public boolean existePorCandidatoIdEVagaId(UUID c, UUID v) { return chavesExistentes.contains(chave(c, v)); }
-        public Candidatura salvar(Candidatura c) { if (falharPorUnicidade) throw new CandidaturaRepositorio.CandidaturaDuplicadaException(); dados.put(c.getId(), c); chavesExistentes.add(chave(c.getCandidatoId(), c.getVagaId())); salvouAntesDoEvento = true; return c; }
-        public void salvarRespostasAtomicamente(List<RespostaCandidatura> lote) { if (falharRespostasPorUnicidade) throw new CandidaturaRepositorio.RespostasDuplicadasException(); respostas.addAll(lote); }
+
+    private static final class Vagas implements VagaCandidaturaRepositorio {
+        private final Map<UUID, Vaga> dados = new HashMap<>();
+
+        public Optional<Vaga> buscarPorId(UUID id) {
+            return Optional.ofNullable(dados.get(id));
+        }
+
+        void salvar(Vaga v) {
+            dados.put(v.getId(), v);
+        }
     }
-    private static final class Vagas implements VagaCandidaturaRepositorio { private final Map<UUID, Vaga> dados = new HashMap<>(); public Optional<Vaga> buscarPorId(UUID id) { return Optional.ofNullable(dados.get(id)); } void salvar(Vaga v) { dados.put(v.getId(), v); } }
-    private static final class Perguntas implements PerguntaCandidaturaRepositorio { private final Map<UUID, PerguntaVaga> dados = new HashMap<>(); public Optional<PerguntaVaga> buscarAtivaPorId(UUID id) { return Optional.ofNullable(dados.get(id)).filter(p -> p.getExcluidoEm() == null); } void salvar(PerguntaVaga p) { dados.put(p.getId(), p); } }
-    private final class Autorizacao implements AutorizacaoResponsavelCandidatura { public boolean podeGerenciar(UUID usuarioId, Vaga vaga) { return responsavel.equals(usuarioId) && responsavel.equals(vaga.getResponsavelId()); } }
-    private final class Eventos implements EventosCandidatura { private int criadas; private int statusAlterados; private boolean falhar; public void candidaturaCriada(Candidatura c) { assertTrue(candidaturas.salvouAntesDoEvento); if (falhar) throw new IllegalStateException(); criadas++; } public void statusAlterado(Candidatura c, StatusCandidatura anterior) { if (falhar) throw new IllegalStateException(); statusAlterados++; } }
+
+    private static final class Perguntas implements PerguntaCandidaturaRepositorio {
+        private final Map<UUID, PerguntaVaga> dados = new HashMap<>();
+
+        public Optional<PerguntaVaga> buscarAtivaPorId(UUID id) {
+            return Optional.ofNullable(dados.get(id)).filter(p -> p.getExcluidoEm() == null);
+        }
+
+        void salvar(PerguntaVaga p) {
+            dados.put(p.getId(), p);
+        }
+    }
+
+    private final class Candidaturas implements CandidaturaRepositorio {
+        private final Map<UUID, Candidatura> dados = new HashMap<>();
+        private final Set<String> chavesExistentes = new HashSet<>();
+        private final List<RespostaCandidatura> respostas = new ArrayList<>();
+        private boolean falharPorUnicidade;
+        private boolean falharRespostasPorUnicidade;
+        private boolean salvouAntesDoEvento;
+
+        public Optional<Candidatura> buscarPorId(UUID id) {
+            return Optional.ofNullable(dados.get(id));
+        }
+
+        public boolean existePorCandidatoIdEVagaId(UUID c, UUID v) {
+            return chavesExistentes.contains(chave(c, v));
+        }
+
+        public Candidatura salvar(Candidatura c) {
+            if (falharPorUnicidade) throw new CandidaturaRepositorio.CandidaturaDuplicadaException();
+            dados.put(c.getId(), c);
+            chavesExistentes.add(chave(c.getCandidatoId(), c.getVagaId()));
+            salvouAntesDoEvento = true;
+            return c;
+        }
+
+        public void salvarRespostasAtomicamente(List<RespostaCandidatura> lote) {
+            if (falharRespostasPorUnicidade) throw new CandidaturaRepositorio.RespostasDuplicadasException();
+            respostas.addAll(lote);
+        }
+    }
+
+    private final class Autorizacao implements AutorizacaoResponsavelCandidatura {
+        public boolean podeGerenciar(UUID usuarioId, Vaga vaga) {
+            return responsavel.equals(usuarioId) && responsavel.equals(vaga.getResponsavelId());
+        }
+    }
+
+    private final class Eventos implements EventosCandidatura {
+        private int criadas;
+        private int statusAlterados;
+        private boolean falhar;
+
+        public void candidaturaCriada(Candidatura c) {
+            assertTrue(candidaturas.salvouAntesDoEvento);
+            if (falhar) throw new IllegalStateException();
+            criadas++;
+        }
+
+        public void statusAlterado(Candidatura c, StatusCandidatura anterior) {
+            if (falhar) throw new IllegalStateException();
+            statusAlterados++;
+        }
+    }
 }

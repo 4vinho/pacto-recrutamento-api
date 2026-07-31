@@ -1,12 +1,11 @@
 package br.com.pacto.recrutamento.app.ports.usuario;
 
 import br.com.pacto.recrutamento.app.serviceImpl.UsuarioServiceImpl;
-
-import org.junit.jupiter.api.Test;
 import br.com.pacto.recrutamento.infra.usuario.BCryptCodificadorSenha;
 import br.com.pacto.recrutamento.infra.usuario.PapelJpaAdapter;
 import br.com.pacto.recrutamento.infra.usuario.RefreshTokenJpaAdapter;
 import br.com.pacto.recrutamento.infra.usuario.UsuarioJpaAdapter;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

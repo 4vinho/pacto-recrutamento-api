@@ -1,29 +1,20 @@
 package br.com.pacto.recrutamento.app.ports.curriculo;
 
-import br.com.pacto.recrutamento.app.serviceImpl.CurriculoServiceImpl;
-
 import br.com.pacto.recrutamento.app.dtos.curriculo.EnviarCurriculoDTO;
 import br.com.pacto.recrutamento.app.dtos.curriculo.GerarUrlTemporariaCurriculoDTO;
 import br.com.pacto.recrutamento.app.dtos.curriculo.SubstituirCurriculoDTO;
+import br.com.pacto.recrutamento.app.serviceImpl.CurriculoServiceImpl;
 import br.com.pacto.recrutamento.core.entities.Curriculo;
 import org.junit.jupiter.api.Test;
 
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class CurriculoServiceImplTest {
     private static final byte[] PDF = "%PDF-1.7\nconteudo".getBytes();

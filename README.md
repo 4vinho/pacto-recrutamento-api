@@ -31,7 +31,8 @@ Os dados do PostgreSQL e do MinIO são mantidos em volumes nomeados.
 
 ## Executar sem Docker
 
-Configure `DATABASE_URL`, `DATABASE_USERNAME` e `DATABASE_PASSWORD` se os valores padrão não atenderem ao seu ambiente. Depois execute:
+Configure `DATABASE_URL`, `DATABASE_USERNAME` e `DATABASE_PASSWORD` se os valores padrão não atenderem ao seu ambiente.
+Depois execute:
 
 ```shell
 mvn spring-boot:run

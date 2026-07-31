@@ -1,7 +1,7 @@
 package br.com.pacto.recrutamento.app.ports.candidato;
 
-import br.com.pacto.recrutamento.infra.candidato.CandidatoJpaAdapter;
 import br.com.pacto.recrutamento.core.entities.Candidato;
+import br.com.pacto.recrutamento.infra.candidato.CandidatoJpaAdapter;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.Entity;

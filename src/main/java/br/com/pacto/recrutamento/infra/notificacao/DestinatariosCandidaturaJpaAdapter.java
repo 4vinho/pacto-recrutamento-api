@@ -1,12 +1,16 @@
 package br.com.pacto.recrutamento.infra.notificacao;
+
 import br.com.pacto.recrutamento.app.ports.notificacao.DestinatariosCandidatura;
 import br.com.pacto.recrutamento.app.ports.notificacao.DestinatariosCandidaturaPort;
 import org.springframework.stereotype.Component;
+
 import java.util.Optional;
 import java.util.UUID;
+
 @Component
 public class DestinatariosCandidaturaJpaAdapter implements DestinatariosCandidaturaPort {
     private final DestinatariosCandidaturaRepository repository;
+
     public DestinatariosCandidaturaJpaAdapter(DestinatariosCandidaturaRepository repository) {
         this.repository = repository;
     }

@@ -1,7 +1,6 @@
 package br.com.pacto.recrutamento.app.ports.curriculo;
 
 import br.com.pacto.recrutamento.app.serviceImpl.CurriculoServiceImpl;
-
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
