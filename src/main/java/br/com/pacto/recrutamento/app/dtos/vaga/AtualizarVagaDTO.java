@@ -16,8 +16,19 @@ public class AtualizarVagaDTO {
         this.descricao = descricao;
     }
 
-    public UUID getUsuarioSolicitanteId() { return usuarioSolicitanteId; }
-    public UUID getVagaId() { return vagaId; }
-    public String getTitulo() { return titulo; }
-    public String getDescricao() { return descricao; }
+    public UUID getUsuarioSolicitanteId() {
+        return usuarioSolicitanteId;
+    }
+
+    public UUID getVagaId() {
+        return vagaId;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
 }

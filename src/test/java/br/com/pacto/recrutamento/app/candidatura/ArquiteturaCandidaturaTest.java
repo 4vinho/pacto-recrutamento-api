@@ -3,6 +3,7 @@ package br.com.pacto.recrutamento.app.ports.candidatura;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
 import org.junit.jupiter.api.Test;
+
 import javax.persistence.Entity;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -10,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ArquiteturaCandidaturaTest {
@@ -23,7 +25,7 @@ class ArquiteturaCandidaturaTest {
                 fontes.filter(path -> path.toString().endsWith(".java")).forEach(path -> {
                     try {
                         String fonte = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-                    assertThat(fonte).doesNotContain("javax.persistence", ".infra.");
+                        assertThat(fonte).doesNotContain("javax.persistence", ".infra.");
                     } catch (IOException ex) {
                         throw new IllegalStateException(ex);
                     }

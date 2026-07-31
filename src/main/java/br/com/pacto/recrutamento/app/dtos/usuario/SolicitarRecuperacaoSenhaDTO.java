@@ -7,5 +7,7 @@ public class SolicitarRecuperacaoSenhaDTO {
         this.email = email;
     }
 
-    public String getEmail() { return email; }
+    public String getEmail() {
+        return email;
+    }
 }

@@ -1,7 +1,5 @@
 package br.com.pacto.recrutamento.app.ports.vaga;
 
-import br.com.pacto.recrutamento.app.serviceImpl.VagaServiceImpl;
-
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
 import br.com.pacto.recrutamento.core.entities.Vaga;

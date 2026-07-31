@@ -92,5 +92,7 @@ Os casos de uso correspondentes são:
 
 - Dado um administrador autenticado, quando atualizar uma vaga válida, então as alterações devem ser registradas.
 - Dado um usuário sem permissão administrativa, quando tentar modificar uma vaga, então a operação deve ser rejeitada.
-- Dado um recurso válido, quando sua exclusão for solicitada, então ele deve ser marcado como excluído sem remoção física.
-- Dado um recurso que não pertence ao pai informado na rota, quando uma alteração for solicitada, então a operação deve ser rejeitada.
+- Dado um recurso válido, quando sua exclusão for solicitada, então ele deve ser marcado como excluído sem remoção
+  física.
+- Dado um recurso que não pertence ao pai informado na rota, quando uma alteração for solicitada, então a operação deve
+  ser rejeitada.

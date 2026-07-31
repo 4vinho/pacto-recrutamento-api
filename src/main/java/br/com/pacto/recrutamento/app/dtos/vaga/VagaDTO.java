@@ -20,9 +20,23 @@ public class VagaDTO {
         this.status = status;
     }
 
-    public UUID getId() { return id; }
-    public UUID getResponsavelId() { return responsavelId; }
-    public String getTitulo() { return titulo; }
-    public String getDescricao() { return descricao; }
-    public StatusVaga getStatus() { return status; }
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getResponsavelId() {
+        return responsavelId;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public StatusVaga getStatus() {
+        return status;
+    }
 }

@@ -11,7 +11,15 @@ public class CadastrarUsuarioDTO {
         this.senha = senha;
     }
 
-    public String getEmail() { return email; }
-    public String getTelefone() { return telefone; }
-    public String getSenha() { return senha; }
+    public String getEmail() {
+        return email;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
 }

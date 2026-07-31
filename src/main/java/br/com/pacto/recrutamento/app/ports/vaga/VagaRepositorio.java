@@ -7,5 +7,6 @@ import java.util.UUID;
 
 public interface VagaRepositorio {
     Optional<Vaga> buscarAtivaPorId(UUID id);
+
     Vaga salvar(Vaga vaga);
 }

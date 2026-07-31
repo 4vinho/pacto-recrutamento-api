@@ -12,6 +12,11 @@ public class CriarCandidatoDTO {
         this.dataAdmissao = dataAdmissao;
     }
 
-    public UUID getUsuarioId() { return usuarioId; }
-    public LocalDate getDataAdmissao() { return dataAdmissao; }
+    public UUID getUsuarioId() {
+        return usuarioId;
+    }
+
+    public LocalDate getDataAdmissao() {
+        return dataAdmissao;
+    }
 }

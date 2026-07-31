@@ -13,7 +13,15 @@ public class RequisitoTemplateVagaDTO {
         this.obrigatorio = obrigatorio;
     }
 
-    public UUID getId() { return id; }
-    public String getDescricao() { return descricao; }
-    public boolean isObrigatorio() { return obrigatorio; }
+    public UUID getId() {
+        return id;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public boolean isObrigatorio() {
+        return obrigatorio;
+    }
 }

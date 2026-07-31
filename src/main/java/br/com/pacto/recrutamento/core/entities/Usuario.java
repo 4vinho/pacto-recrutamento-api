@@ -1,13 +1,6 @@
 package br.com.pacto.recrutamento.core.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,7 +26,9 @@ public class Usuario extends EntidadeAuditavel {
     @Column(name = "excluido_em")
     private OffsetDateTime excluidoEm;
 
-    public Usuario() {}
+    public Usuario() {
+    }
+
     public Usuario(String email, String senhaHash) {
         super(UUID.randomUUID());
         this.email = normalizarEmail(email);
@@ -44,16 +39,51 @@ public class Usuario extends EntidadeAuditavel {
         return email == null ? null : email.trim().toLowerCase();
     }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = normalizarEmail(email); }
-    public String getTelefone() { return telefone; }
-    public void setTelefone(String telefone) { this.telefone = telefone; }
-    public String getSenhaHash() { return senhaHash; }
-    public void setSenhaHash(String senhaHash) { this.senhaHash = senhaHash; }
-    public boolean isAtivo() { return ativo; }
-    public void setAtivo(boolean ativo) { this.ativo = ativo; }
-    public Set<Papel> getPapeis() { return papeis; }
-    public void setPapeis(Set<Papel> papeis) { this.papeis = new HashSet<>(papeis); }
-    public OffsetDateTime getExcluidoEm() { return excluidoEm; }
-    public void setExcluidoEm(OffsetDateTime excluidoEm) { this.excluidoEm = excluidoEm; }
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = normalizarEmail(email);
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public String getSenhaHash() {
+        return senhaHash;
+    }
+
+    public void setSenhaHash(String senhaHash) {
+        this.senhaHash = senhaHash;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public Set<Papel> getPapeis() {
+        return papeis;
+    }
+
+    public void setPapeis(Set<Papel> papeis) {
+        this.papeis = new HashSet<>(papeis);
+    }
+
+    public OffsetDateTime getExcluidoEm() {
+        return excluidoEm;
+    }
+
+    public void setExcluidoEm(OffsetDateTime excluidoEm) {
+        this.excluidoEm = excluidoEm;
+    }
 }

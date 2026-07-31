@@ -21,9 +21,23 @@ public class CandidaturaDTO {
         this.criadaEm = criadaEm;
     }
 
-    public UUID getId() { return id; }
-    public UUID getCandidatoId() { return candidatoId; }
-    public UUID getVagaId() { return vagaId; }
-    public StatusCandidatura getStatus() { return status; }
-    public OffsetDateTime getCriadaEm() { return criadaEm; }
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getCandidatoId() {
+        return candidatoId;
+    }
+
+    public UUID getVagaId() {
+        return vagaId;
+    }
+
+    public StatusCandidatura getStatus() {
+        return status;
+    }
+
+    public OffsetDateTime getCriadaEm() {
+        return criadaEm;
+    }
 }

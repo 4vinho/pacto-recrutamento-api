@@ -11,6 +11,11 @@ public class ExcluirVagaDTO {
         this.vagaId = vagaId;
     }
 
-    public UUID getUsuarioSolicitanteId() { return usuarioSolicitanteId; }
-    public UUID getVagaId() { return vagaId; }
+    public UUID getUsuarioSolicitanteId() {
+        return usuarioSolicitanteId;
+    }
+
+    public UUID getVagaId() {
+        return vagaId;
+    }
 }

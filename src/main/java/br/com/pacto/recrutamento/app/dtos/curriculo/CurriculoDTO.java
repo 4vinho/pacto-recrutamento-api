@@ -18,9 +18,23 @@ public class CurriculoDTO {
         this.checksumSha256 = checksumSha256;
     }
 
-    public UUID getId() { return id; }
-    public String getNomeOriginal() { return nomeOriginal; }
-    public String getContentType() { return contentType; }
-    public long getTamanhoBytes() { return tamanhoBytes; }
-    public String getChecksumSha256() { return checksumSha256; }
+    public UUID getId() {
+        return id;
+    }
+
+    public String getNomeOriginal() {
+        return nomeOriginal;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public long getTamanhoBytes() {
+        return tamanhoBytes;
+    }
+
+    public String getChecksumSha256() {
+        return checksumSha256;
+    }
 }

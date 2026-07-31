@@ -7,5 +7,7 @@ public class RenovarSessaoDTO {
         this.refreshToken = refreshToken;
     }
 
-    public String getRefreshToken() { return refreshToken; }
+    public String getRefreshToken() {
+        return refreshToken;
+    }
 }

@@ -9,8 +9,11 @@ import java.util.UUID;
 
 public interface CandidaturaRepositorio {
     Optional<Candidatura> buscarPorId(UUID candidaturaId);
+
     boolean existePorCandidatoIdEVagaId(UUID candidatoId, UUID vagaId);
+
     Candidatura salvar(Candidatura candidatura);
+
     void salvarRespostasAtomicamente(List<RespostaCandidatura> respostas);
 
     final class CandidaturaDuplicadaException extends RuntimeException {
@@ -18,7 +21,10 @@ public interface CandidaturaRepositorio {
             super("Candidatura duplicada");
         }
     }
+
     final class RespostasDuplicadasException extends RuntimeException {
-        public RespostasDuplicadasException() { super("Resposta duplicada"); }
+        public RespostasDuplicadasException() {
+            super("Resposta duplicada");
+        }
     }
 }

@@ -11,6 +11,11 @@ public class RespostaCandidaturaDTO {
         this.valor = valor;
     }
 
-    public UUID getPerguntaId() { return perguntaId; }
-    public String getValor() { return valor; }
+    public UUID getPerguntaId() {
+        return perguntaId;
+    }
+
+    public String getValor() {
+        return valor;
+    }
 }

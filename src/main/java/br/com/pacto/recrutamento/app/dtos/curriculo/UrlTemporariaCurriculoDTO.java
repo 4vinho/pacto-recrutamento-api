@@ -11,6 +11,11 @@ public class UrlTemporariaCurriculoDTO {
         this.expiraEm = expiraEm;
     }
 
-    public String getUrl() { return url; }
-    public OffsetDateTime getExpiraEm() { return expiraEm; }
+    public String getUrl() {
+        return url;
+    }
+
+    public OffsetDateTime getExpiraEm() {
+        return expiraEm;
+    }
 }

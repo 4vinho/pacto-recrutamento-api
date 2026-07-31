@@ -11,6 +11,11 @@ public class CriarVagaAPartirDoTemplateDTO {
         this.templateId = templateId;
     }
 
-    public UUID getUsuarioSolicitanteId() { return usuarioSolicitanteId; }
-    public UUID getTemplateId() { return templateId; }
+    public UUID getUsuarioSolicitanteId() {
+        return usuarioSolicitanteId;
+    }
+
+    public UUID getTemplateId() {
+        return templateId;
+    }
 }

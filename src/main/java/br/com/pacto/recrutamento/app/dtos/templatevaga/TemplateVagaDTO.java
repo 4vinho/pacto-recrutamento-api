@@ -15,8 +15,19 @@ public class TemplateVagaDTO {
         this.descricao = descricao;
     }
 
-    public UUID getId() { return id; }
-    public UUID getResponsavelId() { return responsavelId; }
-    public String getTitulo() { return titulo; }
-    public String getDescricao() { return descricao; }
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getResponsavelId() {
+        return responsavelId;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
 }

@@ -18,9 +18,23 @@ public class SalvarRequisitoVagaDTO {
         this.obrigatorio = obrigatorio;
     }
 
-    public UUID getUsuarioSolicitanteId() { return usuarioSolicitanteId; }
-    public UUID getVagaId() { return vagaId; }
-    public UUID getRequisitoId() { return requisitoId; }
-    public String getDescricao() { return descricao; }
-    public boolean isObrigatorio() { return obrigatorio; }
+    public UUID getUsuarioSolicitanteId() {
+        return usuarioSolicitanteId;
+    }
+
+    public UUID getVagaId() {
+        return vagaId;
+    }
+
+    public UUID getRequisitoId() {
+        return requisitoId;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public boolean isObrigatorio() {
+        return obrigatorio;
+    }
 }

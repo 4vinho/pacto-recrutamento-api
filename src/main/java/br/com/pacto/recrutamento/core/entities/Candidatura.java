@@ -2,15 +2,7 @@ package br.com.pacto.recrutamento.core.entities;
 
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -39,6 +31,7 @@ public class Candidatura {
         criadoEm = OffsetDateTime.now();
         atualizadoEm = criadoEm;
     }
+
     public Candidatura(UUID candidatoId, UUID vagaId) {
         this();
         this.candidatoId = candidatoId;
@@ -66,13 +59,35 @@ public class Candidatura {
         setStatus(StatusCandidatura.CANCELADA);
         canceladoEm = data;
     }
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
-    public UUID getCandidatoId() { return candidatoId; }
-    public void setCandidatoId(UUID candidatoId) { this.candidatoId = candidatoId; }
-    public UUID getVagaId() { return vagaId; }
-    public void setVagaId(UUID vagaId) { this.vagaId = vagaId; }
-    public StatusCandidatura getStatus() { return status; }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public UUID getCandidatoId() {
+        return candidatoId;
+    }
+
+    public void setCandidatoId(UUID candidatoId) {
+        this.candidatoId = candidatoId;
+    }
+
+    public UUID getVagaId() {
+        return vagaId;
+    }
+
+    public void setVagaId(UUID vagaId) {
+        this.vagaId = vagaId;
+    }
+
+    public StatusCandidatura getStatus() {
+        return status;
+    }
+
     public void setStatus(StatusCandidatura novoStatus) {
         if (novoStatus == null) {
             throw new IllegalArgumentException("O status da candidatura é obrigatório");
@@ -102,10 +117,28 @@ public class Candidatura {
         }
         return false;
     }
-    public OffsetDateTime getCanceladoEm() { return canceladoEm; }
-    public void setCanceladoEm(OffsetDateTime canceladoEm) { this.canceladoEm = canceladoEm; }
-    public OffsetDateTime getCriadoEm() { return criadoEm; }
-    public void setCriadoEm(OffsetDateTime criadoEm) { this.criadoEm = criadoEm; }
-    public OffsetDateTime getAtualizadoEm() { return atualizadoEm; }
-    public void setAtualizadoEm(OffsetDateTime atualizadoEm) { this.atualizadoEm = atualizadoEm; }
+
+    public OffsetDateTime getCanceladoEm() {
+        return canceladoEm;
+    }
+
+    public void setCanceladoEm(OffsetDateTime canceladoEm) {
+        this.canceladoEm = canceladoEm;
+    }
+
+    public OffsetDateTime getCriadoEm() {
+        return criadoEm;
+    }
+
+    public void setCriadoEm(OffsetDateTime criadoEm) {
+        this.criadoEm = criadoEm;
+    }
+
+    public OffsetDateTime getAtualizadoEm() {
+        return atualizadoEm;
+    }
+
+    public void setAtualizadoEm(OffsetDateTime atualizadoEm) {
+        this.atualizadoEm = atualizadoEm;
+    }
 }

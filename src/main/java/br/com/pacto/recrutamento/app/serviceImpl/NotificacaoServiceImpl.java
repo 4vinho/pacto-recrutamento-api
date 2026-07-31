@@ -1,17 +1,17 @@
 package br.com.pacto.recrutamento.app.serviceImpl;
 
+import br.com.pacto.recrutamento.app.dtos.notificacao.CandidaturaCriadaDTO;
+import br.com.pacto.recrutamento.app.dtos.notificacao.StatusCandidaturaAlteradoDTO;
 import br.com.pacto.recrutamento.app.ports.notificacao.CanalNotificacao;
 import br.com.pacto.recrutamento.app.ports.notificacao.DestinatariosCandidatura;
 import br.com.pacto.recrutamento.app.ports.notificacao.DestinatariosCandidaturaPort;
 import br.com.pacto.recrutamento.app.ports.notificacao.NotificacaoPort;
-
-import br.com.pacto.recrutamento.app.dtos.notificacao.CandidaturaCriadaDTO;
-import br.com.pacto.recrutamento.app.dtos.notificacao.StatusCandidaturaAlteradoDTO;
 import br.com.pacto.recrutamento.app.services.NotificacaoService;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Notificacao;
 import br.com.pacto.recrutamento.core.enums.TipoNotificacao;
 import org.springframework.stereotype.Service;
+
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,11 +21,13 @@ public class NotificacaoServiceImpl implements NotificacaoService {
     private final DestinatariosCandidaturaPort destinatarios;
     private final NotificacaoPort notificacoes;
     private final CanalNotificacao canal;
+
     public NotificacaoServiceImpl(DestinatariosCandidaturaPort destinatarios, NotificacaoPort notificacoes, CanalNotificacao canal) {
         this.destinatarios = destinatarios;
         this.notificacoes = notificacoes;
         this.canal = canal;
     }
+
     public TypedResponse<Void> processarCandidaturaCriada(CandidaturaCriadaDTO evento) {
         if (evento == null || evento.getEventoId() == null || evento.getCandidaturaId() == null) {
             return resposta(400);
@@ -39,6 +41,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         }
         return resposta(202);
     }
+
     public TypedResponse<Void> processarStatusCandidaturaAlterado(StatusCandidaturaAlteradoDTO evento) {
         if (evento == null || evento.getEventoId() == null
                 || evento.getCandidaturaId() == null || evento.getNovoStatus() == null) {
@@ -52,6 +55,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
                 "Status da candidatura atualizado", "O status da candidatura foi atualizado.");
         return resposta(202);
     }
+
     private void processar(UUID eventoId, UUID usuarioId, TipoNotificacao tipo, String titulo, String mensagem) {
         Optional<Notificacao> existente = notificacoes.buscarPorEventoEDestinatario(eventoId, usuarioId);
         Notificacao notificacao = existente.orElseGet(
@@ -65,6 +69,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         }
         notificacoes.salvar(notificacao);
     }
+
     private TypedResponse<Void> resposta(int status) {
         return new TypedResponse<>(status, "Notificacao processada.", null);
     }

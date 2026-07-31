@@ -24,22 +24,6 @@ public class TypedPagedResponse<T> extends TypedResponse<List<T>> {
         this.totalItems = totalItems;
     }
 
-    public int getPage() {
-        return page;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public long getTotalItems() {
-        return totalItems;
-    }
-
-    public int getTotalPages() {
-        return (int) Math.ceil((double) totalItems / pageSize);
-    }
-
     private static void validatePagination(int page, int pageSize, long totalItems) {
         if (page < 0) {
             throw new IllegalArgumentException("A página não pode ser negativa.");
@@ -57,5 +41,21 @@ public class TypedPagedResponse<T> extends TypedResponse<List<T>> {
             return Collections.emptyList();
         }
         return Collections.unmodifiableList(new ArrayList<>(data));
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public long getTotalItems() {
+        return totalItems;
+    }
+
+    public int getTotalPages() {
+        return (int) Math.ceil((double) totalItems / pageSize);
     }
 }

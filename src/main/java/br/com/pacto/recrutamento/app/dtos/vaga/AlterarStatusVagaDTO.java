@@ -15,7 +15,15 @@ public class AlterarStatusVagaDTO {
         this.status = status;
     }
 
-    public UUID getUsuarioSolicitanteId() { return usuarioSolicitanteId; }
-    public UUID getVagaId() { return vagaId; }
-    public StatusVaga getStatus() { return status; }
+    public UUID getUsuarioSolicitanteId() {
+        return usuarioSolicitanteId;
+    }
+
+    public UUID getVagaId() {
+        return vagaId;
+    }
+
+    public StatusVaga getStatus() {
+        return status;
+    }
 }

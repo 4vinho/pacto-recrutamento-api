@@ -23,9 +23,23 @@ public class StatusCandidaturaAlteradoDTO {
         this.ocorridaEm = ocorridaEm;
     }
 
-    public UUID getEventoId() { return eventoId; }
-    public UUID getCandidaturaId() { return candidaturaId; }
-    public StatusCandidatura getStatusAnterior() { return statusAnterior; }
-    public StatusCandidatura getNovoStatus() { return novoStatus; }
-    public OffsetDateTime getOcorridaEm() { return ocorridaEm; }
+    public UUID getEventoId() {
+        return eventoId;
+    }
+
+    public UUID getCandidaturaId() {
+        return candidaturaId;
+    }
+
+    public StatusCandidatura getStatusAnterior() {
+        return statusAnterior;
+    }
+
+    public StatusCandidatura getNovoStatus() {
+        return novoStatus;
+    }
+
+    public OffsetDateTime getOcorridaEm() {
+        return ocorridaEm;
+    }
 }

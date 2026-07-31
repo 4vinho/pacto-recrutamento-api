@@ -13,7 +13,15 @@ public class UsuarioDTO {
         this.telefone = telefone;
     }
 
-    public UUID getId() { return id; }
-    public String getEmail() { return email; }
-    public String getTelefone() { return telefone; }
+    public UUID getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
 }

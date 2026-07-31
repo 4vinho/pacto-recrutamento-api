@@ -17,8 +17,19 @@ public class SubstituirCurriculoDTO {
         this.conteudo = Arrays.copyOf(conteudo, conteudo.length);
     }
 
-    public UUID getUsuarioId() { return usuarioId; }
-    public String getNomeOriginal() { return nomeOriginal; }
-    public String getContentType() { return contentType; }
-    public byte[] getConteudo() { return Arrays.copyOf(conteudo, conteudo.length); }
+    public UUID getUsuarioId() {
+        return usuarioId;
+    }
+
+    public String getNomeOriginal() {
+        return nomeOriginal;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public byte[] getConteudo() {
+        return Arrays.copyOf(conteudo, conteudo.length);
+    }
 }

@@ -16,8 +16,19 @@ public class AtualizarTemplateVagaDTO {
         this.descricao = descricao;
     }
 
-    public UUID getUsuarioSolicitanteId() { return usuarioSolicitanteId; }
-    public UUID getTemplateId() { return templateId; }
-    public String getTitulo() { return titulo; }
-    public String getDescricao() { return descricao; }
+    public UUID getUsuarioSolicitanteId() {
+        return usuarioSolicitanteId;
+    }
+
+    public UUID getTemplateId() {
+        return templateId;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
 }

@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 @Repository
 public class CandidatoJpaAdapter implements CandidatoRepository {
     private final CandidatoJpaRepository repository;
+
     public CandidatoJpaAdapter(CandidatoJpaRepository repository) {
         this.repository = repository;
     }

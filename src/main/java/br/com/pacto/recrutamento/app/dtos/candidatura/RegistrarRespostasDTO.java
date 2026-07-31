@@ -17,7 +17,15 @@ public class RegistrarRespostasDTO {
         this.respostas = Collections.unmodifiableList(new ArrayList<>(respostas));
     }
 
-    public UUID getUsuarioId() { return usuarioId; }
-    public UUID getCandidaturaId() { return candidaturaId; }
-    public List<RespostaCandidaturaDTO> getRespostas() { return respostas; }
+    public UUID getUsuarioId() {
+        return usuarioId;
+    }
+
+    public UUID getCandidaturaId() {
+        return candidaturaId;
+    }
+
+    public List<RespostaCandidaturaDTO> getRespostas() {
+        return respostas;
+    }
 }

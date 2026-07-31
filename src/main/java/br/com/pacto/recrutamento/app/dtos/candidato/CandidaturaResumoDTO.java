@@ -14,8 +14,8 @@ public class CandidaturaResumoDTO {
     private final String feedback;
 
     public CandidaturaResumoDTO(UUID candidaturaId, UUID vagaId, String tituloVaga,
-                               StatusCandidatura status, OffsetDateTime criadaEm,
-                               String feedback) {
+                                StatusCandidatura status, OffsetDateTime criadaEm,
+                                String feedback) {
         this.candidaturaId = candidaturaId;
         this.vagaId = vagaId;
         this.tituloVaga = tituloVaga;
@@ -24,10 +24,27 @@ public class CandidaturaResumoDTO {
         this.feedback = feedback;
     }
 
-    public UUID getCandidaturaId() { return candidaturaId; }
-    public UUID getVagaId() { return vagaId; }
-    public String getTituloVaga() { return tituloVaga; }
-    public StatusCandidatura getStatus() { return status; }
-    public OffsetDateTime getCriadaEm() { return criadaEm; }
-    public String getFeedback() { return feedback; }
+    public UUID getCandidaturaId() {
+        return candidaturaId;
+    }
+
+    public UUID getVagaId() {
+        return vagaId;
+    }
+
+    public String getTituloVaga() {
+        return tituloVaga;
+    }
+
+    public StatusCandidatura getStatus() {
+        return status;
+    }
+
+    public OffsetDateTime getCriadaEm() {
+        return criadaEm;
+    }
+
+    public String getFeedback() {
+        return feedback;
+    }
 }

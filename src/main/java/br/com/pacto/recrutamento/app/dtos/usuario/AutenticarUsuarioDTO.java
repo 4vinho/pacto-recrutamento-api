@@ -9,6 +9,11 @@ public class AutenticarUsuarioDTO {
         this.senha = senha;
     }
 
-    public String getEmail() { return email; }
-    public String getSenha() { return senha; }
+    public String getEmail() {
+        return email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
 }

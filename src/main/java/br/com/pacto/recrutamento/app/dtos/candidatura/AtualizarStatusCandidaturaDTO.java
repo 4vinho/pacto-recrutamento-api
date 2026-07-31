@@ -16,7 +16,15 @@ public class AtualizarStatusCandidaturaDTO {
         this.status = status;
     }
 
-    public UUID getUsuarioSolicitanteId() { return usuarioSolicitanteId; }
-    public UUID getCandidaturaId() { return candidaturaId; }
-    public StatusCandidatura getStatus() { return status; }
+    public UUID getUsuarioSolicitanteId() {
+        return usuarioSolicitanteId;
+    }
+
+    public UUID getCandidaturaId() {
+        return candidaturaId;
+    }
+
+    public StatusCandidatura getStatus() {
+        return status;
+    }
 }

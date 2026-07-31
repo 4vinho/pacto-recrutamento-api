@@ -26,11 +26,31 @@ public class SalvarPerguntaTemplateVagaDTO {
         this.ordem = ordem;
     }
 
-    public UUID getUsuarioSolicitanteId() { return usuarioSolicitanteId; }
-    public UUID getTemplateId() { return templateId; }
-    public UUID getPerguntaId() { return perguntaId; }
-    public String getEnunciado() { return enunciado; }
-    public TipoResposta getTipoResposta() { return tipoResposta; }
-    public boolean isObrigatoria() { return obrigatoria; }
-    public int getOrdem() { return ordem; }
+    public UUID getUsuarioSolicitanteId() {
+        return usuarioSolicitanteId;
+    }
+
+    public UUID getTemplateId() {
+        return templateId;
+    }
+
+    public UUID getPerguntaId() {
+        return perguntaId;
+    }
+
+    public String getEnunciado() {
+        return enunciado;
+    }
+
+    public TipoResposta getTipoResposta() {
+        return tipoResposta;
+    }
+
+    public boolean isObrigatoria() {
+        return obrigatoria;
+    }
+
+    public int getOrdem() {
+        return ordem;
+    }
 }

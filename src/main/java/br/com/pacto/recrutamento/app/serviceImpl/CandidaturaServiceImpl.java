@@ -1,36 +1,16 @@
 package br.com.pacto.recrutamento.app.serviceImpl;
 
-import br.com.pacto.recrutamento.app.ports.candidatura.AutorizacaoResponsavelCandidatura;
-import br.com.pacto.recrutamento.app.ports.candidatura.CandidaturaRepositorio;
-import br.com.pacto.recrutamento.app.ports.candidatura.EventosCandidatura;
-import br.com.pacto.recrutamento.app.ports.candidatura.PerguntaCandidaturaRepositorio;
-import br.com.pacto.recrutamento.app.ports.candidatura.VagaCandidaturaRepositorio;
-
-import br.com.pacto.recrutamento.app.dtos.candidatura.AtualizarStatusCandidaturaDTO;
-import br.com.pacto.recrutamento.app.dtos.candidatura.CancelarCandidaturaDTO;
-import br.com.pacto.recrutamento.app.dtos.candidatura.CandidaturaDTO;
-import br.com.pacto.recrutamento.app.dtos.candidatura.ConsultarCandidaturaDTO;
-import br.com.pacto.recrutamento.app.dtos.candidatura.CriarCandidaturaDTO;
-import br.com.pacto.recrutamento.app.dtos.candidatura.RegistrarRespostasDTO;
-import br.com.pacto.recrutamento.app.dtos.candidatura.RespostaCandidaturaDTO;
+import br.com.pacto.recrutamento.app.dtos.candidatura.*;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
+import br.com.pacto.recrutamento.app.ports.candidatura.*;
 import br.com.pacto.recrutamento.app.services.CandidaturaService;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
-import br.com.pacto.recrutamento.core.entities.Candidatura;
-import br.com.pacto.recrutamento.core.entities.Candidato;
-import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
-import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
-import br.com.pacto.recrutamento.core.entities.Vaga;
+import br.com.pacto.recrutamento.core.entities.*;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class CandidaturaServiceImpl implements CandidaturaService {
@@ -196,7 +176,7 @@ public class CandidaturaServiceImpl implements CandidaturaService {
     }
 
     private List<RespostaCandidatura> validarLote(Candidatura candidatura,
-                                                   List<RespostaCandidaturaDTO> respostas) {
+                                                  List<RespostaCandidaturaDTO> respostas) {
         List<RespostaCandidatura> lote = new ArrayList<>();
         for (RespostaCandidaturaDTO resposta : respostas) {
             if (!respostaValida(candidatura, resposta)) {

@@ -13,7 +13,15 @@ public class ListarMinhasCandidaturasDTO {
         this.pageSize = pageSize;
     }
 
-    public UUID getUsuarioId() { return usuarioId; }
-    public int getPage() { return page; }
-    public int getPageSize() { return pageSize; }
+    public UUID getUsuarioId() {
+        return usuarioId;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
 }

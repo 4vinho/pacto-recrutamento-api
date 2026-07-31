@@ -1,31 +1,11 @@
 package br.com.pacto.recrutamento.app.serviceImpl;
 
-import br.com.pacto.recrutamento.app.ports.templatevaga.AutorizacaoTemplateVaga;
-import br.com.pacto.recrutamento.app.ports.templatevaga.PerguntaTemplateVagaRepositorio;
-import br.com.pacto.recrutamento.app.ports.templatevaga.PerguntaVagaTemplateRepositorio;
-import br.com.pacto.recrutamento.app.ports.templatevaga.RequisitoTemplateVagaRepositorio;
-import br.com.pacto.recrutamento.app.ports.templatevaga.RequisitoVagaTemplateRepositorio;
-import br.com.pacto.recrutamento.app.ports.templatevaga.TemplateVagaRepositorio;
-import br.com.pacto.recrutamento.app.ports.templatevaga.VagaTemplateRepositorio;
-
-import br.com.pacto.recrutamento.app.dtos.templatevaga.AtualizarTemplateVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.templatevaga.CriarTemplateVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.templatevaga.CriarVagaAPartirDoTemplateDTO;
-import br.com.pacto.recrutamento.app.dtos.templatevaga.ExcluirItemTemplateVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.templatevaga.PerguntaTemplateVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.templatevaga.RequisitoTemplateVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.templatevaga.SalvarPerguntaTemplateVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.templatevaga.SalvarRequisitoTemplateVagaDTO;
-import br.com.pacto.recrutamento.app.dtos.templatevaga.TemplateVagaDTO;
+import br.com.pacto.recrutamento.app.dtos.templatevaga.*;
 import br.com.pacto.recrutamento.app.dtos.vaga.VagaDTO;
+import br.com.pacto.recrutamento.app.ports.templatevaga.*;
 import br.com.pacto.recrutamento.app.services.TemplateVagaService;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
-import br.com.pacto.recrutamento.core.entities.PerguntaTemplateVaga;
-import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
-import br.com.pacto.recrutamento.core.entities.RequisitoTemplateVaga;
-import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
-import br.com.pacto.recrutamento.core.entities.TemplateVaga;
-import br.com.pacto.recrutamento.core.entities.Vaga;
+import br.com.pacto.recrutamento.core.entities.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,7 +91,8 @@ public class TemplateVagaServiceImpl implements TemplateVagaService {
 
     @Override
     public TypedResponse<PerguntaTemplateVagaDTO> atualizarPerguntaDoTemplate(SalvarPerguntaTemplateVagaDTO command) {
-        if (command == null || command.getPerguntaId() == null || perguntaInvalida(command)) return erro(400, "Dados da pergunta invalidos");
+        if (command == null || command.getPerguntaId() == null || perguntaInvalida(command))
+            return erro(400, "Dados da pergunta invalidos");
         if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, "Acesso nao autorizado");
         if (!templateExiste(command.getTemplateId())) return erro(404, "Template nao encontrado");
         Optional<PerguntaTemplateVaga> pergunta = perguntas.buscarAtivaPorId(command.getPerguntaId());
@@ -126,7 +107,8 @@ public class TemplateVagaServiceImpl implements TemplateVagaService {
         if (!administrador(command.getUsuarioSolicitanteId())) return vazio(403, "Acesso nao autorizado");
         if (!templateExiste(command.getTemplateId())) return vazio(404, "Template nao encontrado");
         Optional<PerguntaTemplateVaga> pergunta = perguntas.buscarAtivaPorId(command.getItemId());
-        if (!perguntaPertenceAoTemplate(pergunta, command.getTemplateId())) return vazio(404, "Pergunta nao encontrada");
+        if (!perguntaPertenceAoTemplate(pergunta, command.getTemplateId()))
+            return vazio(404, "Pergunta nao encontrada");
         pergunta.get().setExcluidoEm(agora());
         perguntas.salvar(pergunta.get());
         return vazio(204, "Pergunta excluida");
@@ -144,11 +126,13 @@ public class TemplateVagaServiceImpl implements TemplateVagaService {
 
     @Override
     public TypedResponse<RequisitoTemplateVagaDTO> atualizarRequisitoDoTemplate(SalvarRequisitoTemplateVagaDTO command) {
-        if (command == null || command.getRequisitoId() == null || requisitoInvalido(command)) return erro(400, "Dados do requisito invalidos");
+        if (command == null || command.getRequisitoId() == null || requisitoInvalido(command))
+            return erro(400, "Dados do requisito invalidos");
         if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, "Acesso nao autorizado");
         if (!templateExiste(command.getTemplateId())) return erro(404, "Template nao encontrado");
         Optional<RequisitoTemplateVaga> requisito = requisitos.buscarAtivoPorId(command.getRequisitoId());
-        if (!requisitoPertenceAoTemplate(requisito, command.getTemplateId())) return erro(404, "Requisito nao encontrado");
+        if (!requisitoPertenceAoTemplate(requisito, command.getTemplateId()))
+            return erro(404, "Requisito nao encontrado");
         preencher(requisito.get(), command);
         return respostaRequisito(200, "Requisito atualizado", requisitos.salvar(requisito.get()));
     }
@@ -159,7 +143,8 @@ public class TemplateVagaServiceImpl implements TemplateVagaService {
         if (!administrador(command.getUsuarioSolicitanteId())) return vazio(403, "Acesso nao autorizado");
         if (!templateExiste(command.getTemplateId())) return vazio(404, "Template nao encontrado");
         Optional<RequisitoTemplateVaga> requisito = requisitos.buscarAtivoPorId(command.getItemId());
-        if (!requisitoPertenceAoTemplate(requisito, command.getTemplateId())) return vazio(404, "Requisito nao encontrado");
+        if (!requisitoPertenceAoTemplate(requisito, command.getTemplateId()))
+            return vazio(404, "Requisito nao encontrado");
         requisito.get().setExcluidoEm(agora());
         requisitos.salvar(requisito.get());
         return vazio(204, "Requisito excluido");
@@ -178,27 +163,113 @@ public class TemplateVagaServiceImpl implements TemplateVagaService {
         return respostaVaga(vaga);
     }
 
-    private Vaga criarVaga(TemplateVaga template) { return new Vaga(template.getResponsavelId(), template.getTitulo(), template.getDescricao()); }
-    private void copiarPerguntas(UUID templateId, UUID vagaId) { for (PerguntaTemplateVaga origem : perguntas.listarAtivasDoTemplate(templateId)) perguntasVaga.salvar(copiar(origem, vagaId)); }
-    private void copiarRequisitos(UUID templateId, UUID vagaId) { for (RequisitoTemplateVaga origem : requisitos.listarAtivosDoTemplate(templateId)) requisitosVaga.salvar(copiar(origem, vagaId)); }
-    private PerguntaVaga copiar(PerguntaTemplateVaga origem, UUID vagaId) { PerguntaVaga destino = new PerguntaVaga(); destino.setVagaId(vagaId); destino.setEnunciado(origem.getEnunciado()); destino.setTipoResposta(origem.getTipoResposta()); destino.setObrigatoria(origem.isObrigatoria()); destino.setOrdem(origem.getOrdem()); return destino; }
-    private RequisitoVaga copiar(RequisitoTemplateVaga origem, UUID vagaId) { RequisitoVaga destino = new RequisitoVaga(); destino.setVagaId(vagaId); destino.setDescricao(origem.getDescricao()); destino.setObrigatorio(origem.isObrigatorio()); return destino; }
-    private boolean templateExiste(UUID id) { return templates.buscarAtivoPorId(id).isPresent(); }
-    private boolean administrador(UUID id) { return id != null && autorizacao.podeManterTemplates(id); }
-    private boolean camposTemplateInvalidos(String titulo, String descricao) { return emBranco(titulo) || emBranco(descricao); }
-    private boolean perguntaInvalida(SalvarPerguntaTemplateVagaDTO command) { return command.getTemplateId() == null || emBranco(command.getEnunciado()) || command.getTipoResposta() == null || command.getOrdem() <= 0; }
-    private boolean requisitoInvalido(SalvarRequisitoTemplateVagaDTO command) { return command.getTemplateId() == null || emBranco(command.getDescricao()); }
-    private boolean itemInvalido(ExcluirItemTemplateVagaDTO command) { return command == null || command.getTemplateId() == null || command.getItemId() == null; }
-    private boolean emBranco(String valor) { return valor == null || valor.trim().isEmpty(); }
-    private boolean perguntaPertenceAoTemplate(Optional<PerguntaTemplateVaga> pergunta, UUID templateId) { return pergunta.isPresent() && templateId.equals(pergunta.get().getTemplateVagaId()); }
-    private boolean requisitoPertenceAoTemplate(Optional<RequisitoTemplateVaga> requisito, UUID templateId) { return requisito.isPresent() && templateId.equals(requisito.get().getTemplateVagaId()); }
-    private OffsetDateTime agora() { return OffsetDateTime.now(clock); }
-    private void preencher(PerguntaTemplateVaga pergunta, SalvarPerguntaTemplateVagaDTO command) { pergunta.setTemplateVagaId(command.getTemplateId()); pergunta.setEnunciado(command.getEnunciado()); pergunta.setTipoResposta(command.getTipoResposta()); pergunta.setObrigatoria(command.isObrigatoria()); pergunta.setOrdem(command.getOrdem()); }
-    private void preencher(RequisitoTemplateVaga requisito, SalvarRequisitoTemplateVagaDTO command) { requisito.setTemplateVagaId(command.getTemplateId()); requisito.setDescricao(command.getDescricao()); requisito.setObrigatorio(command.isObrigatorio()); }
-    private TypedResponse<TemplateVagaDTO> respostaTemplate(int status, String mensagem, TemplateVaga template) { return new TypedResponse<TemplateVagaDTO>(status, mensagem, new TemplateVagaDTO(template.getId(), template.getResponsavelId(), template.getTitulo(), template.getDescricao())); }
-    private TypedResponse<PerguntaTemplateVagaDTO> respostaPergunta(int status, String mensagem, PerguntaTemplateVaga pergunta) { return new TypedResponse<PerguntaTemplateVagaDTO>(status, mensagem, new PerguntaTemplateVagaDTO(pergunta.getId(), pergunta.getEnunciado(), pergunta.getTipoResposta(), pergunta.isObrigatoria(), pergunta.getOrdem())); }
-    private TypedResponse<RequisitoTemplateVagaDTO> respostaRequisito(int status, String mensagem, RequisitoTemplateVaga requisito) { return new TypedResponse<RequisitoTemplateVagaDTO>(status, mensagem, new RequisitoTemplateVagaDTO(requisito.getId(), requisito.getDescricao(), requisito.isObrigatorio())); }
-    private TypedResponse<VagaDTO> respostaVaga(Vaga vaga) { return new TypedResponse<VagaDTO>(201, "Vaga criada a partir do template", new VagaDTO(vaga.getId(), vaga.getResponsavelId(), vaga.getTitulo(), vaga.getDescricao(), vaga.getStatus())); }
-    private <T> TypedResponse<T> erro(int status, String mensagem) { return new TypedResponse<T>(status, mensagem, null); }
-    private TypedResponse<Void> vazio(int status, String mensagem) { return new TypedResponse<Void>(status, mensagem, null); }
+    private Vaga criarVaga(TemplateVaga template) {
+        return new Vaga(template.getResponsavelId(), template.getTitulo(), template.getDescricao());
+    }
+
+    private void copiarPerguntas(UUID templateId, UUID vagaId) {
+        for (PerguntaTemplateVaga origem : perguntas.listarAtivasDoTemplate(templateId))
+            perguntasVaga.salvar(copiar(origem, vagaId));
+    }
+
+    private void copiarRequisitos(UUID templateId, UUID vagaId) {
+        for (RequisitoTemplateVaga origem : requisitos.listarAtivosDoTemplate(templateId))
+            requisitosVaga.salvar(copiar(origem, vagaId));
+    }
+
+    private PerguntaVaga copiar(PerguntaTemplateVaga origem, UUID vagaId) {
+        PerguntaVaga destino = new PerguntaVaga();
+        destino.setVagaId(vagaId);
+        destino.setEnunciado(origem.getEnunciado());
+        destino.setTipoResposta(origem.getTipoResposta());
+        destino.setObrigatoria(origem.isObrigatoria());
+        destino.setOrdem(origem.getOrdem());
+        return destino;
+    }
+
+    private RequisitoVaga copiar(RequisitoTemplateVaga origem, UUID vagaId) {
+        RequisitoVaga destino = new RequisitoVaga();
+        destino.setVagaId(vagaId);
+        destino.setDescricao(origem.getDescricao());
+        destino.setObrigatorio(origem.isObrigatorio());
+        return destino;
+    }
+
+    private boolean templateExiste(UUID id) {
+        return templates.buscarAtivoPorId(id).isPresent();
+    }
+
+    private boolean administrador(UUID id) {
+        return id != null && autorizacao.podeManterTemplates(id);
+    }
+
+    private boolean camposTemplateInvalidos(String titulo, String descricao) {
+        return emBranco(titulo) || emBranco(descricao);
+    }
+
+    private boolean perguntaInvalida(SalvarPerguntaTemplateVagaDTO command) {
+        return command.getTemplateId() == null || emBranco(command.getEnunciado()) || command.getTipoResposta() == null || command.getOrdem() <= 0;
+    }
+
+    private boolean requisitoInvalido(SalvarRequisitoTemplateVagaDTO command) {
+        return command.getTemplateId() == null || emBranco(command.getDescricao());
+    }
+
+    private boolean itemInvalido(ExcluirItemTemplateVagaDTO command) {
+        return command == null || command.getTemplateId() == null || command.getItemId() == null;
+    }
+
+    private boolean emBranco(String valor) {
+        return valor == null || valor.trim().isEmpty();
+    }
+
+    private boolean perguntaPertenceAoTemplate(Optional<PerguntaTemplateVaga> pergunta, UUID templateId) {
+        return pergunta.isPresent() && templateId.equals(pergunta.get().getTemplateVagaId());
+    }
+
+    private boolean requisitoPertenceAoTemplate(Optional<RequisitoTemplateVaga> requisito, UUID templateId) {
+        return requisito.isPresent() && templateId.equals(requisito.get().getTemplateVagaId());
+    }
+
+    private OffsetDateTime agora() {
+        return OffsetDateTime.now(clock);
+    }
+
+    private void preencher(PerguntaTemplateVaga pergunta, SalvarPerguntaTemplateVagaDTO command) {
+        pergunta.setTemplateVagaId(command.getTemplateId());
+        pergunta.setEnunciado(command.getEnunciado());
+        pergunta.setTipoResposta(command.getTipoResposta());
+        pergunta.setObrigatoria(command.isObrigatoria());
+        pergunta.setOrdem(command.getOrdem());
+    }
+
+    private void preencher(RequisitoTemplateVaga requisito, SalvarRequisitoTemplateVagaDTO command) {
+        requisito.setTemplateVagaId(command.getTemplateId());
+        requisito.setDescricao(command.getDescricao());
+        requisito.setObrigatorio(command.isObrigatorio());
+    }
+
+    private TypedResponse<TemplateVagaDTO> respostaTemplate(int status, String mensagem, TemplateVaga template) {
+        return new TypedResponse<TemplateVagaDTO>(status, mensagem, new TemplateVagaDTO(template.getId(), template.getResponsavelId(), template.getTitulo(), template.getDescricao()));
+    }
+
+    private TypedResponse<PerguntaTemplateVagaDTO> respostaPergunta(int status, String mensagem, PerguntaTemplateVaga pergunta) {
+        return new TypedResponse<PerguntaTemplateVagaDTO>(status, mensagem, new PerguntaTemplateVagaDTO(pergunta.getId(), pergunta.getEnunciado(), pergunta.getTipoResposta(), pergunta.isObrigatoria(), pergunta.getOrdem()));
+    }
+
+    private TypedResponse<RequisitoTemplateVagaDTO> respostaRequisito(int status, String mensagem, RequisitoTemplateVaga requisito) {
+        return new TypedResponse<RequisitoTemplateVagaDTO>(status, mensagem, new RequisitoTemplateVagaDTO(requisito.getId(), requisito.getDescricao(), requisito.isObrigatorio()));
+    }
+
+    private TypedResponse<VagaDTO> respostaVaga(Vaga vaga) {
+        return new TypedResponse<VagaDTO>(201, "Vaga criada a partir do template", new VagaDTO(vaga.getId(), vaga.getResponsavelId(), vaga.getTitulo(), vaga.getDescricao(), vaga.getStatus()));
+    }
+
+    private <T> TypedResponse<T> erro(int status, String mensagem) {
+        return new TypedResponse<T>(status, mensagem, null);
+    }
+
+    private TypedResponse<Void> vazio(int status, String mensagem) {
+        return new TypedResponse<Void>(status, mensagem, null);
+    }
 }

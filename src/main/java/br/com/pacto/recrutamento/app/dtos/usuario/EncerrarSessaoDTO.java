@@ -11,6 +11,11 @@ public class EncerrarSessaoDTO {
         this.refreshToken = refreshToken;
     }
 
-    public UUID getUsuarioId() { return usuarioId; }
-    public String getRefreshToken() { return refreshToken; }
+    public UUID getUsuarioId() {
+        return usuarioId;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
 }

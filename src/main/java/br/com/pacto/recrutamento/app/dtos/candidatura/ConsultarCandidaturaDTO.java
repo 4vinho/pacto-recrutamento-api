@@ -11,6 +11,11 @@ public class ConsultarCandidaturaDTO {
         this.candidaturaId = candidaturaId;
     }
 
-    public UUID getUsuarioSolicitanteId() { return usuarioSolicitanteId; }
-    public UUID getCandidaturaId() { return candidaturaId; }
+    public UUID getUsuarioSolicitanteId() {
+        return usuarioSolicitanteId;
+    }
+
+    public UUID getCandidaturaId() {
+        return candidaturaId;
+    }
 }

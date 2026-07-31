@@ -19,9 +19,23 @@ public class SalvarRequisitoTemplateVagaDTO {
         this.obrigatorio = obrigatorio;
     }
 
-    public UUID getUsuarioSolicitanteId() { return usuarioSolicitanteId; }
-    public UUID getTemplateId() { return templateId; }
-    public UUID getRequisitoId() { return requisitoId; }
-    public String getDescricao() { return descricao; }
-    public boolean isObrigatorio() { return obrigatorio; }
+    public UUID getUsuarioSolicitanteId() {
+        return usuarioSolicitanteId;
+    }
+
+    public UUID getTemplateId() {
+        return templateId;
+    }
+
+    public UUID getRequisitoId() {
+        return requisitoId;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public boolean isObrigatorio() {
+        return obrigatorio;
+    }
 }

@@ -13,7 +13,15 @@ public class SessaoDTO {
         this.accessTokenExpiraEm = accessTokenExpiraEm;
     }
 
-    public String getAccessToken() { return accessToken; }
-    public String getRefreshToken() { return refreshToken; }
-    public OffsetDateTime getAccessTokenExpiraEm() { return accessTokenExpiraEm; }
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public OffsetDateTime getAccessTokenExpiraEm() {
+        return accessTokenExpiraEm;
+    }
 }

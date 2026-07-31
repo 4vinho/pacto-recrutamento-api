@@ -13,7 +13,15 @@ public class CriarVagaDTO {
         this.descricao = descricao;
     }
 
-    public UUID getResponsavelId() { return responsavelId; }
-    public String getTitulo() { return titulo; }
-    public String getDescricao() { return descricao; }
+    public UUID getResponsavelId() {
+        return responsavelId;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
 }

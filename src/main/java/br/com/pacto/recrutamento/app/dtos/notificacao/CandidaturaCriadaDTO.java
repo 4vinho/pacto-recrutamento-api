@@ -14,7 +14,15 @@ public class CandidaturaCriadaDTO {
         this.ocorridaEm = ocorridaEm;
     }
 
-    public UUID getEventoId() { return eventoId; }
-    public UUID getCandidaturaId() { return candidaturaId; }
-    public OffsetDateTime getOcorridaEm() { return ocorridaEm; }
+    public UUID getEventoId() {
+        return eventoId;
+    }
+
+    public UUID getCandidaturaId() {
+        return candidaturaId;
+    }
+
+    public OffsetDateTime getOcorridaEm() {
+        return ocorridaEm;
+    }
 }

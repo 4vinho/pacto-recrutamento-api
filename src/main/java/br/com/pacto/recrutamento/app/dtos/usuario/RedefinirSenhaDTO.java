@@ -9,6 +9,11 @@ public class RedefinirSenhaDTO {
         this.novaSenha = novaSenha;
     }
 
-    public String getToken() { return token; }
-    public String getNovaSenha() { return novaSenha; }
+    public String getToken() {
+        return token;
+    }
+
+    public String getNovaSenha() {
+        return novaSenha;
+    }
 }

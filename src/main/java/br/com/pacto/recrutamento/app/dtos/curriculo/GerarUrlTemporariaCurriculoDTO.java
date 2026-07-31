@@ -11,6 +11,11 @@ public class GerarUrlTemporariaCurriculoDTO {
         this.curriculoId = curriculoId;
     }
 
-    public UUID getUsuarioSolicitanteId() { return usuarioSolicitanteId; }
-    public UUID getCurriculoId() { return curriculoId; }
+    public UUID getUsuarioSolicitanteId() {
+        return usuarioSolicitanteId;
+    }
+
+    public UUID getCurriculoId() {
+        return curriculoId;
+    }
 }

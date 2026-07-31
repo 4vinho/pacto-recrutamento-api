@@ -14,7 +14,15 @@ public class CandidatoDTO {
         this.dataAdmissao = dataAdmissao;
     }
 
-    public UUID getId() { return id; }
-    public UUID getUsuarioId() { return usuarioId; }
-    public LocalDate getDataAdmissao() { return dataAdmissao; }
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getUsuarioId() {
+        return usuarioId;
+    }
+
+    public LocalDate getDataAdmissao() {
+        return dataAdmissao;
+    }
 }

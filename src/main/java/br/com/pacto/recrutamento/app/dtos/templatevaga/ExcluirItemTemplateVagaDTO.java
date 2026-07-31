@@ -13,7 +13,15 @@ public class ExcluirItemTemplateVagaDTO {
         this.itemId = itemId;
     }
 
-    public UUID getUsuarioSolicitanteId() { return usuarioSolicitanteId; }
-    public UUID getTemplateId() { return templateId; }
-    public UUID getItemId() { return itemId; }
+    public UUID getUsuarioSolicitanteId() {
+        return usuarioSolicitanteId;
+    }
+
+    public UUID getTemplateId() {
+        return templateId;
+    }
+
+    public UUID getItemId() {
+        return itemId;
+    }
 }

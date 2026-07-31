@@ -11,6 +11,11 @@ public class CriarCandidaturaDTO {
         this.vagaId = vagaId;
     }
 
-    public UUID getUsuarioId() { return usuarioId; }
-    public UUID getVagaId() { return vagaId; }
+    public UUID getUsuarioId() {
+        return usuarioId;
+    }
+
+    public UUID getVagaId() {
+        return vagaId;
+    }
 }

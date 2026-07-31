@@ -11,6 +11,11 @@ public class CancelarCandidaturaDTO {
         this.candidaturaId = candidaturaId;
     }
 
-    public UUID getUsuarioId() { return usuarioId; }
-    public UUID getCandidaturaId() { return candidaturaId; }
+    public UUID getUsuarioId() {
+        return usuarioId;
+    }
+
+    public UUID getCandidaturaId() {
+        return candidaturaId;
+    }
 }
