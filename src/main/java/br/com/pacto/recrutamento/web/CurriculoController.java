@@ -3,6 +3,8 @@ package br.com.pacto.recrutamento.web;
 import br.com.pacto.recrutamento.app.dtos.curriculo.*;
 import br.com.pacto.recrutamento.app.ports.in.curriculo.CurriculoUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.BusinessException;
+import br.com.pacto.recrutamento.core.common.ErrorCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -11,6 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.UUID;
+
+import static br.com.pacto.recrutamento.core.common.ErrorMessages.ARQUIVO_MUITO_GRANDE;
+import static br.com.pacto.recrutamento.core.common.ErrorMessages.ARQUIVO_OBRIGATORIO;
 
 @RestController
 @RequestMapping("/candidatos/me/curriculo")
@@ -47,18 +52,10 @@ public class CurriculoController {
 
     private void validarArquivo(MultipartFile arquivo) {
         if (arquivo == null || arquivo.isEmpty()) {
-            throw new InvalidRequestException("O arquivo é obrigatório.");
+            throw new BusinessException(422, ErrorCode.VALIDATION_ERROR, ARQUIVO_OBRIGATORIO);
         }
         if (arquivo.getSize() > TAMANHO_MAXIMO) {
-            throw new InvalidRequestException("O arquivo deve possuir no máximo 5 MB.");
-        }
-    }
-
-    static final class InvalidRequestException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
-
-        InvalidRequestException(String message) {
-            super(message);
+            throw new BusinessException(422, ErrorCode.VALIDATION_ERROR, ARQUIVO_MUITO_GRANDE);
         }
     }
 }

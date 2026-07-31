@@ -14,7 +14,17 @@ class TypedResponseTest {
         TypedResponse<String> failure = new TypedResponse<>(404, "Recurso não encontrado.", null);
 
         assertThat(success.getIsError()).isFalse();
+        assertThat(success.getErrorCode()).isNull();
         assertThat(failure.getIsError()).isTrue();
+        assertThat(failure.getErrorCode()).isEqualTo("RESOURCE_NOT_FOUND");
+    }
+
+    @Test
+    void respostaPermiteCodigoDeErroExplicito() {
+        TypedResponse<Void> response = new TypedResponse<>(
+                422, "Campo inválido.", null, ErrorCode.VALIDATION_ERROR);
+
+        assertThat(response.getErrorCode()).isEqualTo("VALIDATION_ERROR");
     }
 
     @Test

@@ -5,6 +5,7 @@ public final class ErrorMessages {
     public static final String ACESSO_NAO_AUTORIZADO_ACENTUADO = "Acesso não autorizado";
     public static final String ACESSO_NAO_AUTORIZADO_FORMATADO = "Acesso não autorizado.";
     public static final String ARQUIVO_MUITO_GRANDE = "O arquivo deve possuir no máximo 5 MB.";
+    public static final String ARQUIVO_OBRIGATORIO = "O arquivo é obrigatório.";
     public static final String CANCELAMENTO_NAO_PERMITIDO = "Cancelamento nao permitido para o estado atual";
     public static final String CANDIDATO_NAO_ENCONTRADO = "Candidato não encontrado";
     public static final String CANDIDATURA_DUPLICADA = "Candidato ja possui candidatura para esta vaga";
@@ -32,6 +33,9 @@ public final class ErrorMessages {
     public static final String LOTE_RESPOSTAS_INCOMPATIVEL = "Lote de respostas incompativel com a vaga";
     public static final String LOTE_RESPOSTAS_INVALIDO = "Lote de respostas invalido";
     public static final String EMAIL_JA_UTILIZADO = "E-mail já utilizado.";
+    public static final String ERROR_CODE_OBRIGATORIO = "O código do erro é obrigatório.";
+    public static final String EXCECAO_NEGOCIO_STATUS_INVALIDO =
+            "Exceções de negócio devem utilizar status HTTP 4xx.";
     public static final String NAO_AUTENTICADO = "Não autenticado.";
     public static final String PERFIL_CANDIDATO_EXISTENTE = "O usuario ja possui perfil de candidato";
     public static final String PERFIL_CANDIDATO_NAO_ENCONTRADO = "Perfil de candidato nao encontrado";
@@ -46,6 +50,7 @@ public final class ErrorMessages {
     public static final String SALVAMENTO_CURRICULO_FALHOU = "Não foi possível salvar o currículo";
     public static final String CADASTRO_NAO_CONCLUIDO = "Não foi possível concluir o cadastro.";
     public static final String GERACAO_URL_TEMPORARIA_FALHOU = "Não foi possível gerar a URL temporária";
+    public static final String ERRO_INTERNO = "Não foi possível concluir a operação.";
     public static final String TEMPLATE_NAO_ENCONTRADO = "Template nao encontrado";
     public static final String TRANSICAO_CANDIDATURA_INVALIDA = "Transicao de candidatura invalida";
     public static final String TOKEN_RECUPERACAO_INVALIDO = "Token de recuperação inválido.";

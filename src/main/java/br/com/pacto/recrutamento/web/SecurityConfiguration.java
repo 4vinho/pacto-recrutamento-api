@@ -3,6 +3,7 @@ package br.com.pacto.recrutamento.web;
 import static br.com.pacto.recrutamento.core.common.ErrorMessages.*;
 
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,13 +41,15 @@ public class SecurityConfiguration {
                     response.setStatus(HttpStatus.UNAUTHORIZED.value());
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                     objectMapper.writeValue(response.getOutputStream(),
-                    new TypedResponse<Void>(401, NAO_AUTENTICADO, null));
+                    new TypedResponse<Void>(401, NAO_AUTENTICADO, null,
+                            ErrorCode.AUTHENTICATION_REQUIRED));
                 })
                 .accessDeniedHandler((request, response, exception) -> {
                     response.setStatus(HttpStatus.FORBIDDEN.value());
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                     objectMapper.writeValue(response.getOutputStream(),
-                    new TypedResponse<Void>(403, ACESSO_NAO_AUTORIZADO_FORMATADO, null));
+                    new TypedResponse<Void>(403, ACESSO_NAO_AUTORIZADO_FORMATADO, null,
+                            ErrorCode.ACCESS_DENIED));
                 });
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
