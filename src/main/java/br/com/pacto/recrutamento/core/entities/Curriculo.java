@@ -22,7 +22,7 @@ public class Curriculo extends EntidadeAuditavel {
     private String contentType;
     @Column(name = "tamanho_bytes", nullable = false)
     private long tamanhoBytes;
-    @Column(name = "checksum_sha256", nullable = false, columnDefinition = "CHAR(64)")
+    @Column(name = "checksum_sha256", nullable = false, length = 64)
     private String checksumSha256;
     @Column(name = "excluido_em")
     private OffsetDateTime excluidoEm;
