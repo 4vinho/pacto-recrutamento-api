@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.infra.projections.candidatura;
+package br.com.pacto.recrutamento.infra.projections;
 
 import br.com.pacto.recrutamento.core.enums.TipoResposta;
 

@@ -2,7 +2,7 @@ package br.com.pacto.recrutamento.infra.adapters.candidatura;
 
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.PerguntaCandidaturaJpaRepository;
 
-import br.com.pacto.recrutamento.infra.projections.candidatura.PerguntaCandidaturaProjection;
+import br.com.pacto.recrutamento.infra.projections.PerguntaCandidaturaProjection;
 
 import br.com.pacto.recrutamento.app.ports.candidatura.PerguntaCandidaturaRepositorio;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;

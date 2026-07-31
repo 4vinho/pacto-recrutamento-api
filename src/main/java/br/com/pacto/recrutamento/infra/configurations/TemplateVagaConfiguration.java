@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.infra.configurations.templatevaga;
+package br.com.pacto.recrutamento.infra.configurations;
 
 import br.com.pacto.recrutamento.infra.repositorys.templatevaga.AutorizacaoTemplateVagaJpaRepository;
 

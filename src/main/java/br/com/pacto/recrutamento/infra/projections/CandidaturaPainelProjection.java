@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.infra.projections.candidato;
+package br.com.pacto.recrutamento.infra.projections;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

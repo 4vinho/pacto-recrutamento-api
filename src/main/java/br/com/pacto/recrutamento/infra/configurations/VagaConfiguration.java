@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.infra.configurations.vaga;
+package br.com.pacto.recrutamento.infra.configurations;
 
 import br.com.pacto.recrutamento.infra.adapters.vaga.AutorizacaoVagaJpaAdapter;
 

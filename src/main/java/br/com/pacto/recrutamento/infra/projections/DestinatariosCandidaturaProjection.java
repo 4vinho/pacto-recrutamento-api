@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.infra.projections.notificacao;
+package br.com.pacto.recrutamento.infra.projections;
 
 import java.util.UUID;
 

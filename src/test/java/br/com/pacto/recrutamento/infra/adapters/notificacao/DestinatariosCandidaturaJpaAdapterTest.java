@@ -2,7 +2,7 @@ package br.com.pacto.recrutamento.infra.adapters.notificacao;
 
 import br.com.pacto.recrutamento.infra.repositorys.notificacao.DestinatariosCandidaturaRepository;
 
-import br.com.pacto.recrutamento.infra.projections.notificacao.DestinatariosCandidaturaProjection;
+import br.com.pacto.recrutamento.infra.projections.DestinatariosCandidaturaProjection;
 
 import org.junit.jupiter.api.Test;
 

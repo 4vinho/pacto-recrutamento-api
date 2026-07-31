@@ -1,6 +1,6 @@
 package br.com.pacto.recrutamento.infra.repositorys.candidato;
 
-import br.com.pacto.recrutamento.infra.projections.candidato.CandidaturaPainelProjection;
+import br.com.pacto.recrutamento.infra.projections.CandidaturaPainelProjection;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

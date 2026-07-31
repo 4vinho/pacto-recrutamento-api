@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.infra.configurations.candidatura;
+package br.com.pacto.recrutamento.infra.configurations;
 
 import br.com.pacto.recrutamento.app.ports.candidatura.AutorizacaoResponsavelCandidatura;
 import org.springframework.context.annotation.Bean;

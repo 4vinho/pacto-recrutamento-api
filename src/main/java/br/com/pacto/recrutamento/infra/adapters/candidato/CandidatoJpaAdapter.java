@@ -2,7 +2,7 @@ package br.com.pacto.recrutamento.infra.adapters.candidato;
 
 import br.com.pacto.recrutamento.infra.repositorys.candidato.CandidatoJpaRepository;
 
-import br.com.pacto.recrutamento.infra.projections.candidato.CandidaturaPainelProjection;
+import br.com.pacto.recrutamento.infra.projections.CandidaturaPainelProjection;
 
 import br.com.pacto.recrutamento.app.ports.candidato.CandidatoRepository;
 import br.com.pacto.recrutamento.app.ports.candidato.CandidaturaDoCandidato;
