@@ -1,12 +1,21 @@
 package br.com.pacto.recrutamento.core.entities;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "templates_vaga")
 public class TemplateVaga extends EntidadeAuditavel {
+    @Column(name = "responsavel_id", nullable = false)
     private UUID responsavelId;
+    @Column(name = "titulo", nullable = false, length = 150)
     private String titulo;
+    @Column(name = "descricao", nullable = false, columnDefinition = "TEXT")
     private String descricao;
+    @Column(name = "excluido_em")
     private OffsetDateTime excluidoEm;
 
     public TemplateVaga() {}

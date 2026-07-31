@@ -1,12 +1,21 @@
 package br.com.pacto.recrutamento.core.entities;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "requisitos_template_vaga")
 public class RequisitoTemplateVaga extends EntidadeAuditavel {
+    @Column(name = "template_vaga_id", nullable = false)
     private UUID templateVagaId;
+    @Column(name = "descricao", nullable = false, columnDefinition = "TEXT")
     private String descricao;
+    @Column(name = "obrigatorio", nullable = false)
     private boolean obrigatorio;
+    @Column(name = "excluido_em")
     private OffsetDateTime excluidoEm;
 
     public RequisitoTemplateVaga() {}

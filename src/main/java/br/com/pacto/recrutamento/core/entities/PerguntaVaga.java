@@ -2,15 +2,29 @@ package br.com.pacto.recrutamento.core.entities;
 
 import br.com.pacto.recrutamento.core.enums.TipoResposta;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "perguntas_vaga")
 public class PerguntaVaga extends EntidadeAuditavel {
+    @Column(name = "vaga_id", nullable = false)
     private UUID vagaId;
+    @Column(name = "enunciado", nullable = false, columnDefinition = "TEXT")
     private String enunciado;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_resposta", nullable = false, length = 30)
     private TipoResposta tipoResposta;
+    @Column(name = "obrigatoria", nullable = false)
     private boolean obrigatoria;
+    @Column(name = "ordem", nullable = false)
     private int ordem;
+    @Column(name = "excluido_em")
     private OffsetDateTime excluidoEm;
 
     public PerguntaVaga() {}

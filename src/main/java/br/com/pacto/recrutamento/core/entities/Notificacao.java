@@ -3,18 +3,37 @@ package br.com.pacto.recrutamento.core.entities;
 import br.com.pacto.recrutamento.core.enums.StatusNotificacao;
 import br.com.pacto.recrutamento.core.enums.TipoNotificacao;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "notificacoes")
 public class Notificacao extends Entidade {
+    @Column(name = "usuario_id", nullable = false)
     private UUID usuarioId;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo", nullable = false, length = 50)
     private TipoNotificacao tipo;
+    @Column(name = "titulo", nullable = false, length = 150)
     private String titulo;
+    @Column(name = "mensagem", nullable = false, columnDefinition = "TEXT")
     private String mensagem;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 30)
     private StatusNotificacao status = StatusNotificacao.PENDENTE;
+    @Column(name = "tentativas", nullable = false)
     private int tentativas;
+    @Column(name = "lida_em")
     private OffsetDateTime lidaEm;
+    @Column(name = "criado_em", nullable = false, updatable = false)
     private OffsetDateTime criadoEm;
+    @Column(name = "ultimo_erro", columnDefinition = "TEXT")
     private String ultimoErro;
 
     public Notificacao() {}
@@ -25,6 +44,13 @@ public class Notificacao extends Entidade {
         this.titulo = titulo;
         this.mensagem = mensagem;
         this.criadoEm = OffsetDateTime.now();
+    }
+
+    @PrePersist
+    private void inicializarCriacao() {
+        if (criadoEm == null) {
+            criadoEm = OffsetDateTime.now();
+        }
     }
 
     public UUID getUsuarioId() { return usuarioId; }

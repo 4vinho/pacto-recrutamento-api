@@ -1,18 +1,36 @@
 package br.com.pacto.recrutamento.core.entities;
 
-import br.com.pacto.recrutamento.core.enums.NomePapel;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@Entity
+@Table(name = "usuarios", uniqueConstraints = @UniqueConstraint(name = "uk_usuarios_email", columnNames = "email"))
 public class Usuario extends EntidadeAuditavel {
+    @Column(name = "email", nullable = false, length = 254)
     private String email;
+    @Column(name = "telefone", length = 20)
     private String telefone;
+    @Column(name = "senha_hash", nullable = false, length = 255)
     private String senhaHash;
+    @Column(name = "ativo", nullable = false)
     private boolean ativo = true;
-    private Set<NomePapel> papeis = new HashSet<>();
+    @ManyToMany
+    @JoinTable(name = "usuarios_papeis",
+            joinColumns = @JoinColumn(name = "usuario_id", foreignKey = @ForeignKey(name = "fk_usuarios_papeis_usuario")),
+            inverseJoinColumns = @JoinColumn(name = "papel_id", foreignKey = @ForeignKey(name = "fk_usuarios_papeis_papel")),
+            uniqueConstraints = @UniqueConstraint(name = "pk_usuarios_papeis", columnNames = {"usuario_id", "papel_id"}))
+    private Set<Papel> papeis = new HashSet<>();
+    @Column(name = "excluido_em")
     private OffsetDateTime excluidoEm;
 
     public Usuario() {}
@@ -34,8 +52,8 @@ public class Usuario extends EntidadeAuditavel {
     public void setSenhaHash(String senhaHash) { this.senhaHash = senhaHash; }
     public boolean isAtivo() { return ativo; }
     public void setAtivo(boolean ativo) { this.ativo = ativo; }
-    public Set<NomePapel> getPapeis() { return papeis; }
-    public void setPapeis(Set<NomePapel> papeis) { this.papeis = new HashSet<>(papeis); }
+    public Set<Papel> getPapeis() { return papeis; }
+    public void setPapeis(Set<Papel> papeis) { this.papeis = new HashSet<>(papeis); }
     public OffsetDateTime getExcluidoEm() { return excluidoEm; }
     public void setExcluidoEm(OffsetDateTime excluidoEm) { this.excluidoEm = excluidoEm; }
 }

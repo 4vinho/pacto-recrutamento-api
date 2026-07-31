@@ -1,10 +1,18 @@
 package br.com.pacto.recrutamento.core.entities;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Entity
+@Table(name = "candidatos", uniqueConstraints = @UniqueConstraint(name = "uk_candidatos_usuario", columnNames = "usuario_id"))
 public class Candidato extends EntidadeAuditavel {
+    @Column(name = "usuario_id", nullable = false)
     private UUID usuarioId;
+    @Column(name = "data_admissao")
     private LocalDate dataAdmissao;
 
     public Candidato() {}
