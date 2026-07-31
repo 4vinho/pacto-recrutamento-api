@@ -30,8 +30,8 @@ public class UsuarioService implements UsuarioUseCase {
     private final Clock relogio;
 
     public UsuarioService(UsuarioPort usuarios, PapelPort papeis, RefreshTokenPort refreshTokens,
-                              CodificadorSenhaPort senhas, GeradorTokenPort tokens,
-                              RecuperacaoSenhaPort recuperacoes, Clock relogio) {
+                          CodificadorSenhaPort senhas, GeradorTokenPort tokens,
+                          RecuperacaoSenhaPort recuperacoes, Clock relogio) {
         this.usuarios = usuarios;
         this.papeis = papeis;
         this.refreshTokens = refreshTokens;

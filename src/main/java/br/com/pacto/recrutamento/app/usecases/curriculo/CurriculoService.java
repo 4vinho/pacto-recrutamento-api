@@ -32,7 +32,7 @@ public class CurriculoService implements CurriculoUseCase {
     private final Clock clock;
 
     public CurriculoService(CurriculoPort repositorio, ArquivoStoragePort storage,
-                                CandidatoConsultaPort candidatos, Clock clock) {
+                            CandidatoConsultaPort candidatos, Clock clock) {
         this.repositorio = repositorio;
         this.storage = storage;
         this.candidatos = candidatos;

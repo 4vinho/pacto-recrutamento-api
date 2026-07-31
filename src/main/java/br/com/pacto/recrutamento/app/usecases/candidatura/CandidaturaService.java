@@ -22,11 +22,11 @@ public class CandidaturaService implements CandidaturaUseCase {
     private final EventosCandidaturaPort eventos;
 
     public CandidaturaService(CandidatoPort candidatos,
-                                  CandidaturaPort candidaturas,
-                                  VagaCandidaturaPort vagas,
-                                  PerguntaCandidaturaPort perguntas,
-                                  AutorizacaoResponsavelCandidaturaPort autorizacao,
-                                  EventosCandidaturaPort eventos) {
+                              CandidaturaPort candidaturas,
+                              VagaCandidaturaPort vagas,
+                              PerguntaCandidaturaPort perguntas,
+                              AutorizacaoResponsavelCandidaturaPort autorizacao,
+                              EventosCandidaturaPort eventos) {
         this.candidatos = candidatos;
         this.candidaturas = candidaturas;
         this.vagas = vagas;

@@ -26,8 +26,8 @@ public class VagaService implements VagaUseCase {
     private final Clock clock;
 
     public VagaService(VagaPort vagas, PerguntaVagaPort perguntas,
-                           RequisitoVagaPort requisitos, AutorizacaoVagaPort autorizacao,
-                           Clock clock) {
+                       RequisitoVagaPort requisitos, AutorizacaoVagaPort autorizacao,
+                       Clock clock) {
         this.vagas = vagas;
         this.perguntas = perguntas;
         this.requisitos = requisitos;

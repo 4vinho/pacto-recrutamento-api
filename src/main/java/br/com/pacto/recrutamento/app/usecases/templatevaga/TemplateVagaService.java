@@ -26,13 +26,13 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     private final Clock clock;
 
     public TemplateVagaService(TemplateVagaPort templates,
-                                   PerguntaTemplateVagaPort perguntas,
-                                   RequisitoTemplateVagaPort requisitos,
-                                   VagaTemplatePort vagas,
-                                   PerguntaVagaTemplatePort perguntasVaga,
-                                   RequisitoVagaTemplatePort requisitosVaga,
-                                   AutorizacaoTemplateVagaPort autorizacao,
-                                   Clock clock) {
+                               PerguntaTemplateVagaPort perguntas,
+                               RequisitoTemplateVagaPort requisitos,
+                               VagaTemplatePort vagas,
+                               PerguntaVagaTemplatePort perguntasVaga,
+                               RequisitoVagaTemplatePort requisitosVaga,
+                               AutorizacaoTemplateVagaPort autorizacao,
+                               Clock clock) {
         this.templates = templates;
         this.perguntas = perguntas;
         this.requisitos = requisitos;
