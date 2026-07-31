@@ -15,7 +15,7 @@ class EntidadesTest {
     void novaCandidaturaComecaComoEnviada() {
         Candidatura candidatura = new Candidatura(UUID.randomUUID(), UUID.randomUUID());
 
-        assertThat(candidatura.getStatus()).isEqualTo(StatusCandidatura.ENVIADA);
+        assertThat(candidatura.getStatus()).isEqualTo(StatusCandidatura.RASCUNHO);
     }
 
     @Test
@@ -53,6 +53,7 @@ class EntidadesTest {
     @Test
     void candidaturaAprovadaNaoPodeVoltarParaAnalise() {
         Candidatura candidatura = new Candidatura(UUID.randomUUID(), UUID.randomUUID());
+        candidatura.setStatus(StatusCandidatura.ENVIADA);
         candidatura.setStatus(StatusCandidatura.EM_ANALISE);
         candidatura.setStatus(StatusCandidatura.APROVADA);
 

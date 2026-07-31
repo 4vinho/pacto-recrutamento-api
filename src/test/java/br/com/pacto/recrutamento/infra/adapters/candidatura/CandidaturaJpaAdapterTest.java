@@ -33,6 +33,8 @@ class CandidaturaJpaAdapterTest {
         RespostaCandidatura resposta = new RespostaCandidatura(java.util.UUID.randomUUID(),
                 java.util.UUID.randomUUID(), "valor");
         assertThrows(CandidaturaPort.RespostasDuplicadasException.class,
-                () -> adapter.salvarRespostasAtomicamente(Collections.singletonList(resposta)));
+                () -> adapter.finalizarComRespostasAtomicamente(
+                        new Candidatura(java.util.UUID.randomUUID(), java.util.UUID.randomUUID()),
+                        Collections.singletonList(resposta)));
     }
 }

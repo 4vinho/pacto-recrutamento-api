@@ -14,7 +14,8 @@ public interface CandidaturaPort {
 
     Candidatura salvar(Candidatura candidatura);
 
-    void salvarRespostasAtomicamente(List<RespostaCandidatura> respostas);
+    void finalizarComRespostasAtomicamente(Candidatura candidatura,
+                                            List<RespostaCandidatura> respostas);
 
     final class CandidaturaDuplicadaException extends RuntimeException {
         public CandidaturaDuplicadaException() {

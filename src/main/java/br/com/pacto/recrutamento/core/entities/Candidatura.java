@@ -18,7 +18,7 @@ public class Candidatura {
     private UUID vagaId;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private StatusCandidatura status = StatusCandidatura.ENVIADA;
+    private StatusCandidatura status = StatusCandidatura.RASCUNHO;
     @Column(name = "criado_em", nullable = false, updatable = false)
     private OffsetDateTime criadoEm;
     @Column(name = "atualizado_em", nullable = false)
@@ -106,6 +106,10 @@ public class Candidatura {
     }
 
     private boolean permiteTransicaoPara(StatusCandidatura novoStatus) {
+        if (status == StatusCandidatura.RASCUNHO) {
+            return novoStatus == StatusCandidatura.ENVIADA
+                    || novoStatus == StatusCandidatura.CANCELADA;
+        }
         if (status == StatusCandidatura.ENVIADA) {
             return novoStatus == StatusCandidatura.EM_ANALISE
                     || novoStatus == StatusCandidatura.CANCELADA;

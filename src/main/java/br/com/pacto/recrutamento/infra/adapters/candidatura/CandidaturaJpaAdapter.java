@@ -42,9 +42,12 @@ public class CandidaturaJpaAdapter implements CandidaturaPort {
     }
 
     @Transactional
-    public void salvarRespostasAtomicamente(List<RespostaCandidatura> lote) {
+    public void finalizarComRespostasAtomicamente(Candidatura candidatura,
+                                                   List<RespostaCandidatura> lote) {
         try {
             respostas.saveAllAndFlush(lote);
+            candidatura.setStatus(br.com.pacto.recrutamento.core.enums.StatusCandidatura.ENVIADA);
+            candidaturas.saveAndFlush(candidatura);
         } catch (DataIntegrityViolationException ex) {
             throw new RespostasDuplicadasException();
         }

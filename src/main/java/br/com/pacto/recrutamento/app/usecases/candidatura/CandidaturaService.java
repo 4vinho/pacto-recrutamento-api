@@ -11,7 +11,10 @@ import br.com.pacto.recrutamento.core.entities.*;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @Service
@@ -57,13 +60,21 @@ public class CandidaturaService implements CandidaturaUseCase {
             return erro(409, CANDIDATURA_DUPLICADA);
         }
         Candidatura candidatura = new Candidatura(candidato.getId(), vaga.getId());
+        boolean exigeRespostas = !perguntas.listarAtivasPorVagaId(vaga.getId()).isEmpty();
+        if (!exigeRespostas) {
+            candidatura.setStatus(StatusCandidatura.ENVIADA);
+        }
         try {
             candidaturas.salvar(candidatura);
         } catch (CandidaturaPort.CandidaturaDuplicadaException ex) {
             return erro(409, CANDIDATURA_DUPLICADA);
         }
-        publicarCriacao(candidatura);
-        return new TypedResponse<>(201, "Candidatura criada", paraDto(candidatura));
+        if (!exigeRespostas) {
+            publicarCriacao(candidatura);
+        }
+        String mensagem = exigeRespostas ? "Candidatura criada como rascunho"
+                : "Candidatura criada";
+        return new TypedResponse<>(201, mensagem, paraDto(candidatura));
     }
 
     @Override
@@ -79,18 +90,24 @@ public class CandidaturaService implements CandidaturaUseCase {
         if (!pertenceAoUsuario(candidatura, command.getUsuarioId())) {
             return erro(403, CANDIDATURA_NAO_PERTENCE_AO_CANDIDATO);
         }
+        if (candidatura.getStatus() != StatusCandidatura.RASCUNHO) {
+            return erro(422, TRANSICAO_CANDIDATURA_INVALIDA);
+        }
         if (!estruturaDoLoteValida(command.getRespostas())) {
             return erro(400, LOTE_RESPOSTAS_INVALIDO);
         }
-        List<RespostaCandidatura> lote = validarLote(candidatura, command.getRespostas());
+        List<PerguntaVaga> perguntasDaVaga = perguntas.listarAtivasPorVagaId(candidatura.getVagaId());
+        List<RespostaCandidatura> lote = validarLote(
+                candidatura, command.getRespostas(), perguntasDaVaga);
         if (lote == null) {
             return erro(422, LOTE_RESPOSTAS_INCOMPATIVEL);
         }
         try {
-            candidaturas.salvarRespostasAtomicamente(lote);
+            candidaturas.finalizarComRespostasAtomicamente(candidatura, lote);
         } catch (CandidaturaPort.RespostasDuplicadasException ex) {
             return erro(409, PERGUNTAS_JA_RESPONDIDAS);
         }
+        publicarCriacao(candidatura);
         return new TypedResponse<>(200, "Respostas registradas", paraDto(candidatura));
     }
 
@@ -136,7 +153,8 @@ public class CandidaturaService implements CandidaturaUseCase {
         if (!pertenceAoUsuario(candidatura, command.getUsuarioId())) {
             return erro(403, CANDIDATURA_NAO_PERTENCE_AO_CANDIDATO);
         }
-        if (candidatura.getStatus() != StatusCandidatura.ENVIADA
+        if (candidatura.getStatus() != StatusCandidatura.RASCUNHO
+                && candidatura.getStatus() != StatusCandidatura.ENVIADA
                 && candidatura.getStatus() != StatusCandidatura.EM_ANALISE) {
             return erro(422, CANCELAMENTO_NAO_PERMITIDO);
         }
@@ -177,21 +195,53 @@ public class CandidaturaService implements CandidaturaUseCase {
         return candidato.isPresent() && candidatura.getCandidatoId().equals(candidato.get().getId());
     }
 
-    private List<RespostaCandidatura> validarLote(Candidatura candidatura,
-                                                  List<RespostaCandidaturaDTO> respostas) {
+    private List<RespostaCandidatura> validarLote(
+            Candidatura candidatura, List<RespostaCandidaturaDTO> respostas,
+            List<PerguntaVaga> perguntasDaVaga) {
+        Map<UUID, PerguntaVaga> perguntasPorId = new HashMap<>();
+        for (PerguntaVaga pergunta : perguntasDaVaga) {
+            perguntasPorId.put(pergunta.getId(), pergunta);
+        }
         List<RespostaCandidatura> lote = new ArrayList<>();
+        Set<UUID> respondidas = new HashSet<>();
         for (RespostaCandidaturaDTO resposta : respostas) {
-            if (!respostaValida(candidatura, resposta)) {
+            PerguntaVaga pergunta = perguntasPorId.get(resposta.getPerguntaId());
+            if (pergunta == null || !respostaValida(pergunta, resposta.getValor())) {
                 return null;
             }
-            lote.add(new RespostaCandidatura(candidatura.getId(), resposta.getPerguntaId(), resposta.getValor()));
+            respondidas.add(pergunta.getId());
+            lote.add(new RespostaCandidatura(candidatura.getId(), pergunta.getId(),
+                    resposta.getValor().trim()));
+        }
+        for (PerguntaVaga pergunta : perguntasDaVaga) {
+            if (pergunta.isObrigatoria() && !respondidas.contains(pergunta.getId())) return null;
         }
         return lote;
     }
 
-    private boolean respostaValida(Candidatura candidatura, RespostaCandidaturaDTO resposta) {
-        PerguntaVaga pergunta = perguntas.buscarAtivaPorId(resposta.getPerguntaId()).orElse(null);
-        return pergunta != null && candidatura.getVagaId().equals(pergunta.getVagaId());
+    private boolean respostaValida(PerguntaVaga pergunta, String valor) {
+        if (valor == null || valor.trim().isEmpty()) return false;
+        String normalizado = valor.trim();
+        try {
+            switch (pergunta.getTipoResposta()) {
+                case NUMERO:
+                    new BigDecimal(normalizado);
+                    return true;
+                case BOOLEANO:
+                    return "true".equalsIgnoreCase(normalizado)
+                            || "false".equalsIgnoreCase(normalizado);
+                case DATA:
+                    LocalDate.parse(normalizado);
+                    return true;
+                case TEXTO:
+                case SELECAO_UNICA:
+                    return true;
+                default:
+                    return false;
+            }
+        } catch (NumberFormatException | DateTimeParseException exception) {
+            return false;
+        }
     }
 
     private boolean estruturaDoLoteValida(List<RespostaCandidaturaDTO> respostas) {

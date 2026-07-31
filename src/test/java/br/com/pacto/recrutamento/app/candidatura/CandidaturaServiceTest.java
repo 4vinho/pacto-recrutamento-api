@@ -45,6 +45,30 @@ class CandidaturaServiceTest {
     }
 
     @Test
+    void criaRascunhoQuandoVagaPossuiPerguntasESoPublicaAposRespostasValidas() {
+        Vaga vaga = vagaPublicada();
+        vagas.salvar(vaga);
+        PerguntaVaga obrigatoria = pergunta(vaga.getId());
+        obrigatoria.setObrigatoria(true);
+        perguntas.salvar(obrigatoria);
+
+        TypedResponse<CandidaturaDTO> criada = service.criarCandidatura(
+                new CriarCandidaturaDTO(usuarioCandidato, vaga.getId()));
+
+        assertEquals(StatusCandidatura.RASCUNHO, criada.getData().getStatus());
+        assertEquals(0, eventos.criadas);
+
+        TypedResponse<CandidaturaDTO> enviada = service.registrarRespostas(
+                new RegistrarRespostasDTO(usuarioCandidato, criada.getData().getId(),
+                        Collections.singletonList(
+                                new RespostaCandidaturaDTO(obrigatoria.getId(), "resposta"))));
+
+        assertEquals(200, enviada.getStatusCode());
+        assertEquals(StatusCandidatura.ENVIADA, enviada.getData().getStatus());
+        assertEquals(1, eventos.criadas);
+    }
+
+    @Test
     void rejeitaCriacaoSemPerfilDeCandidatoOuParaVagaQueNaoAceitaCandidaturas() {
         Vaga vaga = vagaPublicada();
         vagas.salvar(vaga);
@@ -95,6 +119,29 @@ class CandidaturaServiceTest {
 
         assertEquals(200, resposta.getStatusCode());
         assertEquals(2, candidaturas.respostas.size());
+        assertEquals(StatusCandidatura.ENVIADA, candidatura.getStatus());
+    }
+
+    @Test
+    void exigePerguntasObrigatoriasEValidaTipoDasRespostas() {
+        Candidatura candidatura = candidatura();
+        candidaturas.salvar(candidatura);
+        PerguntaVaga textoObrigatorio = pergunta(candidatura.getVagaId());
+        textoObrigatorio.setObrigatoria(true);
+        perguntas.salvar(textoObrigatorio);
+        PerguntaVaga numero = pergunta(candidatura.getVagaId());
+        numero.setTipoResposta(TipoResposta.NUMERO);
+        perguntas.salvar(numero);
+
+        assertEquals(422, service.registrarRespostas(new RegistrarRespostasDTO(
+                usuarioCandidato, candidatura.getId(), Collections.singletonList(
+                new RespostaCandidaturaDTO(numero.getId(), "10")))).getStatusCode());
+        assertEquals(422, service.registrarRespostas(new RegistrarRespostasDTO(
+                usuarioCandidato, candidatura.getId(), Arrays.asList(
+                new RespostaCandidaturaDTO(textoObrigatorio.getId(), "ok"),
+                new RespostaCandidaturaDTO(numero.getId(), "dez")))).getStatusCode());
+        assertTrue(candidaturas.respostas.isEmpty());
+        assertEquals(StatusCandidatura.RASCUNHO, candidatura.getStatus());
     }
 
     @Test
@@ -143,6 +190,7 @@ class CandidaturaServiceTest {
     @Test
     void responsavelAutorizadoAlteraStatusEmTransicaoPermitidaEPublicaEventoAposSalvar() {
         Candidatura candidatura = candidatura();
+        candidatura.setStatus(StatusCandidatura.ENVIADA);
         candidaturas.salvar(candidatura);
         vagas.salvar(vagaPublicadaComId(candidatura.getVagaId()));
 
@@ -157,6 +205,7 @@ class CandidaturaServiceTest {
     @Test
     void bloqueiaResponsavelNaoAutorizadoETransicaoInvalidaSemEvento() {
         Candidatura candidatura = candidatura();
+        candidatura.setStatus(StatusCandidatura.ENVIADA);
         candidaturas.salvar(candidatura);
         vagas.salvar(vagaPublicadaComId(candidatura.getVagaId()));
         assertEquals(403, service.atualizarStatusCandidatura(new AtualizarStatusCandidaturaDTO(UUID.randomUUID(), candidatura.getId(), StatusCandidatura.EM_ANALISE)).getStatusCode());
@@ -167,6 +216,7 @@ class CandidaturaServiceTest {
     @Test
     void apenasProprietarioCancelaCandidaturaEmEstadoPermitido() {
         Candidatura candidatura = candidatura();
+        candidatura.setStatus(StatusCandidatura.ENVIADA);
         candidaturas.salvar(candidatura);
         assertEquals(403, service.cancelarCandidatura(new CancelarCandidaturaDTO(UUID.randomUUID(), candidatura.getId())).getStatusCode());
         TypedResponse<CandidaturaDTO> cancelada = service.cancelarCandidatura(new CancelarCandidaturaDTO(usuarioCandidato, candidatura.getId()));
@@ -264,6 +314,16 @@ class CandidaturaServiceTest {
             return Optional.ofNullable(dados.get(id)).filter(p -> p.getExcluidoEm() == null);
         }
 
+        public List<PerguntaVaga> listarAtivasPorVagaId(UUID vagaId) {
+            List<PerguntaVaga> resultado = new ArrayList<>();
+            for (PerguntaVaga pergunta : dados.values()) {
+                if (vagaId.equals(pergunta.getVagaId()) && pergunta.getExcluidoEm() == null) {
+                    resultado.add(pergunta);
+                }
+            }
+            return resultado;
+        }
+
         void salvar(PerguntaVaga p) {
             dados.put(p.getId(), p);
         }
@@ -293,9 +353,12 @@ class CandidaturaServiceTest {
             return c;
         }
 
-        public void salvarRespostasAtomicamente(List<RespostaCandidatura> lote) {
+        public void finalizarComRespostasAtomicamente(Candidatura candidatura,
+                                                       List<RespostaCandidatura> lote) {
             if (falharRespostasPorUnicidade) throw new CandidaturaPort.RespostasDuplicadasException();
             respostas.addAll(lote);
+            candidatura.setStatus(StatusCandidatura.ENVIADA);
+            dados.put(candidatura.getId(), candidatura);
         }
     }
 
