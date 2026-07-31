@@ -1,11 +1,9 @@
 package br.com.pacto.recrutamento.infra.adapters.candidatura;
 
-import br.com.pacto.recrutamento.infra.repositorys.candidatura.PerguntaCandidaturaJpaRepository;
-
-import br.com.pacto.recrutamento.infra.projections.PerguntaCandidaturaProjection;
-
 import br.com.pacto.recrutamento.app.ports.out.candidatura.PerguntaCandidaturaPort;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
+import br.com.pacto.recrutamento.infra.projections.PerguntaCandidaturaProjection;
+import br.com.pacto.recrutamento.infra.repositorys.candidatura.PerguntaCandidaturaJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

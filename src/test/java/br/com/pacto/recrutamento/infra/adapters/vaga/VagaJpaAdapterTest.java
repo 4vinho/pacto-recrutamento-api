@@ -1,11 +1,8 @@
 package br.com.pacto.recrutamento.infra.adapters.vaga;
 
-import br.com.pacto.recrutamento.infra.repositorys.vaga.RequisitoVagaJpaRepository;
-
 import br.com.pacto.recrutamento.infra.repositorys.vaga.PerguntaVagaJpaRepository;
-
+import br.com.pacto.recrutamento.infra.repositorys.vaga.RequisitoVagaJpaRepository;
 import br.com.pacto.recrutamento.infra.repositorys.vaga.VagaJpaRepository;
-
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

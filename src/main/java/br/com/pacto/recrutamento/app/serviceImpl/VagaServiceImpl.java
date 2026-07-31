@@ -1,11 +1,11 @@
 package br.com.pacto.recrutamento.app.serviceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.vaga.*;
+import br.com.pacto.recrutamento.app.ports.in.vaga.VagaUseCase;
 import br.com.pacto.recrutamento.app.ports.out.vaga.AutorizacaoVagaPort;
 import br.com.pacto.recrutamento.app.ports.out.vaga.PerguntaVagaPort;
 import br.com.pacto.recrutamento.app.ports.out.vaga.RequisitoVagaPort;
 import br.com.pacto.recrutamento.app.ports.out.vaga.VagaPort;
-import br.com.pacto.recrutamento.app.ports.in.vaga.VagaUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import br.com.pacto.recrutamento.core.entities.RequisitoVaga;

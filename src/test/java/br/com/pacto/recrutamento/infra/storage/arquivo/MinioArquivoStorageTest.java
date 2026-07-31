@@ -1,8 +1,7 @@
 package br.com.pacto.recrutamento.infra.storage.arquivo;
 
-import br.com.pacto.recrutamento.infra.configurations.arquivo.MinioProperties;
-
 import br.com.pacto.recrutamento.app.ports.out.curriculo.ArquivoStoragePort;
+import br.com.pacto.recrutamento.infra.configurations.arquivo.MinioProperties;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;

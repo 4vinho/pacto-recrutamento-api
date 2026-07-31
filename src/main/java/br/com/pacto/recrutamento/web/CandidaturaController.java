@@ -68,15 +68,20 @@ public class CandidaturaController {
     }
 
     public static class RespostasRequest {
-        @NotEmpty @Valid public List<RespostaRequest> respostas;
+        @NotEmpty
+        @Valid
+        public List<RespostaRequest> respostas;
     }
 
     public static class RespostaRequest {
-        @NotNull public UUID perguntaId;
-        @NotBlank public String valor;
+        @NotNull
+        public UUID perguntaId;
+        @NotBlank
+        public String valor;
     }
 
     public static class StatusRequest {
-        @NotNull public StatusCandidatura status;
+        @NotNull
+        public StatusCandidatura status;
     }
 }

@@ -1,9 +1,9 @@
 package br.com.pacto.recrutamento.app.serviceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.candidatura.*;
+import br.com.pacto.recrutamento.app.ports.in.candidatura.CandidaturaUseCase;
 import br.com.pacto.recrutamento.app.ports.out.candidato.CandidatoPort;
 import br.com.pacto.recrutamento.app.ports.out.candidatura.*;
-import br.com.pacto.recrutamento.app.ports.in.candidatura.CandidaturaUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.*;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;

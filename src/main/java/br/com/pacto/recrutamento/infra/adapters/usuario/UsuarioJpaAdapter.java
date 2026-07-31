@@ -1,9 +1,8 @@
 package br.com.pacto.recrutamento.infra.adapters.usuario;
 
-import br.com.pacto.recrutamento.infra.repositorys.usuario.UsuarioJpaRepository;
-
 import br.com.pacto.recrutamento.app.ports.out.usuario.UsuarioPort;
 import br.com.pacto.recrutamento.core.entities.Usuario;
+import br.com.pacto.recrutamento.infra.repositorys.usuario.UsuarioJpaRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

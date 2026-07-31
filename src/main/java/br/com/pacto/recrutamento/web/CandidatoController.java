@@ -47,6 +47,7 @@ public class CandidatoController {
     }
 
     public static class CandidatoRequest {
-        @NotNull public LocalDate dataAdmissao;
+        @NotNull
+        public LocalDate dataAdmissao;
     }
 }

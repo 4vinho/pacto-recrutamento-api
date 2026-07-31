@@ -2,11 +2,11 @@ package br.com.pacto.recrutamento.app.serviceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.notificacao.CandidaturaCriadaDTO;
 import br.com.pacto.recrutamento.app.dtos.notificacao.StatusCandidaturaAlteradoDTO;
+import br.com.pacto.recrutamento.app.ports.in.notificacao.NotificacaoUseCase;
 import br.com.pacto.recrutamento.app.ports.out.notificacao.CanalNotificacaoPort;
-import br.com.pacto.recrutamento.app.ports.out.notificacao.model.DestinatariosCandidatura;
 import br.com.pacto.recrutamento.app.ports.out.notificacao.DestinatariosCandidaturaPort;
 import br.com.pacto.recrutamento.app.ports.out.notificacao.NotificacaoPort;
-import br.com.pacto.recrutamento.app.ports.in.notificacao.NotificacaoUseCase;
+import br.com.pacto.recrutamento.app.ports.out.notificacao.model.DestinatariosCandidatura;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Notificacao;
 import br.com.pacto.recrutamento.core.enums.TipoNotificacao;

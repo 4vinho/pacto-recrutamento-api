@@ -22,12 +22,12 @@ class CandidaturaServiceImplTest {
     private final UUID candidatoId = UUID.randomUUID();
     private final UUID responsavel = UUID.randomUUID();
     private final Candidatos candidatos = new Candidatos(usuarioCandidato, candidatoId);
+    private final CandidaturaServiceImpl service = new CandidaturaServiceImpl(candidatos,
+            candidaturas, vagas, perguntas, new Autorizacao(), eventos);
     private final Candidaturas candidaturas = new Candidaturas();
     private final Vagas vagas = new Vagas();
     private final Perguntas perguntas = new Perguntas();
     private final Eventos eventos = new Eventos();
-    private final CandidaturaServiceImpl service = new CandidaturaServiceImpl(candidatos,
-            candidaturas, vagas, perguntas, new Autorizacao(), eventos);
 
     @Test
     void criaCandidaturaEnviadaParaCandidatoEmVagaAbertaEPublicaEventoAposSalvar() {

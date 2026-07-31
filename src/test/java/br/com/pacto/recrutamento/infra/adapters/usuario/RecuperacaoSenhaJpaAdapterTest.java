@@ -1,8 +1,7 @@
 package br.com.pacto.recrutamento.infra.adapters.usuario;
 
-import br.com.pacto.recrutamento.infra.repositorys.usuario.TokenRecuperacaoSenhaJpaRepository;
-
 import br.com.pacto.recrutamento.core.entities.TokenRecuperacaoSenha;
+import br.com.pacto.recrutamento.infra.repositorys.usuario.TokenRecuperacaoSenhaJpaRepository;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Proxy;

@@ -1,9 +1,8 @@
 package br.com.pacto.recrutamento.infra.adapters.notificacao;
 
-import br.com.pacto.recrutamento.infra.repositorys.notificacao.DestinatariosCandidaturaRepository;
-
-import br.com.pacto.recrutamento.app.ports.out.notificacao.model.DestinatariosCandidatura;
 import br.com.pacto.recrutamento.app.ports.out.notificacao.DestinatariosCandidaturaPort;
+import br.com.pacto.recrutamento.app.ports.out.notificacao.model.DestinatariosCandidatura;
+import br.com.pacto.recrutamento.infra.repositorys.notificacao.DestinatariosCandidaturaRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

@@ -1,8 +1,8 @@
 package br.com.pacto.recrutamento.app.ports.out.notificacao;
 
 import br.com.pacto.recrutamento.app.dtos.notificacao.CandidaturaCriadaDTO;
-import br.com.pacto.recrutamento.app.serviceImpl.NotificacaoServiceImpl;
 import br.com.pacto.recrutamento.app.ports.out.notificacao.model.DestinatariosCandidatura;
+import br.com.pacto.recrutamento.app.serviceImpl.NotificacaoServiceImpl;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Notificacao;
 import br.com.pacto.recrutamento.core.enums.StatusNotificacao;

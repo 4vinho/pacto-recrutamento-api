@@ -1,12 +1,10 @@
 package br.com.pacto.recrutamento.infra.adapters.candidatura;
 
-import br.com.pacto.recrutamento.infra.repositorys.candidatura.RespostaCandidaturaJpaRepository;
-
-import br.com.pacto.recrutamento.infra.repositorys.candidatura.CandidaturaJpaRepository;
-
 import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
+import br.com.pacto.recrutamento.infra.repositorys.candidatura.CandidaturaJpaRepository;
+import br.com.pacto.recrutamento.infra.repositorys.candidatura.RespostaCandidaturaJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 

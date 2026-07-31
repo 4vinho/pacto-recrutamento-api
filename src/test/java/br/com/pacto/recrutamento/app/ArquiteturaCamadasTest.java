@@ -1,12 +1,6 @@
 package br.com.pacto.recrutamento.app;
 
-import br.com.pacto.recrutamento.app.serviceImpl.CandidatoServiceImpl;
-import br.com.pacto.recrutamento.app.serviceImpl.CandidaturaServiceImpl;
-import br.com.pacto.recrutamento.app.serviceImpl.CurriculoServiceImpl;
-import br.com.pacto.recrutamento.app.serviceImpl.NotificacaoServiceImpl;
-import br.com.pacto.recrutamento.app.serviceImpl.TemplateVagaServiceImpl;
-import br.com.pacto.recrutamento.app.serviceImpl.UsuarioServiceImpl;
-import br.com.pacto.recrutamento.app.serviceImpl.VagaServiceImpl;
+import br.com.pacto.recrutamento.app.serviceImpl.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

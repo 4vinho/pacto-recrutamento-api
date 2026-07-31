@@ -1,8 +1,8 @@
 package br.com.pacto.recrutamento.app.serviceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.usuario.*;
-import br.com.pacto.recrutamento.app.ports.out.usuario.*;
 import br.com.pacto.recrutamento.app.ports.in.usuario.UsuarioUseCase;
+import br.com.pacto.recrutamento.app.ports.out.usuario.*;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Papel;
 import br.com.pacto.recrutamento.core.entities.RefreshToken;

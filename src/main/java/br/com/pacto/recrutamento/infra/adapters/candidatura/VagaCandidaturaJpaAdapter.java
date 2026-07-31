@@ -1,9 +1,8 @@
 package br.com.pacto.recrutamento.infra.adapters.candidatura;
 
-import br.com.pacto.recrutamento.infra.repositorys.candidatura.VagaCandidaturaJpaRepository;
-
 import br.com.pacto.recrutamento.app.ports.out.candidatura.VagaCandidaturaPort;
 import br.com.pacto.recrutamento.core.entities.Vaga;
+import br.com.pacto.recrutamento.infra.repositorys.candidatura.VagaCandidaturaJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

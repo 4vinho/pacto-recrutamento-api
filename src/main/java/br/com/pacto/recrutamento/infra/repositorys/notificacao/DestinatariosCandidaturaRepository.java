@@ -1,8 +1,7 @@
 package br.com.pacto.recrutamento.infra.repositorys.notificacao;
 
-import br.com.pacto.recrutamento.infra.projections.DestinatariosCandidaturaProjection;
-
 import br.com.pacto.recrutamento.core.entities.Candidatura;
+import br.com.pacto.recrutamento.infra.projections.DestinatariosCandidaturaProjection;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;

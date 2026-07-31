@@ -2,8 +2,8 @@ package br.com.pacto.recrutamento.app.serviceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.templatevaga.*;
 import br.com.pacto.recrutamento.app.dtos.vaga.VagaDTO;
-import br.com.pacto.recrutamento.app.ports.out.templatevaga.*;
 import br.com.pacto.recrutamento.app.ports.in.templatevaga.TemplateVagaUseCase;
+import br.com.pacto.recrutamento.app.ports.out.templatevaga.*;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.*;
 import org.springframework.stereotype.Service;

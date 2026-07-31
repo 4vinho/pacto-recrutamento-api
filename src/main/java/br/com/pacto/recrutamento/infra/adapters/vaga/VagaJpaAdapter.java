@@ -1,10 +1,9 @@
 package br.com.pacto.recrutamento.infra.adapters.vaga;
 
-import br.com.pacto.recrutamento.infra.repositorys.vaga.VagaJpaRepository;
-
 import br.com.pacto.recrutamento.app.ports.out.templatevaga.VagaTemplatePort;
 import br.com.pacto.recrutamento.app.ports.out.vaga.VagaPort;
 import br.com.pacto.recrutamento.core.entities.Vaga;
+import br.com.pacto.recrutamento.infra.repositorys.vaga.VagaJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

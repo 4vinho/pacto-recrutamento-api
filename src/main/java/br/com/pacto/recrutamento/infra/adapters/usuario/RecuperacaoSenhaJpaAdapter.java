@@ -1,9 +1,8 @@
 package br.com.pacto.recrutamento.infra.adapters.usuario;
 
-import br.com.pacto.recrutamento.infra.repositorys.usuario.TokenRecuperacaoSenhaJpaRepository;
-
 import br.com.pacto.recrutamento.app.ports.out.usuario.RecuperacaoSenhaPort;
 import br.com.pacto.recrutamento.core.entities.TokenRecuperacaoSenha;
+import br.com.pacto.recrutamento.infra.repositorys.usuario.TokenRecuperacaoSenhaJpaRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

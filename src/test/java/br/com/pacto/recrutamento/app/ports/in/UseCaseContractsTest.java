@@ -7,7 +7,6 @@ import br.com.pacto.recrutamento.app.ports.in.notificacao.NotificacaoUseCase;
 import br.com.pacto.recrutamento.app.ports.in.templatevaga.TemplateVagaUseCase;
 import br.com.pacto.recrutamento.app.ports.in.usuario.UsuarioUseCase;
 import br.com.pacto.recrutamento.app.ports.in.vaga.VagaUseCase;
-
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.Entity;

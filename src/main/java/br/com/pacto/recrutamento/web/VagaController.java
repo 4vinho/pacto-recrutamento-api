@@ -97,35 +97,42 @@ public class VagaController {
     }
 
     private SalvarPerguntaVagaDTO pergunta(UUID usuarioId, UUID vagaId, UUID perguntaId,
-                                            PerguntaRequest request) {
+                                           PerguntaRequest request) {
         return new SalvarPerguntaVagaDTO(usuarioId, vagaId, perguntaId, request.enunciado,
                 request.tipoResposta, request.obrigatoria, request.ordem);
     }
 
     private SalvarRequisitoVagaDTO requisito(UUID usuarioId, UUID vagaId, UUID requisitoId,
-                                              RequisitoRequest request) {
+                                             RequisitoRequest request) {
         return new SalvarRequisitoVagaDTO(
                 usuarioId, vagaId, requisitoId, request.descricao, request.obrigatorio);
     }
 
     public static class VagaRequest {
-        @NotBlank public String titulo;
-        @NotBlank public String descricao;
+        @NotBlank
+        public String titulo;
+        @NotBlank
+        public String descricao;
     }
 
     public static class StatusRequest {
-        @NotNull public StatusVaga status;
+        @NotNull
+        public StatusVaga status;
     }
 
     public static class PerguntaRequest {
-        @NotBlank public String enunciado;
-        @NotNull public TipoResposta tipoResposta;
+        @NotBlank
+        public String enunciado;
+        @NotNull
+        public TipoResposta tipoResposta;
         public boolean obrigatoria;
-        @Min(0) public int ordem;
+        @Min(0)
+        public int ordem;
     }
 
     public static class RequisitoRequest {
-        @NotBlank public String descricao;
+        @NotBlank
+        public String descricao;
         public boolean obrigatorio;
     }
 }

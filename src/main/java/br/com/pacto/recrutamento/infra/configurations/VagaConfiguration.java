@@ -1,11 +1,9 @@
 package br.com.pacto.recrutamento.infra.configurations;
 
-import br.com.pacto.recrutamento.infra.adapters.vaga.AutorizacaoVagaJpaAdapter;
-
-import br.com.pacto.recrutamento.infra.repositorys.vaga.AutorizacaoVagaJpaRepository;
-
 import br.com.pacto.recrutamento.app.ports.out.vaga.AutorizacaoVagaPort;
 import br.com.pacto.recrutamento.core.enums.NomePapel;
+import br.com.pacto.recrutamento.infra.adapters.vaga.AutorizacaoVagaJpaAdapter;
+import br.com.pacto.recrutamento.infra.repositorys.vaga.AutorizacaoVagaJpaRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

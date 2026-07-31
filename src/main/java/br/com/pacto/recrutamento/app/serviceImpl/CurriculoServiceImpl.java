@@ -1,10 +1,10 @@
 package br.com.pacto.recrutamento.app.serviceImpl;
 
 import br.com.pacto.recrutamento.app.dtos.curriculo.*;
+import br.com.pacto.recrutamento.app.ports.in.curriculo.CurriculoUseCase;
 import br.com.pacto.recrutamento.app.ports.out.curriculo.ArquivoStoragePort;
 import br.com.pacto.recrutamento.app.ports.out.curriculo.CandidatoConsultaPort;
 import br.com.pacto.recrutamento.app.ports.out.curriculo.CurriculoPort;
-import br.com.pacto.recrutamento.app.ports.in.curriculo.CurriculoUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Curriculo;
 import org.slf4j.Logger;

@@ -113,19 +113,25 @@ public class TemplateVagaController {
     }
 
     public static class TemplateRequest {
-        @NotBlank public String titulo;
-        @NotBlank public String descricao;
+        @NotBlank
+        public String titulo;
+        @NotBlank
+        public String descricao;
     }
 
     public static class PerguntaRequest {
-        @NotBlank public String enunciado;
-        @NotNull public TipoResposta tipoResposta;
+        @NotBlank
+        public String enunciado;
+        @NotNull
+        public TipoResposta tipoResposta;
         public boolean obrigatoria;
-        @Min(0) public int ordem;
+        @Min(0)
+        public int ordem;
     }
 
     public static class RequisitoRequest {
-        @NotBlank public String descricao;
+        @NotBlank
+        public String descricao;
         public boolean obrigatorio;
     }
 }
