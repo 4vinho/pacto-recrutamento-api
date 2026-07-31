@@ -11,19 +11,17 @@ import java.util.UUID;
 @Repository
 public class RequisitoVagaJpaAdapter implements RequisitoVagaRepositorio, RequisitoVagaTemplateRepositorio {
     private final RequisitoVagaJpaRepository repository;
-    private final RequisitoVagaJpaMapper mapper;
 
-    public RequisitoVagaJpaAdapter(RequisitoVagaJpaRepository repository, RequisitoVagaJpaMapper mapper) {
+    public RequisitoVagaJpaAdapter(RequisitoVagaJpaRepository repository) {
         this.repository = repository;
-        this.mapper = mapper;
     }
 
     public Optional<RequisitoVaga> buscarAtivoPorId(UUID id) {
         if (id == null) return Optional.empty();
-        return repository.findByIdAndExcluidoEmIsNull(id).map(mapper::paraDominio);
+        return repository.findByIdAndExcluidoEmIsNull(id);
     }
 
     public RequisitoVaga salvar(RequisitoVaga requisito) {
-        return mapper.paraDominio(repository.save(mapper.paraEntidade(requisito)));
+        return repository.save(requisito);
     }
 }

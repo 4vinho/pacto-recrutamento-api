@@ -9,8 +9,7 @@ import java.util.UUID;
 @Repository
 class TemplateVagaJpaAdapter implements TemplateVagaRepositorio {
     private final TemplateVagaJpaRepository repository;
-    private final TemplateVagaJpaMapper mapper;
-    TemplateVagaJpaAdapter(TemplateVagaJpaRepository repository, TemplateVagaJpaMapper mapper) { this.repository = repository; this.mapper = mapper; }
-    public Optional<TemplateVaga> buscarAtivoPorId(UUID id) { if (id == null) return Optional.empty(); return repository.findByIdAndExcluidoEmIsNull(id).map(mapper::paraDominio); }
-    public TemplateVaga salvar(TemplateVaga template) { return mapper.paraDominio(repository.save(mapper.paraEntidade(template))); }
+    TemplateVagaJpaAdapter(TemplateVagaJpaRepository repository) { this.repository = repository; }
+    public Optional<TemplateVaga> buscarAtivoPorId(UUID id) { if (id == null) return Optional.empty(); return repository.findByIdAndExcluidoEmIsNull(id); }
+    public TemplateVaga salvar(TemplateVaga template) { return repository.save(template); }
 }

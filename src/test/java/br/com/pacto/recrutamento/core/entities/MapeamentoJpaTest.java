@@ -2,13 +2,6 @@ package br.com.pacto.recrutamento.core.entities;
 
 import br.com.pacto.recrutamento.core.enums.StatusVaga;
 import br.com.pacto.recrutamento.core.enums.TipoNotificacao;
-import br.com.pacto.recrutamento.infra.candidatura.CandidaturaJpaEntity;
-import br.com.pacto.recrutamento.infra.candidatura.RespostaCandidaturaJpaEntity;
-import br.com.pacto.recrutamento.infra.notificacao.NotificacaoJpaEntity;
-import br.com.pacto.recrutamento.infra.templatevaga.PerguntaTemplateVagaJpaEntity;
-import br.com.pacto.recrutamento.infra.templatevaga.RequisitoTemplateVagaJpaEntity;
-import br.com.pacto.recrutamento.infra.templatevaga.TemplateVagaJpaEntity;
-import br.com.pacto.recrutamento.infra.vaga.VagaJpaEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,19 +26,19 @@ class MapeamentoJpaTest {
 
         assertThat(entidades).containsExactlyInAnyOrder(
                 "Usuario", "Papel", "RefreshToken", "TokenRecuperacaoSenha",
-                "Candidato", "Curriculo", "VagaJpaEntity",
-                "PerguntaVagaJpaEntity", "RequisitoVagaJpaEntity",
-                CandidaturaJpaEntity.class.getSimpleName(),
-                RespostaCandidaturaJpaEntity.class.getSimpleName(), "NotificacaoJpaEntity", "TemplateVagaJpaEntity",
-                "PerguntaTemplateVagaJpaEntity", "RequisitoTemplateVagaJpaEntity");
+                "Candidato", "Curriculo", "Vaga",
+                "PerguntaVaga", "RequisitoVaga",
+                Candidatura.class.getSimpleName(),
+                RespostaCandidatura.class.getSimpleName(), Notificacao.class.getSimpleName(), "TemplateVaga",
+                "PerguntaTemplateVaga", "RequisitoTemplateVaga");
     }
 
     @Test
     @Transactional
     void persisteEntidadesComIdStatusEAuditoria() {
-        VagaJpaEntity vaga = new VagaJpaEntity(UUID.randomUUID(), UUID.randomUUID(),
+        Vaga vaga = Vaga.restaurar(UUID.randomUUID(), UUID.randomUUID(),
                 "Desenvolvedor", "Descricao", StatusVaga.RASCUNHO, null, null, null);
-        NotificacaoJpaEntity notificacao = notificacaoJpa();
+        Notificacao notificacao = notificacaoJpa();
 
         entityManager.persist(vaga);
         entityManager.persist(notificacao);
@@ -57,16 +50,9 @@ class MapeamentoJpaTest {
         assertThat(notificacao.getCriadoEm()).isNotNull();
     }
 
-    private NotificacaoJpaEntity notificacaoJpa() {
-        NotificacaoJpaEntity notificacao = new NotificacaoJpaEntity();
-        notificacao.setId(UUID.randomUUID());
-        notificacao.setEventoId(UUID.randomUUID());
-        notificacao.setUsuarioId(UUID.randomUUID());
-        notificacao.setTipo(TipoNotificacao.CANDIDATURA_CRIADA);
-        notificacao.setTitulo("Nova candidatura");
-        notificacao.setMensagem("Uma candidatura foi criada");
-        notificacao.setStatus(br.com.pacto.recrutamento.core.enums.StatusNotificacao.PENDENTE);
-        notificacao.setCriadoEm(java.time.OffsetDateTime.now());
-        return notificacao;
+    private Notificacao notificacaoJpa() {
+        return new Notificacao(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                TipoNotificacao.CANDIDATURA_CRIADA, "Nova candidatura", "Uma candidatura foi criada",
+                br.com.pacto.recrutamento.core.enums.StatusNotificacao.PENDENTE, 0, null);
     }
 }

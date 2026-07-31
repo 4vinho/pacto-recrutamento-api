@@ -16,7 +16,7 @@ class VagaJpaAdapterTest {
         UUID id = UUID.randomUUID();
         VagaJpaRepository repository = mock(VagaJpaRepository.class);
         when(repository.findByIdAndExcluidoEmIsNull(id)).thenReturn(Optional.empty());
-        VagaJpaAdapter adapter = new VagaJpaAdapter(repository, new VagaJpaMapper());
+        VagaJpaAdapter adapter = new VagaJpaAdapter(repository);
 
         assertThat(adapter.buscarAtivaPorId(id)).isEmpty();
 
@@ -31,9 +31,9 @@ class VagaJpaAdapterTest {
         when(perguntas.findByIdAndExcluidoEmIsNull(id)).thenReturn(Optional.empty());
         when(requisitos.findByIdAndExcluidoEmIsNull(id)).thenReturn(Optional.empty());
 
-        assertThat(new PerguntaVagaJpaAdapter(perguntas, new PerguntaVagaJpaMapper())
+        assertThat(new PerguntaVagaJpaAdapter(perguntas)
                 .buscarAtivaPorId(id)).isEmpty();
-        assertThat(new RequisitoVagaJpaAdapter(requisitos, new RequisitoVagaJpaMapper())
+        assertThat(new RequisitoVagaJpaAdapter(requisitos)
                 .buscarAtivoPorId(id)).isEmpty();
 
         verify(perguntas).findByIdAndExcluidoEmIsNull(id);

@@ -14,11 +14,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ArquiteturaVagaTest {
 
     @Test
-    void sliceDaAplicacaoFicaCoesoESemDependenciasJpa() throws Exception {
+    void entidadesDoCoreSaoPersistidasDiretamente() throws Exception {
         assertThat(Class.forName("br.com.pacto.recrutamento.app.serviceImpl.VagaServiceImpl")).isNotNull();
         assertThat(Class.forName("br.com.pacto.recrutamento.app.ports.vaga.VagaRepositorio")).isNotNull();
-        assertThat(Vaga.class.isAnnotationPresent(Entity.class)).isFalse();
-        assertThat(PerguntaVaga.class.isAnnotationPresent(Entity.class)).isFalse();
-        assertThat(RequisitoVaga.class.isAnnotationPresent(Entity.class)).isFalse();
+        assertThat(Vaga.class.isAnnotationPresent(Entity.class)).isTrue();
+        assertThat(PerguntaVaga.class.isAnnotationPresent(Entity.class)).isTrue();
+        assertThat(RequisitoVaga.class.isAnnotationPresent(Entity.class)).isTrue();
     }
 }

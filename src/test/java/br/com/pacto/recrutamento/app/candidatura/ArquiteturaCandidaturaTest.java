@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ArquiteturaCandidaturaTest {
     @Test
-    void sliceDaAplicacaoNaoDependeDeSpringJpaOuInfra() throws IOException {
+    void servicesEPortasNaoDependemDaInfraEEntidadesUsamJpa() throws IOException {
         Stream<Path> raizes = Stream.of(
                 Paths.get("src/main/java/br/com/pacto/recrutamento/app/serviceImpl"),
                 Paths.get("src/main/java/br/com/pacto/recrutamento/app/ports/candidatura"));
@@ -30,7 +30,7 @@ class ArquiteturaCandidaturaTest {
                 });
             }
         }
-        assertThat(Candidatura.class.isAnnotationPresent(Entity.class)).isFalse();
-        assertThat(RespostaCandidatura.class.isAnnotationPresent(Entity.class)).isFalse();
+        assertThat(Candidatura.class.isAnnotationPresent(Entity.class)).isTrue();
+        assertThat(RespostaCandidatura.class.isAnnotationPresent(Entity.class)).isTrue();
     }
 }

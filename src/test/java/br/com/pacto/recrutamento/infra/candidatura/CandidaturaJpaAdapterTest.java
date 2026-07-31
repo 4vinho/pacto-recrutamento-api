@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 class CandidaturaJpaAdapterTest {
     private final CandidaturaJpaRepository candidaturas = mock(CandidaturaJpaRepository.class);
     private final RespostaCandidaturaJpaRepository respostas = mock(RespostaCandidaturaJpaRepository.class);
-    private final CandidaturaJpaAdapter adapter = new CandidaturaJpaAdapter(candidaturas, respostas, new CandidaturaJpaMapper());
+    private final CandidaturaJpaAdapter adapter = new CandidaturaJpaAdapter(candidaturas, respostas);
 
     @Test
     void traduzUnicidadeConcorrenteDaCandidatura() {

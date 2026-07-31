@@ -1,16 +1,34 @@
 package br.com.pacto.recrutamento.core.entities;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "requisitos_vaga")
 public class RequisitoVaga {
-    private UUID id = UUID.randomUUID();
-    private UUID vagaId;
-    private String descricao;
-    private boolean obrigatorio;
-    private OffsetDateTime criadoEm;
-    private OffsetDateTime atualizadoEm;
-    private OffsetDateTime excluidoEm;
+    @Id private UUID id = UUID.randomUUID();
+    @Column(name = "vaga_id", nullable = false) private UUID vagaId;
+    @Column(nullable = false, columnDefinition = "TEXT") private String descricao;
+    @Column(nullable = false) private boolean obrigatorio;
+    @Column(name = "criado_em", nullable = false, updatable = false) private OffsetDateTime criadoEm;
+    @Column(name = "atualizado_em", nullable = false) private OffsetDateTime atualizadoEm;
+    @Column(name = "excluido_em") private OffsetDateTime excluidoEm;
+
+    @PrePersist
+    void incluir() {
+        OffsetDateTime agora = OffsetDateTime.now();
+        if (criadoEm == null) criadoEm = agora;
+        atualizadoEm = agora;
+    }
+
+    @PreUpdate
+    void atualizar() { atualizadoEm = OffsetDateTime.now(); }
 
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }

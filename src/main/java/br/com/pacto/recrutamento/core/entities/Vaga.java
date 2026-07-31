@@ -2,18 +2,28 @@ package br.com.pacto.recrutamento.core.entities;
 
 import br.com.pacto.recrutamento.core.enums.StatusVaga;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "vagas")
 public class Vaga {
-    private UUID id;
-    private UUID responsavelId;
-    private String titulo;
-    private String descricao;
-    private StatusVaga status = StatusVaga.RASCUNHO;
-    private OffsetDateTime criadoEm;
-    private OffsetDateTime atualizadoEm;
-    private OffsetDateTime excluidoEm;
+    @Id private UUID id;
+    @Column(name = "responsavel_id", nullable = false) private UUID responsavelId;
+    @Column(nullable = false, length = 150) private String titulo;
+    @Column(nullable = false, columnDefinition = "TEXT") private String descricao;
+    @Enumerated(EnumType.STRING) @Column(nullable = false, length = 30) private StatusVaga status = StatusVaga.RASCUNHO;
+    @Column(name = "criado_em", nullable = false, updatable = false) private OffsetDateTime criadoEm;
+    @Column(name = "atualizado_em", nullable = false) private OffsetDateTime atualizadoEm;
+    @Column(name = "excluido_em") private OffsetDateTime excluidoEm;
 
     public Vaga() {
         id = UUID.randomUUID();
@@ -41,6 +51,16 @@ public class Vaga {
     public boolean aceitaCandidatura() {
         return status == StatusVaga.PUBLICADA && excluidoEm == null;
     }
+
+    @PrePersist
+    void incluir() {
+        OffsetDateTime agora = OffsetDateTime.now();
+        if (criadoEm == null) criadoEm = agora;
+        atualizadoEm = agora;
+    }
+
+    @PreUpdate
+    void atualizar() { atualizadoEm = OffsetDateTime.now(); }
 
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
