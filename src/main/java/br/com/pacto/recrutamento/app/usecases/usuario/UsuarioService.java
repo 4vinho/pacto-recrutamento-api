@@ -1,5 +1,7 @@
 package br.com.pacto.recrutamento.app.usecases.usuario;
 
+import static br.com.pacto.recrutamento.core.common.ErrorMessages.*;
+
 import br.com.pacto.recrutamento.app.dtos.usuario.*;
 import br.com.pacto.recrutamento.app.ports.in.usuario.UsuarioUseCase;
 import br.com.pacto.recrutamento.app.ports.out.usuario.*;
@@ -43,13 +45,13 @@ public class UsuarioService implements UsuarioUseCase {
 
     @Override
     public TypedResponse<UsuarioDTO> cadastrarUsuario(CadastrarUsuarioDTO command) {
-        if (command == null) return resposta(400, "Comando de cadastro obrigat\u00f3rio.", null);
+        if (command == null) return resposta(400, COMANDO_CADASTRO_OBRIGATORIO, null);
         String email = normalizarEmail(command.getEmail());
         if (emailInvalido(email) || senhaInvalida(command.getSenha()))
-            return resposta(400, "Dados de cadastro inv\u00e1lidos.", null);
-        if (usuarios.buscarPorEmail(email).isPresent()) return resposta(409, "E-mail j\u00e1 utilizado.", null);
+            return resposta(400, DADOS_CADASTRO_INVALIDOS, null);
+        if (usuarios.buscarPorEmail(email).isPresent()) return resposta(409, EMAIL_JA_UTILIZADO, null);
         Optional<Papel> papel = papeis.buscarPorNome(NomePapel.CANDIDATO);
-        if (!papel.isPresent()) return resposta(500, "N\u00e3o foi poss\u00edvel concluir o cadastro.", null);
+        if (!papel.isPresent()) return resposta(500, CADASTRO_NAO_CONCLUIDO, null);
         Usuario usuario = new Usuario(email, senhas.codificar(command.getSenha()));
         usuario.setTelefone(command.getTelefone());
         usuario.setPapeis(Collections.singleton(papel.get()));
@@ -59,31 +61,31 @@ public class UsuarioService implements UsuarioUseCase {
 
     @Override
     public TypedResponse<SessaoDTO> autenticarUsuario(AutenticarUsuarioDTO command) {
-        if (command == null) return resposta(401, "Credenciais inv\u00e1lidas.", null);
+        if (command == null) return resposta(401, CREDENCIAIS_INVALIDAS, null);
         String email = normalizarEmail(command.getEmail());
         if (emailInvalido(email) || senhaInvalida(command.getSenha()))
-            return resposta(401, "Credenciais inv\u00e1lidas.", null);
+            return resposta(401, CREDENCIAIS_INVALIDAS, null);
         Optional<Usuario> usuario = usuarios.buscarPorEmail(email);
         if (!usuario.isPresent() || !usuario.get().isAtivo() || !senhas.confere(command.getSenha(), usuario.get().getSenhaHash()))
-            return resposta(401, "Credenciais inv\u00e1lidas.", null);
+            return resposta(401, CREDENCIAIS_INVALIDAS, null);
         return resposta(200, "Autentica\u00e7\u00e3o realizada com sucesso.", criarSessao(usuario.get(), UUID.randomUUID()));
     }
 
     @Override
     public TypedResponse<SessaoDTO> renovarSessao(RenovarSessaoDTO command) {
         if (command == null || tokenInvalido(command.getRefreshToken()))
-            return resposta(401, "Refresh token inv\u00e1lido.", null);
+            return resposta(401, REFRESH_TOKEN_INVALIDO, null);
         Optional<RefreshToken> encontrado = refreshTokens.buscarPorHash(tokens.calcularHash(command.getRefreshToken()));
-        if (!encontrado.isPresent()) return resposta(401, "Refresh token inv\u00e1lido.", null);
+        if (!encontrado.isPresent()) return resposta(401, REFRESH_TOKEN_INVALIDO, null);
         RefreshToken refresh = encontrado.get();
         OffsetDateTime agora = agora();
         if (!refresh.podeCriarSessao(agora)) {
             if (refresh.getUsadoEm() != null) refreshTokens.revogarFamilia(refresh.getFamiliaId(), agora);
-            return resposta(401, "Refresh token inv\u00e1lido.", null);
+            return resposta(401, REFRESH_TOKEN_INVALIDO, null);
         }
         Optional<Usuario> usuario = usuarios.buscarPorId(refresh.getUsuarioId());
         if (!usuario.isPresent() || !usuario.get().isAtivo())
-            return resposta(401, "Refresh token inv\u00e1lido.", null);
+            return resposta(401, REFRESH_TOKEN_INVALIDO, null);
         refresh.marcarComoUsado(agora);
         refreshTokens.salvar(refresh);
         return resposta(200, "Sess\u00e3o renovada com sucesso.", criarSessao(usuario.get(), refresh.getFamiliaId()));
@@ -92,10 +94,10 @@ public class UsuarioService implements UsuarioUseCase {
     @Override
     public TypedResponse<Void> encerrarSessao(EncerrarSessaoDTO command) {
         if (command == null || command.getUsuarioId() == null || tokenInvalido(command.getRefreshToken()))
-            return resposta(401, "Refresh token inv\u00e1lido.", null);
+            return resposta(401, REFRESH_TOKEN_INVALIDO, null);
         Optional<RefreshToken> encontrado = refreshTokens.buscarPorHash(tokens.calcularHash(command.getRefreshToken()));
         if (!encontrado.isPresent() || !encontrado.get().getUsuarioId().equals(command.getUsuarioId()))
-            return resposta(401, "Refresh token inv\u00e1lido.", null);
+            return resposta(401, REFRESH_TOKEN_INVALIDO, null);
         RefreshToken refresh = encontrado.get();
         refresh.revogar(agora());
         refreshTokens.salvar(refresh);
@@ -104,7 +106,7 @@ public class UsuarioService implements UsuarioUseCase {
 
     @Override
     public TypedResponse<Void> solicitarRecuperacaoSenha(SolicitarRecuperacaoSenhaDTO command) {
-        if (command == null) return resposta(400, "Comando de recupera\u00e7\u00e3o obrigat\u00f3rio.", null);
+        if (command == null) return resposta(400, COMANDO_RECUPERACAO_OBRIGATORIO, null);
         String email = normalizarEmail(command.getEmail());
         if (emailInvalido(email)) return resposta(200, mensagemRecuperacao(), null);
         Optional<Usuario> usuario = usuarios.buscarPorEmail(email);
@@ -117,15 +119,15 @@ public class UsuarioService implements UsuarioUseCase {
 
     @Override
     public TypedResponse<Void> redefinirSenha(RedefinirSenhaDTO command) {
-        if (command == null) return resposta(400, "Comando de redefini\u00e7\u00e3o obrigat\u00f3rio.", null);
+        if (command == null) return resposta(400, COMANDO_REDEFINICAO_OBRIGATORIO, null);
         if (senhaInvalida(command.getNovaSenha()))
-            return resposta(400, "Dados para redefini\u00e7\u00e3o de senha inv\u00e1lidos.", null);
+            return resposta(400, DADOS_REDEFINICAO_SENHA_INVALIDOS, null);
         if (tokenInvalido(command.getToken()))
-            return resposta(401, "Token de recupera\u00e7\u00e3o inv\u00e1lido.", null);
+            return resposta(401, TOKEN_RECUPERACAO_INVALIDO, null);
         Optional<UUID> usuarioId = recuperacoes.consumirTokenValido(tokens.calcularHash(command.getToken()), agora());
-        if (!usuarioId.isPresent()) return resposta(401, "Token de recupera\u00e7\u00e3o inv\u00e1lido.", null);
+        if (!usuarioId.isPresent()) return resposta(401, TOKEN_RECUPERACAO_INVALIDO, null);
         Optional<Usuario> usuario = usuarios.buscarPorId(usuarioId.get());
-        if (!usuario.isPresent()) return resposta(401, "Token de recupera\u00e7\u00e3o inv\u00e1lido.", null);
+        if (!usuario.isPresent()) return resposta(401, TOKEN_RECUPERACAO_INVALIDO, null);
         usuario.get().setSenhaHash(senhas.codificar(command.getNovaSenha()));
         usuarios.salvar(usuario.get());
         refreshTokens.revogarTodosDoUsuario(usuario.get().getId(), agora());

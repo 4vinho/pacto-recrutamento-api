@@ -1,5 +1,7 @@
 package br.com.pacto.recrutamento.app.usecases.curriculo;
 
+import static br.com.pacto.recrutamento.core.common.ErrorMessages.*;
+
 import br.com.pacto.recrutamento.app.dtos.curriculo.*;
 import br.com.pacto.recrutamento.app.ports.in.curriculo.CurriculoUseCase;
 import br.com.pacto.recrutamento.app.ports.out.curriculo.ArquivoStoragePort;
@@ -42,11 +44,11 @@ public class CurriculoService implements CurriculoUseCase {
     @Override
     public TypedResponse<CurriculoDTO> enviarCurriculo(EnviarCurriculoDTO command) {
         Arquivo recebido = Arquivo.de(command.getNomeOriginal(), command.getConteudo());
-        if (!recebido.ehPdfValido()) return erro(400, "O currículo deve ser um PDF válido");
+        if (!recebido.ehPdfValido()) return erro(400, CURRICULO_PDF_INVALIDO);
         Optional<UUID> candidatoId = candidatos.buscarIdPorUsuario(command.getUsuarioId());
-        if (!candidatoId.isPresent()) return erro(404, "Candidato não encontrado");
+        if (!candidatoId.isPresent()) return erro(404, CANDIDATO_NAO_ENCONTRADO);
         if (repositorio.buscarAtivoPorCandidato(candidatoId.get()).isPresent()) {
-            return erro(409, "Já existe um currículo ativo");
+            return erro(409, CURRICULO_ATIVO_EXISTENTE);
         }
         return salvarNovo(candidatoId.get(), recebido);
     }
@@ -54,18 +56,18 @@ public class CurriculoService implements CurriculoUseCase {
     @Override
     public TypedResponse<CurriculoDTO> substituirCurriculo(SubstituirCurriculoDTO command) {
         Arquivo recebido = Arquivo.de(command.getNomeOriginal(), command.getConteudo());
-        if (!recebido.ehPdfValido()) return erro(400, "O currículo deve ser um PDF válido");
+        if (!recebido.ehPdfValido()) return erro(400, CURRICULO_PDF_INVALIDO);
         Optional<UUID> candidatoId = candidatos.buscarIdPorUsuario(command.getUsuarioId());
-        if (!candidatoId.isPresent()) return erro(404, "Candidato não encontrado");
+        if (!candidatoId.isPresent()) return erro(404, CANDIDATO_NAO_ENCONTRADO);
         Optional<Curriculo> anterior = repositorio.buscarAtivoPorCandidato(candidatoId.get());
-        if (!anterior.isPresent()) return erro(404, "Currículo ativo não encontrado");
+        if (!anterior.isPresent()) return erro(404, CURRICULO_ATIVO_NAO_ENCONTRADO);
         Curriculo novo = novoCurriculo(candidatoId.get(), recebido);
         try {
             storage.armazenar(novo.getStorageKey(), recebido.conteudo, PDF);
             repositorio.substituir(anterior.get(), novo, agora());
         } catch (RuntimeException e) {
             compensar(novo.getStorageKey());
-            return erro(500, "Não foi possível substituir o currículo");
+            return erro(500, SUBSTITUICAO_CURRICULO_FALHOU);
         }
         removerAnterior(anterior.get().getStorageKey());
         return sucesso(200, novo);
@@ -76,9 +78,9 @@ public class CurriculoService implements CurriculoUseCase {
             GerarUrlTemporariaCurriculoDTO query) {
         Optional<Curriculo> curriculo = repositorio.buscarAtivoPorId(query.getCurriculoId());
         if (!curriculo.isPresent())
-            return new TypedResponse<UrlTemporariaCurriculoDTO>(404, "Currículo não encontrado", null);
+            return new TypedResponse<UrlTemporariaCurriculoDTO>(404, CURRICULO_NAO_ENCONTRADO, null);
         if (!candidatos.pertenceAoUsuario(curriculo.get().getCandidatoId(), query.getUsuarioSolicitanteId())) {
-            return new TypedResponse<UrlTemporariaCurriculoDTO>(403, "Acesso não autorizado", null);
+            return new TypedResponse<UrlTemporariaCurriculoDTO>(403, ACESSO_NAO_AUTORIZADO_ACENTUADO, null);
         }
         try {
             OffsetDateTime expiraEm = agora().plus(DURACAO_URL);
@@ -86,7 +88,7 @@ public class CurriculoService implements CurriculoUseCase {
             return new TypedResponse<UrlTemporariaCurriculoDTO>(200, "URL temporária gerada",
                     new UrlTemporariaCurriculoDTO(url, expiraEm));
         } catch (RuntimeException e) {
-            return new TypedResponse<UrlTemporariaCurriculoDTO>(500, "Não foi possível gerar a URL temporária", null);
+            return new TypedResponse<UrlTemporariaCurriculoDTO>(500, GERACAO_URL_TEMPORARIA_FALHOU, null);
         }
     }
 
@@ -98,7 +100,7 @@ public class CurriculoService implements CurriculoUseCase {
             return sucesso(201, novo);
         } catch (RuntimeException e) {
             compensar(novo.getStorageKey());
-            return erro(500, "Não foi possível salvar o currículo");
+            return erro(500, SALVAMENTO_CURRICULO_FALHOU);
         }
     }
 

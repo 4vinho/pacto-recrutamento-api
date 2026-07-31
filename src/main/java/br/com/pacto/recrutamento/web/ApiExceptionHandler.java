@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static br.com.pacto.recrutamento.core.common.ErrorMessages.*;
+
 @RestControllerAdvice
 public class ApiExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -23,14 +25,14 @@ public class ApiExceptionHandler {
         for (FieldError error : exception.getBindingResult().getFieldErrors()) {
             errors.put(error.getField(), error.getDefaultMessage());
         }
-        return error(HttpStatus.UNPROCESSABLE_ENTITY, "Dados inválidos.", errors);
+        return error(HttpStatus.UNPROCESSABLE_ENTITY, DADOS_INVALIDOS, errors);
     }
 
     @ExceptionHandler({HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class,
             MissingServletRequestParameterException.class})
     ResponseEntity<TypedResponse<Void>> malformed(Exception exception) {
-        return error(HttpStatus.BAD_REQUEST, "Requisição inválida.", null);
+        return error(HttpStatus.BAD_REQUEST, REQUISICAO_INVALIDA, null);
     }
 
     @ExceptionHandler(CurriculoController.InvalidRequestException.class)
@@ -40,12 +42,12 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     ResponseEntity<TypedResponse<Void>> uploadTooLarge(MaxUploadSizeExceededException exception) {
-        return error(HttpStatus.UNPROCESSABLE_ENTITY, "O arquivo deve possuir no máximo 5 MB.", null);
+        return error(HttpStatus.UNPROCESSABLE_ENTITY, ARQUIVO_MUITO_GRANDE, null);
     }
 
     @ExceptionHandler(AuthenticatedUser.UnauthenticatedException.class)
     ResponseEntity<TypedResponse<Void>> unauthenticated(AuthenticatedUser.UnauthenticatedException exception) {
-        return error(HttpStatus.UNAUTHORIZED, "Não autenticado.", null);
+        return error(HttpStatus.UNAUTHORIZED, NAO_AUTENTICADO, null);
     }
 
     private <T> ResponseEntity<TypedResponse<T>> error(HttpStatus status, String message, T data) {

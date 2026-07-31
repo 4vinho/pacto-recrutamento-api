@@ -1,5 +1,7 @@
 package br.com.pacto.recrutamento.app.usecases.vaga;
 
+import static br.com.pacto.recrutamento.core.common.ErrorMessages.*;
+
 import br.com.pacto.recrutamento.app.dtos.vaga.*;
 import br.com.pacto.recrutamento.app.ports.in.vaga.VagaUseCase;
 import br.com.pacto.recrutamento.app.ports.out.vaga.AutorizacaoVagaPort;
@@ -38,19 +40,19 @@ public class VagaService implements VagaUseCase {
     @Override
     public TypedResponse<VagaDTO> criarVaga(CriarVagaDTO command) {
         if (command == null || command.getResponsavelId() == null || camposVagaInvalidos(command.getTitulo(), command.getDescricao()))
-            return vagaErro(400, "Dados da vaga invalidos");
-        if (!autorizacao.podeManterVagas(command.getResponsavelId())) return vagaErro(403, "Acesso nao autorizado");
+            return vagaErro(400, DADOS_VAGA_INVALIDOS);
+        if (!autorizacao.podeManterVagas(command.getResponsavelId())) return vagaErro(403, ACESSO_NAO_AUTORIZADO);
         return vagaResposta(201, "Vaga criada", vagas.salvar(new Vaga(command.getResponsavelId(), command.getTitulo(), command.getDescricao())));
     }
 
     @Override
     public TypedResponse<VagaDTO> atualizarVaga(AtualizarVagaDTO command) {
         if (command == null || camposVagaInvalidos(command.getTitulo(), command.getDescricao()))
-            return vagaErro(400, "Dados da vaga invalidos");
+            return vagaErro(400, DADOS_VAGA_INVALIDOS);
         TypedResponse<VagaDTO> acesso = validarAcesso(command.getUsuarioSolicitanteId());
         if (acesso != null) return acesso;
         Optional<Vaga> vaga = vagas.buscarAtivaPorId(command.getVagaId());
-        if (!vaga.isPresent()) return vagaErro(404, "Vaga nao encontrada");
+        if (!vaga.isPresent()) return vagaErro(404, VAGA_NAO_ENCONTRADA);
         vaga.get().setTitulo(command.getTitulo());
         vaga.get().setDescricao(command.getDescricao());
         return vagaResposta(200, "Vaga atualizada", vagas.salvar(vaga.get()));
@@ -58,11 +60,11 @@ public class VagaService implements VagaUseCase {
 
     @Override
     public TypedResponse<VagaDTO> alterarStatusVaga(AlterarStatusVagaDTO command) {
-        if (command == null || command.getStatus() == null) return vagaErro(400, "Status da vaga obrigatorio");
+        if (command == null || command.getStatus() == null) return vagaErro(400, STATUS_VAGA_OBRIGATORIO);
         TypedResponse<VagaDTO> acesso = validarAcesso(command.getUsuarioSolicitanteId());
         if (acesso != null) return acesso;
         Optional<Vaga> vaga = vagas.buscarAtivaPorId(command.getVagaId());
-        if (!vaga.isPresent()) return vagaErro(404, "Vaga nao encontrada");
+        if (!vaga.isPresent()) return vagaErro(404, VAGA_NAO_ENCONTRADA);
         try {
             vaga.get().setStatus(command.getStatus());
         } catch (IllegalStateException e) {
@@ -73,11 +75,11 @@ public class VagaService implements VagaUseCase {
 
     @Override
     public TypedResponse<Void> excluirVaga(ExcluirVagaDTO command) {
-        if (command == null) return vazioErro(400, "Dados da vaga invalidos");
+        if (command == null) return vazioErro(400, DADOS_VAGA_INVALIDOS);
         TypedResponse<Void> acesso = validarAcessoVazio(command.getUsuarioSolicitanteId());
         if (acesso != null) return acesso;
         Optional<Vaga> vaga = vagas.buscarAtivaPorId(command.getVagaId());
-        if (!vaga.isPresent()) return vazioErro(404, "Vaga nao encontrada");
+        if (!vaga.isPresent()) return vazioErro(404, VAGA_NAO_ENCONTRADA);
         vaga.get().setExcluidoEm(agora());
         vagas.salvar(vaga.get());
         return new TypedResponse<Void>(204, "Vaga excluida", null);
@@ -85,10 +87,10 @@ public class VagaService implements VagaUseCase {
 
     @Override
     public TypedResponse<PerguntaVagaDTO> criarPerguntaDaVaga(SalvarPerguntaVagaDTO command) {
-        if (command == null || perguntaInvalida(command)) return perguntaErro(400, "Dados da pergunta invalidos");
+        if (command == null || perguntaInvalida(command)) return perguntaErro(400, DADOS_PERGUNTA_INVALIDOS);
         TypedResponse<PerguntaVagaDTO> acesso = validarAcessoPergunta(command.getUsuarioSolicitanteId());
         if (acesso != null) return acesso;
-        if (!vagas.buscarAtivaPorId(command.getVagaId()).isPresent()) return perguntaErro(404, "Vaga nao encontrada");
+        if (!vagas.buscarAtivaPorId(command.getVagaId()).isPresent()) return perguntaErro(404, VAGA_NAO_ENCONTRADA);
         PerguntaVaga pergunta = new PerguntaVaga();
         preencher(pergunta, command);
         return perguntaResposta(201, "Pergunta criada", perguntas.salvar(pergunta));
@@ -97,26 +99,26 @@ public class VagaService implements VagaUseCase {
     @Override
     public TypedResponse<PerguntaVagaDTO> atualizarPerguntaDaVaga(SalvarPerguntaVagaDTO command) {
         if (command == null || command.getPerguntaId() == null || perguntaInvalida(command))
-            return perguntaErro(400, "Dados da pergunta invalidos");
+            return perguntaErro(400, DADOS_PERGUNTA_INVALIDOS);
         TypedResponse<PerguntaVagaDTO> acesso = validarAcessoPergunta(command.getUsuarioSolicitanteId());
         if (acesso != null) return acesso;
-        if (!vagas.buscarAtivaPorId(command.getVagaId()).isPresent()) return perguntaErro(404, "Vaga nao encontrada");
+        if (!vagas.buscarAtivaPorId(command.getVagaId()).isPresent()) return perguntaErro(404, VAGA_NAO_ENCONTRADA);
         Optional<PerguntaVaga> pergunta = perguntas.buscarAtivaPorId(command.getPerguntaId());
         if (!pergunta.isPresent() || !command.getVagaId().equals(pergunta.get().getVagaId()))
-            return perguntaErro(404, "Pergunta nao encontrada");
+            return perguntaErro(404, PERGUNTA_NAO_ENCONTRADA);
         preencher(pergunta.get(), command);
         return perguntaResposta(200, "Pergunta atualizada", perguntas.salvar(pergunta.get()));
     }
 
     @Override
     public TypedResponse<Void> excluirPerguntaDaVaga(ExcluirItemVagaDTO command) {
-        if (command == null) return vazioErro(400, "Dados da pergunta invalidos");
+        if (command == null) return vazioErro(400, DADOS_PERGUNTA_INVALIDOS);
         TypedResponse<Void> acesso = validarAcessoVazio(command.getUsuarioSolicitanteId());
         if (acesso != null) return acesso;
-        if (!vagas.buscarAtivaPorId(command.getVagaId()).isPresent()) return vazioErro(404, "Vaga nao encontrada");
+        if (!vagas.buscarAtivaPorId(command.getVagaId()).isPresent()) return vazioErro(404, VAGA_NAO_ENCONTRADA);
         Optional<PerguntaVaga> pergunta = perguntas.buscarAtivaPorId(command.getItemId());
         if (!pergunta.isPresent() || !command.getVagaId().equals(pergunta.get().getVagaId()))
-            return vazioErro(404, "Pergunta nao encontrada");
+            return vazioErro(404, PERGUNTA_NAO_ENCONTRADA);
         pergunta.get().setExcluidoEm(agora());
         perguntas.salvar(pergunta.get());
         return new TypedResponse<Void>(204, "Pergunta excluida", null);
@@ -124,10 +126,10 @@ public class VagaService implements VagaUseCase {
 
     @Override
     public TypedResponse<RequisitoVagaDTO> criarRequisitoDaVaga(SalvarRequisitoVagaDTO command) {
-        if (command == null || requisitoInvalido(command)) return requisitoErro(400, "Dados do requisito invalidos");
+        if (command == null || requisitoInvalido(command)) return requisitoErro(400, DADOS_REQUISITO_INVALIDOS);
         TypedResponse<RequisitoVagaDTO> acesso = validarAcessoRequisito(command.getUsuarioSolicitanteId());
         if (acesso != null) return acesso;
-        if (!vagas.buscarAtivaPorId(command.getVagaId()).isPresent()) return requisitoErro(404, "Vaga nao encontrada");
+        if (!vagas.buscarAtivaPorId(command.getVagaId()).isPresent()) return requisitoErro(404, VAGA_NAO_ENCONTRADA);
         RequisitoVaga requisito = new RequisitoVaga();
         preencher(requisito, command);
         return requisitoResposta(201, "Requisito criado", requisitos.salvar(requisito));
@@ -136,26 +138,26 @@ public class VagaService implements VagaUseCase {
     @Override
     public TypedResponse<RequisitoVagaDTO> atualizarRequisitoDaVaga(SalvarRequisitoVagaDTO command) {
         if (command == null || command.getRequisitoId() == null || requisitoInvalido(command))
-            return requisitoErro(400, "Dados do requisito invalidos");
+            return requisitoErro(400, DADOS_REQUISITO_INVALIDOS);
         TypedResponse<RequisitoVagaDTO> acesso = validarAcessoRequisito(command.getUsuarioSolicitanteId());
         if (acesso != null) return acesso;
-        if (!vagas.buscarAtivaPorId(command.getVagaId()).isPresent()) return requisitoErro(404, "Vaga nao encontrada");
+        if (!vagas.buscarAtivaPorId(command.getVagaId()).isPresent()) return requisitoErro(404, VAGA_NAO_ENCONTRADA);
         Optional<RequisitoVaga> requisito = requisitos.buscarAtivoPorId(command.getRequisitoId());
         if (!requisito.isPresent() || !command.getVagaId().equals(requisito.get().getVagaId()))
-            return requisitoErro(404, "Requisito nao encontrado");
+            return requisitoErro(404, REQUISITO_NAO_ENCONTRADO);
         preencher(requisito.get(), command);
         return requisitoResposta(200, "Requisito atualizado", requisitos.salvar(requisito.get()));
     }
 
     @Override
     public TypedResponse<Void> excluirRequisitoDaVaga(ExcluirItemVagaDTO command) {
-        if (command == null) return vazioErro(400, "Dados do requisito invalidos");
+        if (command == null) return vazioErro(400, DADOS_REQUISITO_INVALIDOS);
         TypedResponse<Void> acesso = validarAcessoVazio(command.getUsuarioSolicitanteId());
         if (acesso != null) return acesso;
-        if (!vagas.buscarAtivaPorId(command.getVagaId()).isPresent()) return vazioErro(404, "Vaga nao encontrada");
+        if (!vagas.buscarAtivaPorId(command.getVagaId()).isPresent()) return vazioErro(404, VAGA_NAO_ENCONTRADA);
         Optional<RequisitoVaga> requisito = requisitos.buscarAtivoPorId(command.getItemId());
         if (!requisito.isPresent() || !command.getVagaId().equals(requisito.get().getVagaId()))
-            return vazioErro(404, "Requisito nao encontrado");
+            return vazioErro(404, REQUISITO_NAO_ENCONTRADO);
         requisito.get().setExcluidoEm(agora());
         requisitos.salvar(requisito.get());
         return new TypedResponse<Void>(204, "Requisito excluido", null);
@@ -196,19 +198,19 @@ public class VagaService implements VagaUseCase {
     }
 
     private TypedResponse<VagaDTO> validarAcesso(UUID usuarioId) {
-        return !autorizado(usuarioId) ? vagaErro(403, "Acesso nao autorizado") : null;
+        return !autorizado(usuarioId) ? vagaErro(403, ACESSO_NAO_AUTORIZADO) : null;
     }
 
     private TypedResponse<PerguntaVagaDTO> validarAcessoPergunta(UUID usuarioId) {
-        return !autorizado(usuarioId) ? perguntaErro(403, "Acesso nao autorizado") : null;
+        return !autorizado(usuarioId) ? perguntaErro(403, ACESSO_NAO_AUTORIZADO) : null;
     }
 
     private TypedResponse<RequisitoVagaDTO> validarAcessoRequisito(UUID usuarioId) {
-        return !autorizado(usuarioId) ? requisitoErro(403, "Acesso nao autorizado") : null;
+        return !autorizado(usuarioId) ? requisitoErro(403, ACESSO_NAO_AUTORIZADO) : null;
     }
 
     private TypedResponse<Void> validarAcessoVazio(UUID usuarioId) {
-        return !autorizado(usuarioId) ? vazioErro(403, "Acesso nao autorizado") : null;
+        return !autorizado(usuarioId) ? vazioErro(403, ACESSO_NAO_AUTORIZADO) : null;
     }
 
     private boolean autorizado(UUID usuarioId) {

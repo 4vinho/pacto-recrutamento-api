@@ -1,0 +1,60 @@
+package br.com.pacto.recrutamento.core.common;
+
+public final class ErrorMessages {
+    public static final String ACESSO_NAO_AUTORIZADO = "Acesso nao autorizado";
+    public static final String ACESSO_NAO_AUTORIZADO_ACENTUADO = "Acesso não autorizado";
+    public static final String ACESSO_NAO_AUTORIZADO_FORMATADO = "Acesso não autorizado.";
+    public static final String ARQUIVO_MUITO_GRANDE = "O arquivo deve possuir no máximo 5 MB.";
+    public static final String CANCELAMENTO_NAO_PERMITIDO = "Cancelamento nao permitido para o estado atual";
+    public static final String CANDIDATO_NAO_ENCONTRADO = "Candidato não encontrado";
+    public static final String CANDIDATURA_DUPLICADA = "Candidato ja possui candidatura para esta vaga";
+    public static final String CANDIDATURA_NAO_ENCONTRADA = "Candidatura nao encontrada";
+    public static final String CANDIDATURA_NAO_PERTENCE_AO_CANDIDATO = "Candidatura nao pertence ao candidato";
+    public static final String CONSULTA_CANDIDATURA_INVALIDA = "Consulta de candidatura invalida";
+    public static final String CURRICULO_ATIVO_EXISTENTE = "Já existe um currículo ativo";
+    public static final String CURRICULO_ATIVO_NAO_ENCONTRADO = "Currículo ativo não encontrado";
+    public static final String CURRICULO_PDF_INVALIDO = "O currículo deve ser um PDF válido";
+    public static final String CURRICULO_NAO_ENCONTRADO = "Currículo não encontrado";
+    public static final String COMANDO_CADASTRO_OBRIGATORIO = "Comando de cadastro obrigatório.";
+    public static final String COMANDO_RECUPERACAO_OBRIGATORIO = "Comando de recuperação obrigatório.";
+    public static final String COMANDO_REDEFINICAO_OBRIGATORIO = "Comando de redefinição obrigatório.";
+    public static final String CREDENCIAIS_INVALIDAS = "Credenciais inválidas.";
+    public static final String DADOS_CADASTRO_INVALIDOS = "Dados de cadastro inválidos.";
+    public static final String DADOS_REDEFINICAO_SENHA_INVALIDOS = "Dados para redefinição de senha inválidos.";
+    public static final String DADOS_ATUALIZACAO_INVALIDOS = "Dados de atualizacao invalidos";
+    public static final String DADOS_CANCELAMENTO_INVALIDOS = "Dados de cancelamento invalidos";
+    public static final String DADOS_CANDIDATURA_INVALIDOS = "Dados da candidatura invalidos";
+    public static final String DADOS_INVALIDOS = "Dados inválidos.";
+    public static final String DADOS_PERGUNTA_INVALIDOS = "Dados da pergunta invalidos";
+    public static final String DADOS_REQUISITO_INVALIDOS = "Dados do requisito invalidos";
+    public static final String DADOS_TEMPLATE_INVALIDOS = "Dados do template invalidos";
+    public static final String DADOS_VAGA_INVALIDOS = "Dados da vaga invalidos";
+    public static final String LOTE_RESPOSTAS_INCOMPATIVEL = "Lote de respostas incompativel com a vaga";
+    public static final String LOTE_RESPOSTAS_INVALIDO = "Lote de respostas invalido";
+    public static final String EMAIL_JA_UTILIZADO = "E-mail já utilizado.";
+    public static final String NAO_AUTENTICADO = "Não autenticado.";
+    public static final String PERFIL_CANDIDATO_EXISTENTE = "O usuario ja possui perfil de candidato";
+    public static final String PERFIL_CANDIDATO_NAO_ENCONTRADO = "Perfil de candidato nao encontrado";
+    public static final String PERGUNTA_NAO_ENCONTRADA = "Pergunta nao encontrada";
+    public static final String PERGUNTAS_JA_RESPONDIDAS = "Uma ou mais perguntas ja foram respondidas";
+    public static final String REQUISICAO_INVALIDA = "Requisição inválida.";
+    public static final String REFRESH_TOKEN_INVALIDO = "Refresh token inválido.";
+    public static final String REQUISITO_NAO_ENCONTRADO = "Requisito nao encontrado";
+    public static final String STATUS_CANDIDATURA_INVALIDO = "Status da candidatura invalido";
+    public static final String STATUS_VAGA_OBRIGATORIO = "Status da vaga obrigatorio";
+    public static final String SUBSTITUICAO_CURRICULO_FALHOU = "Não foi possível substituir o currículo";
+    public static final String SALVAMENTO_CURRICULO_FALHOU = "Não foi possível salvar o currículo";
+    public static final String CADASTRO_NAO_CONCLUIDO = "Não foi possível concluir o cadastro.";
+    public static final String GERACAO_URL_TEMPORARIA_FALHOU = "Não foi possível gerar a URL temporária";
+    public static final String TEMPLATE_NAO_ENCONTRADO = "Template nao encontrado";
+    public static final String TRANSICAO_CANDIDATURA_INVALIDA = "Transicao de candidatura invalida";
+    public static final String TOKEN_RECUPERACAO_INVALIDO = "Token de recuperação inválido.";
+    public static final String USUARIO_AUTENTICADO_OBRIGATORIO = "O usuario autenticado e obrigatorio";
+    public static final String USUARIO_NAO_AUTORIZADO_ALTERAR_CANDIDATURA = "Usuario nao autorizado a alterar a candidatura";
+    public static final String USUARIO_NAO_AUTORIZADO_CONSULTAR_CANDIDATURA = "Usuario nao autorizado a consultar a candidatura";
+    public static final String USUARIO_SEM_PERFIL_CANDIDATO = "Usuario nao possui perfil de candidato";
+    public static final String VAGA_NAO_ACEITA_CANDIDATURAS = "Vaga nao aceita candidaturas";
+    public static final String VAGA_NAO_ENCONTRADA = "Vaga nao encontrada";
+
+    private ErrorMessages() { }
+}

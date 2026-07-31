@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static br.com.pacto.recrutamento.core.common.ErrorMessages.*;
+
 @Service
 public class CandidatoService implements CandidatoUseCase {
     private final CandidatoPort candidatoRepository;
@@ -25,10 +27,10 @@ public class CandidatoService implements CandidatoUseCase {
     @Override
     public TypedResponse<CandidatoDTO> criarCandidato(CriarCandidatoDTO command) {
         if (command == null || command.getUsuarioId() == null) {
-            return erro(400, "O usuario autenticado e obrigatorio");
+            return erro(400, USUARIO_AUTENTICADO_OBRIGATORIO);
         }
         if (candidatoRepository.existePorUsuarioId(command.getUsuarioId())) {
-            return erro(409, "O usuario ja possui perfil de candidato");
+            return erro(409, PERFIL_CANDIDATO_EXISTENTE);
         }
         Candidato candidato = candidatoRepository.salvar(
                 new Candidato(command.getUsuarioId(), command.getDataAdmissao()));
@@ -38,12 +40,12 @@ public class CandidatoService implements CandidatoUseCase {
     @Override
     public TypedResponse<CandidatoDTO> atualizarCandidato(AtualizarCandidatoDTO command) {
         if (command == null || command.getUsuarioId() == null) {
-            return erro(400, "O usuario autenticado e obrigatorio");
+            return erro(400, USUARIO_AUTENTICADO_OBRIGATORIO);
         }
         Candidato candidato = candidatoRepository.buscarPorUsuarioId(command.getUsuarioId())
                 .orElse(null);
         if (candidato == null) {
-            return erro(404, "Perfil de candidato nao encontrado");
+            return erro(404, PERFIL_CANDIDATO_NAO_ENCONTRADO);
         }
         candidato.setDataAdmissao(command.getDataAdmissao());
         Candidato atualizado = candidatoRepository.salvar(candidato);

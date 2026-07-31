@@ -1,5 +1,7 @@
 package br.com.pacto.recrutamento.app.usecases.templatevaga;
 
+import static br.com.pacto.recrutamento.core.common.ErrorMessages.*;
+
 import br.com.pacto.recrutamento.app.dtos.templatevaga.*;
 import br.com.pacto.recrutamento.app.dtos.vaga.VagaDTO;
 import br.com.pacto.recrutamento.app.ports.in.templatevaga.TemplateVagaUseCase;
@@ -47,9 +49,9 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     public TypedResponse<TemplateVagaDTO> criarTemplate(CriarTemplateVagaDTO command) {
         if (command == null || command.getResponsavelId() == null
                 || camposTemplateInvalidos(command.getTitulo(), command.getDescricao())) {
-            return erro(400, "Dados do template invalidos");
+            return erro(400, DADOS_TEMPLATE_INVALIDOS);
         }
-        if (!administrador(command.getResponsavelId())) return erro(403, "Acesso nao autorizado");
+        if (!administrador(command.getResponsavelId())) return erro(403, ACESSO_NAO_AUTORIZADO);
         TemplateVaga template = new TemplateVaga(command.getResponsavelId(), command.getTitulo(), command.getDescricao());
         return respostaTemplate(201, "Template criado", templates.salvar(template));
     }
@@ -58,11 +60,11 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     public TypedResponse<TemplateVagaDTO> atualizarTemplate(AtualizarTemplateVagaDTO command) {
         if (command == null || command.getTemplateId() == null
                 || camposTemplateInvalidos(command.getTitulo(), command.getDescricao())) {
-            return erro(400, "Dados do template invalidos");
+            return erro(400, DADOS_TEMPLATE_INVALIDOS);
         }
-        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, "Acesso nao autorizado");
+        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
         Optional<TemplateVaga> template = templates.buscarAtivoPorId(command.getTemplateId());
-        if (!template.isPresent()) return erro(404, "Template nao encontrado");
+        if (!template.isPresent()) return erro(404, TEMPLATE_NAO_ENCONTRADO);
         template.get().setTitulo(command.getTitulo());
         template.get().setDescricao(command.getDescricao());
         return respostaTemplate(200, "Template atualizado", templates.salvar(template.get()));
@@ -81,9 +83,9 @@ public class TemplateVagaService implements TemplateVagaUseCase {
 
     @Override
     public TypedResponse<PerguntaTemplateVagaDTO> criarPerguntaDoTemplate(SalvarPerguntaTemplateVagaDTO command) {
-        if (command == null || perguntaInvalida(command)) return erro(400, "Dados da pergunta invalidos");
-        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, "Acesso nao autorizado");
-        if (!templateExiste(command.getTemplateId())) return erro(404, "Template nao encontrado");
+        if (command == null || perguntaInvalida(command)) return erro(400, DADOS_PERGUNTA_INVALIDOS);
+        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
+        if (!templateExiste(command.getTemplateId())) return erro(404, TEMPLATE_NAO_ENCONTRADO);
         PerguntaTemplateVaga pergunta = new PerguntaTemplateVaga();
         preencher(pergunta, command);
         return respostaPergunta(201, "Pergunta criada", perguntas.salvar(pergunta));
@@ -92,11 +94,11 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     @Override
     public TypedResponse<PerguntaTemplateVagaDTO> atualizarPerguntaDoTemplate(SalvarPerguntaTemplateVagaDTO command) {
         if (command == null || command.getPerguntaId() == null || perguntaInvalida(command))
-            return erro(400, "Dados da pergunta invalidos");
-        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, "Acesso nao autorizado");
-        if (!templateExiste(command.getTemplateId())) return erro(404, "Template nao encontrado");
+            return erro(400, DADOS_PERGUNTA_INVALIDOS);
+        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
+        if (!templateExiste(command.getTemplateId())) return erro(404, TEMPLATE_NAO_ENCONTRADO);
         Optional<PerguntaTemplateVaga> pergunta = perguntas.buscarAtivaPorId(command.getPerguntaId());
-        if (!perguntaPertenceAoTemplate(pergunta, command.getTemplateId())) return erro(404, "Pergunta nao encontrada");
+        if (!perguntaPertenceAoTemplate(pergunta, command.getTemplateId())) return erro(404, PERGUNTA_NAO_ENCONTRADA);
         preencher(pergunta.get(), command);
         return respostaPergunta(200, "Pergunta atualizada", perguntas.salvar(pergunta.get()));
     }
@@ -116,9 +118,9 @@ public class TemplateVagaService implements TemplateVagaUseCase {
 
     @Override
     public TypedResponse<RequisitoTemplateVagaDTO> criarRequisitoDoTemplate(SalvarRequisitoTemplateVagaDTO command) {
-        if (command == null || requisitoInvalido(command)) return erro(400, "Dados do requisito invalidos");
-        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, "Acesso nao autorizado");
-        if (!templateExiste(command.getTemplateId())) return erro(404, "Template nao encontrado");
+        if (command == null || requisitoInvalido(command)) return erro(400, DADOS_REQUISITO_INVALIDOS);
+        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
+        if (!templateExiste(command.getTemplateId())) return erro(404, TEMPLATE_NAO_ENCONTRADO);
         RequisitoTemplateVaga requisito = new RequisitoTemplateVaga();
         preencher(requisito, command);
         return respostaRequisito(201, "Requisito criado", requisitos.salvar(requisito));
@@ -127,12 +129,12 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     @Override
     public TypedResponse<RequisitoTemplateVagaDTO> atualizarRequisitoDoTemplate(SalvarRequisitoTemplateVagaDTO command) {
         if (command == null || command.getRequisitoId() == null || requisitoInvalido(command))
-            return erro(400, "Dados do requisito invalidos");
-        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, "Acesso nao autorizado");
-        if (!templateExiste(command.getTemplateId())) return erro(404, "Template nao encontrado");
+            return erro(400, DADOS_REQUISITO_INVALIDOS);
+        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
+        if (!templateExiste(command.getTemplateId())) return erro(404, TEMPLATE_NAO_ENCONTRADO);
         Optional<RequisitoTemplateVaga> requisito = requisitos.buscarAtivoPorId(command.getRequisitoId());
         if (!requisitoPertenceAoTemplate(requisito, command.getTemplateId()))
-            return erro(404, "Requisito nao encontrado");
+            return erro(404, REQUISITO_NAO_ENCONTRADO);
         preencher(requisito.get(), command);
         return respostaRequisito(200, "Requisito atualizado", requisitos.salvar(requisito.get()));
     }
@@ -153,10 +155,10 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     @Override
     @Transactional
     public TypedResponse<VagaDTO> criarVagaAPartirDoTemplate(CriarVagaAPartirDoTemplateDTO command) {
-        if (command == null || command.getTemplateId() == null) return erro(400, "Dados do template invalidos");
-        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, "Acesso nao autorizado");
+        if (command == null || command.getTemplateId() == null) return erro(400, DADOS_TEMPLATE_INVALIDOS);
+        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
         Optional<TemplateVaga> template = templates.buscarAtivoPorId(command.getTemplateId());
-        if (!template.isPresent()) return erro(404, "Template nao encontrado");
+        if (!template.isPresent()) return erro(404, TEMPLATE_NAO_ENCONTRADO);
         Vaga vaga = vagas.salvar(criarVaga(template.get()));
         copiarPerguntas(template.get().getId(), vaga.getId());
         copiarRequisitos(template.get().getId(), vaga.getId());
