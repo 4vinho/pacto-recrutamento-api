@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.ports;
+package br.com.pacto.recrutamento.app.candidato;
 
 import java.time.LocalDate;
 import java.util.UUID;

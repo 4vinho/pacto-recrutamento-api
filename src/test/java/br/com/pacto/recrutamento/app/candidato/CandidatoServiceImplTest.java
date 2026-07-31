@@ -1,14 +1,10 @@
-package br.com.pacto.recrutamento.app.serviceImpl;
+package br.com.pacto.recrutamento.app.candidato;
 
 import br.com.pacto.recrutamento.app.dtos.candidato.AtualizarCandidatoDTO;
 import br.com.pacto.recrutamento.app.dtos.candidato.CandidatoDTO;
 import br.com.pacto.recrutamento.app.dtos.candidato.CandidaturaResumoDTO;
 import br.com.pacto.recrutamento.app.dtos.candidato.CriarCandidatoDTO;
 import br.com.pacto.recrutamento.app.dtos.candidato.ListarMinhasCandidaturasDTO;
-import br.com.pacto.recrutamento.app.ports.CandidatoRepository;
-import br.com.pacto.recrutamento.app.ports.CandidatoPersistido;
-import br.com.pacto.recrutamento.app.ports.CandidaturaDoCandidato;
-import br.com.pacto.recrutamento.app.ports.PaginaCandidaturas;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
