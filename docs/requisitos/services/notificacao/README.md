@@ -13,3 +13,7 @@
 - Registrar erro e permitir nova tentativa idempotente.
 
 Falha de notificação não deve desfazer uma candidatura já confirmada.
+
+Os eventos são consumidos após o commit da candidatura. No ambiente atual, o
+canal é simulado e registra destinatário, tipo, título e mensagem no log da API
+com o prefixo `[SIMULADO]`.

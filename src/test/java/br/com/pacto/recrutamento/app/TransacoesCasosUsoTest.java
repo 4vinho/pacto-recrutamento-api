@@ -11,6 +11,7 @@ import br.com.pacto.recrutamento.app.dtos.notificacao.StatusCandidaturaAlteradoD
 import br.com.pacto.recrutamento.app.dtos.usuario.EncerrarSessaoDTO;
 import br.com.pacto.recrutamento.app.dtos.usuario.RedefinirSenhaDTO;
 import br.com.pacto.recrutamento.app.dtos.usuario.RenovarSessaoDTO;
+import br.com.pacto.recrutamento.app.dtos.usuario.SolicitarRecuperacaoSenhaDTO;
 import br.com.pacto.recrutamento.app.usecases.candidatura.CandidaturaService;
 import br.com.pacto.recrutamento.app.usecases.notificacao.NotificacaoService;
 import br.com.pacto.recrutamento.app.usecases.usuario.UsuarioService;
@@ -27,6 +28,8 @@ class TransacoesCasosUsoTest {
         assertTransacional(UsuarioService.class, "renovarSessao", RenovarSessaoDTO.class);
         assertTransacional(UsuarioService.class, "encerrarSessao", EncerrarSessaoDTO.class);
         assertTransacional(UsuarioService.class, "redefinirSenha", RedefinirSenhaDTO.class);
+        assertTransacional(UsuarioService.class, "solicitarRecuperacaoSenha",
+                SolicitarRecuperacaoSenhaDTO.class);
     }
 
     @Test

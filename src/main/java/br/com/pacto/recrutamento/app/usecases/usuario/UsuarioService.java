@@ -30,17 +30,20 @@ public class UsuarioService implements UsuarioUseCase {
     private final CodificadorSenhaPort senhas;
     private final GeradorTokenPort tokens;
     private final RecuperacaoSenhaPort recuperacoes;
+    private final CanalRecuperacaoSenhaPort canalRecuperacao;
     private final Clock relogio;
 
     public UsuarioService(UsuarioPort usuarios, PapelPort papeis, RefreshTokenPort refreshTokens,
                           CodificadorSenhaPort senhas, GeradorTokenPort tokens,
-                          RecuperacaoSenhaPort recuperacoes, Clock relogio) {
+                          RecuperacaoSenhaPort recuperacoes,
+                          CanalRecuperacaoSenhaPort canalRecuperacao, Clock relogio) {
         this.usuarios = usuarios;
         this.papeis = papeis;
         this.refreshTokens = refreshTokens;
         this.senhas = senhas;
         this.tokens = tokens;
         this.recuperacoes = recuperacoes;
+        this.canalRecuperacao = canalRecuperacao;
         this.relogio = relogio;
     }
 
@@ -109,6 +112,7 @@ public class UsuarioService implements UsuarioUseCase {
     }
 
     @Override
+    @Transactional
     public TypedResponse<Void> solicitarRecuperacaoSenha(SolicitarRecuperacaoSenhaDTO command) {
         if (command == null) return resposta(400, COMANDO_RECUPERACAO_OBRIGATORIO, null);
         String email = normalizarEmail(command.getEmail());
@@ -116,7 +120,9 @@ public class UsuarioService implements UsuarioUseCase {
         Optional<Usuario> usuario = usuarios.buscarPorEmail(email);
         if (usuario.isPresent()) {
             String token = tokens.gerarTokenAleatorio();
-            recuperacoes.salvar(usuario.get().getId(), tokens.calcularHash(token), agora().plusMinutes(MINUTOS_RECUPERACAO_SENHA));
+            OffsetDateTime expiraEm = agora().plusMinutes(MINUTOS_RECUPERACAO_SENHA);
+            recuperacoes.salvar(usuario.get().getId(), tokens.calcularHash(token), expiraEm);
+            canalRecuperacao.enviar(email, token, expiraEm);
         }
         return resposta(200, mensagemRecuperacao(), null);
     }

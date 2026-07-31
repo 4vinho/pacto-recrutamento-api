@@ -15,3 +15,7 @@
 - Refresh token rotativo, persistido somente em hash.
 - Reutilização de refresh token revoga sua família.
 - Token inválido, expirado, usado ou revogado é rejeitado.
+
+O envio da recuperação de senha é simulado. Para permitir a demonstração do
+fluxo sem SMTP, a API registra e-mail, token e expiração no log com o prefixo
+`[SIMULADO]`. O token deve ser substituído por envio privado antes de produção.

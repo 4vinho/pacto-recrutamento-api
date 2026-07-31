@@ -21,6 +21,8 @@ class UsuarioArquiteturaTest {
         assertThat(CodificadorSenhaPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.out.usuario");
         assertThat(GeradorTokenPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.out.usuario");
         assertThat(RecuperacaoSenhaPort.class.getPackage().getName()).isEqualTo("br.com.pacto.recrutamento.app.ports.out.usuario");
+        assertThat(CanalRecuperacaoSenhaPort.class.getPackage().getName())
+                .isEqualTo("br.com.pacto.recrutamento.app.ports.out.usuario");
     }
 
     @Test
