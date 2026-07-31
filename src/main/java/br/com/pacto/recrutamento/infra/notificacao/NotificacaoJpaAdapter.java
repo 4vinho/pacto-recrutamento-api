@@ -15,8 +15,15 @@ public class NotificacaoJpaAdapter implements NotificacaoPort {
         return repository.findByEventoIdAndUsuarioId(eventoId, destinatarioId).map(mapper::paraDominio);
     }
     public Notificacao salvar(Notificacao notificacao) {
-        NotificacaoJpaEntity entidade = repository.findById(notificacao.getId()).orElseGet(() -> mapper.paraJpa(notificacao));
-        entidade.setStatus(notificacao.getStatus()); entidade.setTentativas(notificacao.getTentativas()); entidade.setUltimoErro(notificacao.getUltimoErro());
+        NotificacaoJpaEntity entidade = repository.findById(notificacao.getId())
+                .orElseGet(() -> mapper.paraJpa(notificacao));
+        atualizarEstado(entidade, notificacao);
         return mapper.paraDominio(repository.save(entidade));
+    }
+
+    private void atualizarEstado(NotificacaoJpaEntity entidade, Notificacao notificacao) {
+        entidade.setStatus(notificacao.getStatus());
+        entidade.setTentativas(notificacao.getTentativas());
+        entidade.setUltimoErro(notificacao.getUltimoErro());
     }
 }

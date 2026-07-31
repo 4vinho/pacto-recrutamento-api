@@ -7,8 +7,15 @@ import java.util.UUID;
 @Component
 public class DestinatariosCandidaturaJpaAdapter implements DestinatariosCandidaturaPort {
     private final DestinatariosCandidaturaRepository repository;
-    public DestinatariosCandidaturaJpaAdapter(DestinatariosCandidaturaRepository repository) { this.repository = repository; }
+    public DestinatariosCandidaturaJpaAdapter(DestinatariosCandidaturaRepository repository) {
+        this.repository = repository;
+    }
+
     public Optional<DestinatariosCandidatura> buscarPorCandidatura(UUID candidaturaId) {
-        return repository.buscarPorCandidatura(candidaturaId).map(p -> new DestinatariosCandidatura(p.getResponsavelId(), p.getCandidatoId()));
+        return repository.buscarPorCandidatura(candidaturaId)
+                .map(projecao -> new DestinatariosCandidatura(
+                        projecao.getResponsavelId(),
+                        projecao.getCandidatoId()
+                ));
     }
 }
