@@ -1,1 +1,27 @@
-package br.com.pacto.recrutamento.infra.templatevaga; import br.com.pacto.recrutamento.core.entities.PerguntaTemplateVaga; import org.springframework.stereotype.Component; @Component class PerguntaTemplateVagaJpaMapper {PerguntaTemplateVagaJpaEntity paraEntidade(PerguntaTemplateVaga x){return new PerguntaTemplateVagaJpaEntity(x.getId(),x.getTemplateVagaId(),x.getEnunciado(),x.getTipoResposta(),x.isObrigatoria(),x.getOrdem(),x.getCriadoEm(),x.getAtualizadoEm(),x.getExcluidoEm());}PerguntaTemplateVaga paraDominio(PerguntaTemplateVaga x,PerguntaTemplateVagaJpaEntity e){x.setId(e.getId());x.setTemplateVagaId(e.getTemplateVagaId());x.setEnunciado(e.getEnunciado());x.setTipoResposta(e.getTipoResposta());x.setObrigatoria(e.isObrigatoria());x.setOrdem(e.getOrdem());x.setCriadoEm(e.getCriadoEm());x.setAtualizadoEm(e.getAtualizadoEm());x.setExcluidoEm(e.getExcluidoEm());return x;}PerguntaTemplateVaga paraDominio(PerguntaTemplateVagaJpaEntity e){return paraDominio(new PerguntaTemplateVaga(),e);}}
+package br.com.pacto.recrutamento.infra.templatevaga;
+
+import br.com.pacto.recrutamento.core.entities.PerguntaTemplateVaga;
+import org.springframework.stereotype.Component;
+
+@Component
+class PerguntaTemplateVagaJpaMapper {
+    PerguntaTemplateVagaJpaEntity paraEntidade(PerguntaTemplateVaga pergunta) {
+        return new PerguntaTemplateVagaJpaEntity(pergunta.getId(), pergunta.getTemplateVagaId(),
+                pergunta.getEnunciado(), pergunta.getTipoResposta(), pergunta.isObrigatoria(),
+                pergunta.getOrdem(), pergunta.getCriadoEm(), pergunta.getAtualizadoEm(), pergunta.getExcluidoEm());
+    }
+
+    PerguntaTemplateVaga paraDominio(PerguntaTemplateVagaJpaEntity entity) {
+        PerguntaTemplateVaga pergunta = new PerguntaTemplateVaga();
+        pergunta.setId(entity.getId());
+        pergunta.setTemplateVagaId(entity.getTemplateVagaId());
+        pergunta.setEnunciado(entity.getEnunciado());
+        pergunta.setTipoResposta(entity.getTipoResposta());
+        pergunta.setObrigatoria(entity.isObrigatoria());
+        pergunta.setOrdem(entity.getOrdem());
+        pergunta.setCriadoEm(entity.getCriadoEm());
+        pergunta.setAtualizadoEm(entity.getAtualizadoEm());
+        pergunta.setExcluidoEm(entity.getExcluidoEm());
+        return pergunta;
+    }
+}

@@ -1,1 +1,7 @@
-package br.com.pacto.recrutamento.app.templatevaga; import br.com.pacto.recrutamento.core.entities.RequisitoVaga; public interface RequisitoVagaTemplateRepositorio { RequisitoVaga salvar(RequisitoVaga requisito); }
+package br.com.pacto.recrutamento.app.templatevaga;
+
+import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
+
+public interface RequisitoVagaTemplateRepositorio {
+    RequisitoVaga salvar(RequisitoVaga requisito);
+}

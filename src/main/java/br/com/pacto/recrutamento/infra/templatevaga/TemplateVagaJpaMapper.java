@@ -1,1 +1,22 @@
-package br.com.pacto.recrutamento.infra.templatevaga; import br.com.pacto.recrutamento.core.entities.TemplateVaga; import org.springframework.stereotype.Component; @Component class TemplateVagaJpaMapper {TemplateVagaJpaEntity paraEntidade(TemplateVaga x){return new TemplateVagaJpaEntity(x.getId(),x.getResponsavelId(),x.getTitulo(),x.getDescricao(),x.getCriadoEm(),x.getAtualizadoEm(),x.getExcluidoEm());}TemplateVaga paraDominio(TemplateVagaJpaEntity x){TemplateVaga r=new TemplateVaga(x.getResponsavelId(),x.getTitulo(),x.getDescricao());r.setId(x.getId());r.setCriadoEm(x.getCriadoEm());r.setAtualizadoEm(x.getAtualizadoEm());r.setExcluidoEm(x.getExcluidoEm());return r;}}
+package br.com.pacto.recrutamento.infra.templatevaga;
+
+import br.com.pacto.recrutamento.core.entities.TemplateVaga;
+import org.springframework.stereotype.Component;
+
+@Component
+class TemplateVagaJpaMapper {
+    TemplateVagaJpaEntity paraEntidade(TemplateVaga template) {
+        return new TemplateVagaJpaEntity(template.getId(), template.getResponsavelId(),
+                template.getTitulo(), template.getDescricao(), template.getCriadoEm(),
+                template.getAtualizadoEm(), template.getExcluidoEm());
+    }
+
+    TemplateVaga paraDominio(TemplateVagaJpaEntity entity) {
+        TemplateVaga template = new TemplateVaga(entity.getResponsavelId(), entity.getTitulo(), entity.getDescricao());
+        template.setId(entity.getId());
+        template.setCriadoEm(entity.getCriadoEm());
+        template.setAtualizadoEm(entity.getAtualizadoEm());
+        template.setExcluidoEm(entity.getExcluidoEm());
+        return template;
+    }
+}

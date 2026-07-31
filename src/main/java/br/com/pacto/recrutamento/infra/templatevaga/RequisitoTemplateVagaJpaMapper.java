@@ -1,1 +1,25 @@
-package br.com.pacto.recrutamento.infra.templatevaga; import br.com.pacto.recrutamento.core.entities.RequisitoTemplateVaga; import org.springframework.stereotype.Component; @Component class RequisitoTemplateVagaJpaMapper {RequisitoTemplateVagaJpaEntity paraEntidade(RequisitoTemplateVaga x){return new RequisitoTemplateVagaJpaEntity(x.getId(),x.getTemplateVagaId(),x.getDescricao(),x.isObrigatorio(),x.getCriadoEm(),x.getAtualizadoEm(),x.getExcluidoEm());}RequisitoTemplateVaga paraDominio(RequisitoTemplateVagaJpaEntity e){RequisitoTemplateVaga x=new RequisitoTemplateVaga();x.setId(e.getId());x.setTemplateVagaId(e.getTemplateVagaId());x.setDescricao(e.getDescricao());x.setObrigatorio(e.isObrigatorio());x.setCriadoEm(e.getCriadoEm());x.setAtualizadoEm(e.getAtualizadoEm());x.setExcluidoEm(e.getExcluidoEm());return x;}}
+package br.com.pacto.recrutamento.infra.templatevaga;
+
+import br.com.pacto.recrutamento.core.entities.RequisitoTemplateVaga;
+import org.springframework.stereotype.Component;
+
+@Component
+class RequisitoTemplateVagaJpaMapper {
+    RequisitoTemplateVagaJpaEntity paraEntidade(RequisitoTemplateVaga requisito) {
+        return new RequisitoTemplateVagaJpaEntity(requisito.getId(), requisito.getTemplateVagaId(),
+                requisito.getDescricao(), requisito.isObrigatorio(), requisito.getCriadoEm(),
+                requisito.getAtualizadoEm(), requisito.getExcluidoEm());
+    }
+
+    RequisitoTemplateVaga paraDominio(RequisitoTemplateVagaJpaEntity entity) {
+        RequisitoTemplateVaga requisito = new RequisitoTemplateVaga();
+        requisito.setId(entity.getId());
+        requisito.setTemplateVagaId(entity.getTemplateVagaId());
+        requisito.setDescricao(entity.getDescricao());
+        requisito.setObrigatorio(entity.isObrigatorio());
+        requisito.setCriadoEm(entity.getCriadoEm());
+        requisito.setAtualizadoEm(entity.getAtualizadoEm());
+        requisito.setExcluidoEm(entity.getExcluidoEm());
+        return requisito;
+    }
+}

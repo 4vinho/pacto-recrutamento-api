@@ -1,7 +1,64 @@
 package br.com.pacto.recrutamento.infra.templatevaga;
-import br.com.pacto.recrutamento.app.services.TemplateVagaService; import br.com.pacto.recrutamento.app.templatevaga.*; import br.com.pacto.recrutamento.core.enums.NomePapel; import br.com.pacto.recrutamento.infra.vaga.*; import org.springframework.context.annotation.*; import org.springframework.transaction.annotation.Transactional; import java.time.Clock; import java.util.UUID;
-@Configuration class TemplateVagaConfiguration {
- @Bean AutorizacaoTemplateVaga autorizacaoTemplateVaga(AutorizacaoTemplateVagaJpaRepository r){return id->id!=null&&r.administradorAtivo(id,NomePapel.ADMINISTRADOR);}
- @Bean TemplateVagaService templateVagaService(TemplateVagaRepositorio t,PerguntaTemplateVagaRepositorio p,RequisitoTemplateVagaRepositorio r,VagaJpaAdapter v,PerguntaVagaJpaAdapter pv,RequisitoVagaJpaAdapter rv,AutorizacaoTemplateVaga a){return new Transacional(new TemplateVagaServiceImpl(t,p,r,v,pv,rv,a,Clock.systemUTC()));}
- static class Transacional implements TemplateVagaService {private final TemplateVagaService d;Transacional(TemplateVagaService d){this.d=d;}public br.com.pacto.recrutamento.core.common.TypedResponse<br.com.pacto.recrutamento.app.dtos.templatevaga.TemplateVagaDTO> criarTemplate(br.com.pacto.recrutamento.app.dtos.templatevaga.CriarTemplateVagaDTO c){return d.criarTemplate(c);}public br.com.pacto.recrutamento.core.common.TypedResponse<br.com.pacto.recrutamento.app.dtos.templatevaga.TemplateVagaDTO> atualizarTemplate(br.com.pacto.recrutamento.app.dtos.templatevaga.AtualizarTemplateVagaDTO c){return d.atualizarTemplate(c);}public br.com.pacto.recrutamento.core.common.TypedResponse<Void> excluirTemplate(br.com.pacto.recrutamento.app.dtos.templatevaga.ExcluirItemTemplateVagaDTO c){return d.excluirTemplate(c);}public br.com.pacto.recrutamento.core.common.TypedResponse<br.com.pacto.recrutamento.app.dtos.templatevaga.PerguntaTemplateVagaDTO> criarPerguntaDoTemplate(br.com.pacto.recrutamento.app.dtos.templatevaga.SalvarPerguntaTemplateVagaDTO c){return d.criarPerguntaDoTemplate(c);}public br.com.pacto.recrutamento.core.common.TypedResponse<br.com.pacto.recrutamento.app.dtos.templatevaga.PerguntaTemplateVagaDTO> atualizarPerguntaDoTemplate(br.com.pacto.recrutamento.app.dtos.templatevaga.SalvarPerguntaTemplateVagaDTO c){return d.atualizarPerguntaDoTemplate(c);}public br.com.pacto.recrutamento.core.common.TypedResponse<Void> excluirPerguntaDoTemplate(br.com.pacto.recrutamento.app.dtos.templatevaga.ExcluirItemTemplateVagaDTO c){return d.excluirPerguntaDoTemplate(c);}public br.com.pacto.recrutamento.core.common.TypedResponse<br.com.pacto.recrutamento.app.dtos.templatevaga.RequisitoTemplateVagaDTO> criarRequisitoDoTemplate(br.com.pacto.recrutamento.app.dtos.templatevaga.SalvarRequisitoTemplateVagaDTO c){return d.criarRequisitoDoTemplate(c);}public br.com.pacto.recrutamento.core.common.TypedResponse<br.com.pacto.recrutamento.app.dtos.templatevaga.RequisitoTemplateVagaDTO> atualizarRequisitoDoTemplate(br.com.pacto.recrutamento.app.dtos.templatevaga.SalvarRequisitoTemplateVagaDTO c){return d.atualizarRequisitoDoTemplate(c);}public br.com.pacto.recrutamento.core.common.TypedResponse<Void> excluirRequisitoDoTemplate(br.com.pacto.recrutamento.app.dtos.templatevaga.ExcluirItemTemplateVagaDTO c){return d.excluirRequisitoDoTemplate(c);}@Transactional public br.com.pacto.recrutamento.core.common.TypedResponse<br.com.pacto.recrutamento.app.dtos.vaga.VagaDTO> criarVagaAPartirDoTemplate(br.com.pacto.recrutamento.app.dtos.templatevaga.CriarVagaAPartirDoTemplateDTO c){return d.criarVagaAPartirDoTemplate(c);}}
+
+import br.com.pacto.recrutamento.app.services.TemplateVagaService;
+import br.com.pacto.recrutamento.app.dtos.templatevaga.AtualizarTemplateVagaDTO;
+import br.com.pacto.recrutamento.app.dtos.templatevaga.CriarTemplateVagaDTO;
+import br.com.pacto.recrutamento.app.dtos.templatevaga.CriarVagaAPartirDoTemplateDTO;
+import br.com.pacto.recrutamento.app.dtos.templatevaga.ExcluirItemTemplateVagaDTO;
+import br.com.pacto.recrutamento.app.dtos.templatevaga.PerguntaTemplateVagaDTO;
+import br.com.pacto.recrutamento.app.dtos.templatevaga.RequisitoTemplateVagaDTO;
+import br.com.pacto.recrutamento.app.dtos.templatevaga.SalvarPerguntaTemplateVagaDTO;
+import br.com.pacto.recrutamento.app.dtos.templatevaga.SalvarRequisitoTemplateVagaDTO;
+import br.com.pacto.recrutamento.app.dtos.templatevaga.TemplateVagaDTO;
+import br.com.pacto.recrutamento.app.dtos.vaga.VagaDTO;
+import br.com.pacto.recrutamento.app.templatevaga.AutorizacaoTemplateVaga;
+import br.com.pacto.recrutamento.app.templatevaga.PerguntaTemplateVagaRepositorio;
+import br.com.pacto.recrutamento.app.templatevaga.PerguntaVagaTemplateRepositorio;
+import br.com.pacto.recrutamento.app.templatevaga.RequisitoTemplateVagaRepositorio;
+import br.com.pacto.recrutamento.app.templatevaga.RequisitoVagaTemplateRepositorio;
+import br.com.pacto.recrutamento.app.templatevaga.TemplateVagaRepositorio;
+import br.com.pacto.recrutamento.app.templatevaga.TemplateVagaServiceImpl;
+import br.com.pacto.recrutamento.app.templatevaga.VagaTemplateRepositorio;
+import br.com.pacto.recrutamento.core.enums.NomePapel;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.Transactional;
+import br.com.pacto.recrutamento.core.common.TypedResponse;
+import java.time.Clock;
+
+@Configuration
+class TemplateVagaConfiguration {
+    @Bean
+    AutorizacaoTemplateVaga autorizacaoTemplateVaga(AutorizacaoTemplateVagaJpaRepository repository) {
+        return usuarioId -> usuarioId != null && repository.administradorAtivo(usuarioId, NomePapel.ADMINISTRADOR);
+    }
+
+    @Bean
+    TemplateVagaService templateVagaService(TemplateVagaRepositorio templates,
+                                            PerguntaTemplateVagaRepositorio perguntas,
+                                            RequisitoTemplateVagaRepositorio requisitos,
+                                            VagaTemplateRepositorio vagas,
+                                            PerguntaVagaTemplateRepositorio perguntasVaga,
+                                            RequisitoVagaTemplateRepositorio requisitosVaga,
+                                            AutorizacaoTemplateVaga autorizacao) {
+        TemplateVagaService service = new TemplateVagaServiceImpl(templates, perguntas, requisitos, vagas, perguntasVaga,
+                requisitosVaga, autorizacao, Clock.systemUTC());
+        return new Transacional(service);
+    }
+
+    static class Transacional implements TemplateVagaService {
+        private final TemplateVagaService delegate;
+        Transacional(TemplateVagaService delegate) { this.delegate = delegate; }
+        public TypedResponse<TemplateVagaDTO> criarTemplate(CriarTemplateVagaDTO command) { return delegate.criarTemplate(command); }
+        public TypedResponse<TemplateVagaDTO> atualizarTemplate(AtualizarTemplateVagaDTO command) { return delegate.atualizarTemplate(command); }
+        public TypedResponse<Void> excluirTemplate(ExcluirItemTemplateVagaDTO command) { return delegate.excluirTemplate(command); }
+        public TypedResponse<PerguntaTemplateVagaDTO> criarPerguntaDoTemplate(SalvarPerguntaTemplateVagaDTO command) { return delegate.criarPerguntaDoTemplate(command); }
+        public TypedResponse<PerguntaTemplateVagaDTO> atualizarPerguntaDoTemplate(SalvarPerguntaTemplateVagaDTO command) { return delegate.atualizarPerguntaDoTemplate(command); }
+        public TypedResponse<Void> excluirPerguntaDoTemplate(ExcluirItemTemplateVagaDTO command) { return delegate.excluirPerguntaDoTemplate(command); }
+        public TypedResponse<RequisitoTemplateVagaDTO> criarRequisitoDoTemplate(SalvarRequisitoTemplateVagaDTO command) { return delegate.criarRequisitoDoTemplate(command); }
+        public TypedResponse<RequisitoTemplateVagaDTO> atualizarRequisitoDoTemplate(SalvarRequisitoTemplateVagaDTO command) { return delegate.atualizarRequisitoDoTemplate(command); }
+        public TypedResponse<Void> excluirRequisitoDoTemplate(ExcluirItemTemplateVagaDTO command) { return delegate.excluirRequisitoDoTemplate(command); }
+        @Transactional
+        public TypedResponse<VagaDTO> criarVagaAPartirDoTemplate(CriarVagaAPartirDoTemplateDTO command) { return delegate.criarVagaAPartirDoTemplate(command); }
+    }
 }
