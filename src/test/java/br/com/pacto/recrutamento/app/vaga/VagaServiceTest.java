@@ -3,6 +3,8 @@ package br.com.pacto.recrutamento.app.ports.out.vaga;
 import br.com.pacto.recrutamento.app.dtos.vaga.*;
 import br.com.pacto.recrutamento.app.usecases.vaga.VagaService;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
+import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
 import br.com.pacto.recrutamento.core.entities.Vaga;
@@ -19,6 +21,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,6 +47,31 @@ class VagaServiceTest {
         assertTrue(resposta.getData().getResponsaveisIds().contains(administrador));
         assertTrue(resposta.getData().getResponsaveisIds().contains(segundoResponsavel));
         assertEquals(StatusVaga.RASCUNHO, resposta.getData().getStatus());
+    }
+
+    @Test
+    void listaSomentePublicadasParaUsuarioComum() {
+        Vaga publicada = vaga();
+        publicada.setStatus(StatusVaga.PUBLICADA);
+        vagas.salvar(publicada);
+        vagas.salvar(vaga());
+
+        TypedPagedResponse<VagaDTO> resposta = service.listarVagas(new ListarVagasDTO(
+                naoAutorizado, null, null, 0, 20, "criadoEm", false));
+
+        assertEquals(200, resposta.getStatusCode());
+        assertEquals(1, resposta.getTotalItems());
+        assertEquals(StatusVaga.PUBLICADA, resposta.getData().get(0).getStatus());
+    }
+
+    @Test
+    void administradorPodeFiltrarVagasPorStatus() {
+        vagas.salvar(vaga());
+
+        TypedPagedResponse<VagaDTO> resposta = service.listarVagas(new ListarVagasDTO(
+                administrador, "Titulo", StatusVaga.RASCUNHO, 0, 20, "titulo", true));
+
+        assertEquals(1, resposta.getTotalItems());
     }
 
     @Test
@@ -190,6 +219,17 @@ class VagaServiceTest {
 
     private static final class MemoriaVagas implements VagaPort {
         private final Map<UUID, Vaga> dados = new HashMap<>();
+
+        public PaginaGenerico<Vaga> listar(String busca, StatusVaga status, int page, int pageSize,
+                                           String ordenarPor, boolean ascendente) {
+            List<Vaga> itens = dados.values().stream()
+                    .filter(v -> v.getExcluidoEm() == null)
+                    .filter(v -> status == null || v.getStatus() == status)
+                    .filter(v -> busca == null || v.getTitulo().contains(busca)
+                            || v.getDescricao().contains(busca))
+                    .collect(Collectors.toList());
+            return new PaginaGenerico<>(itens, itens.size());
+        }
 
         public Optional<Vaga> buscarAtivaPorId(UUID id) {
             return Optional.ofNullable(dados.get(id)).filter(v -> v.getExcluidoEm() == null);

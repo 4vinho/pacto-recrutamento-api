@@ -7,6 +7,7 @@ import br.com.pacto.recrutamento.web.support.HttpResponses;
 import br.com.pacto.recrutamento.app.dtos.vaga.*;
 import br.com.pacto.recrutamento.app.ports.in.vaga.VagaUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.enums.StatusVaga;
 import br.com.pacto.recrutamento.core.enums.TipoResposta;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,21 @@ public class VagaController {
 
     public VagaController(VagaUseCase service) {
         this.service = service;
+    }
+
+    @GetMapping
+    public ResponseEntity<TypedPagedResponse<VagaDTO>> listar(
+            Authentication auth,
+            @RequestParam(required = false) String busca,
+            @RequestParam(required = false) StatusVaga status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int pageSize,
+            @RequestParam(defaultValue = "criadoEm") String ordenarPor,
+            @RequestParam(defaultValue = "desc") String direcao) {
+        TypedPagedResponse<VagaDTO> resposta = service.listarVagas(new ListarVagasDTO(
+                AuthenticatedUser.id(auth), busca, status, page, pageSize, ordenarPor,
+                "asc".equalsIgnoreCase(direcao)));
+        return ResponseEntity.status(resposta.getStatusCode()).body(resposta);
     }
 
     @PostMapping

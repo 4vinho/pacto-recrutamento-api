@@ -2,8 +2,11 @@ package br.com.pacto.recrutamento.app.ports.in.vaga;
 
 import br.com.pacto.recrutamento.app.dtos.vaga.*;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 
 public interface VagaUseCase {
+    TypedPagedResponse<VagaDTO> listarVagas(ListarVagasDTO query);
+
     TypedResponse<VagaDTO> criarVaga(CriarVagaDTO command);
 
     TypedResponse<VagaDTO> atualizarVaga(AtualizarVagaDTO command);

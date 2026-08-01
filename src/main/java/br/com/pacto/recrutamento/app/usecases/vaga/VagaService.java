@@ -9,15 +9,21 @@ import br.com.pacto.recrutamento.app.ports.out.vaga.PerguntaVagaPort;
 import br.com.pacto.recrutamento.app.ports.out.vaga.RequisitoVagaPort;
 import br.com.pacto.recrutamento.app.ports.out.vaga.VagaPort;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
+import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
 import br.com.pacto.recrutamento.core.entities.Vaga;
+import br.com.pacto.recrutamento.core.enums.StatusVaga;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class VagaService implements VagaUseCase {
@@ -35,6 +41,24 @@ public class VagaService implements VagaUseCase {
         this.requisitos = requisitos;
         this.autorizacao = autorizacao;
         this.clock = clock;
+    }
+
+    @Override
+    public TypedPagedResponse<VagaDTO> listarVagas(ListarVagasDTO query) {
+        if (query == null || query.getUsuarioId() == null || query.getPage() < 0
+                || query.getPageSize() <= 0 || query.getPageSize() > 100
+                || !ordenacaoValida(query.getOrdenarPor())) {
+            int page = query == null || query.getPage() < 0 ? 0 : query.getPage();
+            int size = query == null || query.getPageSize() <= 0 ? 20 : query.getPageSize();
+            return new TypedPagedResponse<>(400, "Consulta de vagas invalida",
+                    Collections.<VagaDTO>emptyList(), page, size, 0);
+        }
+        StatusVaga status = autorizado(query.getUsuarioId()) ? query.getStatus() : StatusVaga.PUBLICADA;
+        PaginaGenerico<Vaga> pagina = vagas.listar(query.getBusca(), status, query.getPage(),
+                query.getPageSize(), query.getOrdenarPor(), query.isAscendente());
+        List<VagaDTO> dados = pagina.getItens().stream().map(this::paraDto).collect(Collectors.toList());
+        return new TypedPagedResponse<>(200, "Vagas encontradas", dados, query.getPage(),
+                query.getPageSize(), pagina.getTotalItens());
     }
 
     @Override
@@ -234,7 +258,17 @@ public class VagaService implements VagaUseCase {
     }
 
     private TypedResponse<VagaDTO> vagaResposta(int status, String mensagem, Vaga vaga) {
-        return new TypedResponse<VagaDTO>(status, mensagem, new VagaDTO(vaga.getId(), vaga.getResponsaveisIds(), vaga.getTitulo(), vaga.getDescricao(), vaga.getStatus()));
+        return new TypedResponse<VagaDTO>(status, mensagem, paraDto(vaga));
+    }
+
+    private boolean ordenacaoValida(String ordenarPor) {
+        return "titulo".equals(ordenarPor) || "status".equals(ordenarPor)
+                || "criadoEm".equals(ordenarPor) || "atualizadoEm".equals(ordenarPor);
+    }
+
+    private VagaDTO paraDto(Vaga vaga) {
+        return new VagaDTO(vaga.getId(), vaga.getResponsaveisIds(), vaga.getTitulo(),
+                vaga.getDescricao(), vaga.getStatus());
     }
 
     private TypedResponse<PerguntaVagaDTO> perguntaResposta(int status, String mensagem, PerguntaVaga pergunta) {
