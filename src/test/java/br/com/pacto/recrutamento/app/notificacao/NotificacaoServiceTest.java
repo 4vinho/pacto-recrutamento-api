@@ -59,6 +59,8 @@ class NotificacaoServiceTest {
 
     private static class Memoria implements DestinatariosCandidaturaPort, NotificacaoPort, CanalNotificacaoPort {
         private final UUID candidaturaId = UUID.randomUUID();
+        private final List<UUID> responsaveisIds = Arrays.asList(UUID.randomUUID(), UUID.randomUUID());
+        private final UUID usuarioId = UUID.randomUUID();
         private final Map<String, Notificacao> dados = new HashMap<>();
         private final List<Notificacao> persistidas = new ArrayList<>();
         private final List<StatusNotificacao> statusesPersistidos = new ArrayList<>();
@@ -66,8 +68,7 @@ class NotificacaoServiceTest {
         private int envios;
 
         public Optional<DestinatariosCandidatura> buscarPorCandidatura(UUID id) {
-            return Optional.of(new DestinatariosCandidatura(
-                    Arrays.asList(UUID.randomUUID(), UUID.randomUUID()), UUID.randomUUID()));
+            return Optional.of(new DestinatariosCandidatura(responsaveisIds, usuarioId));
         }
 
         public Optional<Notificacao> buscarPorEventoEDestinatario(UUID evento, UUID usuario) {
