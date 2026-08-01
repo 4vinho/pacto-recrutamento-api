@@ -3,12 +3,19 @@ package br.com.pacto.recrutamento.app.ports.out.candidatura;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaRequisitoCandidatura;
+import br.com.pacto.recrutamento.core.common.PaginaGenerico;
+import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface CandidaturaPort {
+    default PaginaGenerico<Candidatura> listarPorVaga(UUID vagaId, StatusCandidatura status,
+                                                       int page, int pageSize) {
+        throw new UnsupportedOperationException();
+    }
+
     Optional<Candidatura> buscarPorId(UUID candidaturaId);
 
     Optional<Candidatura> buscarPorIdParaAtualizacao(UUID candidaturaId);

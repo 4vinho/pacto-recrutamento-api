@@ -4,12 +4,18 @@ import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaRequisitoCandidatura;
+import br.com.pacto.recrutamento.core.common.PaginaGenerico;
+import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.CandidaturaJpaRepository;
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.RespostaCandidaturaJpaRepository;
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.RespostaRequisitoCandidaturaJpaRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +37,18 @@ public class CandidaturaJpaAdapter implements CandidaturaPort {
 
     public Optional<Candidatura> buscarPorId(UUID id) {
         return candidaturas.findById(id);
+    }
+
+    @Override
+    public PaginaGenerico<Candidatura> listarPorVaga(UUID vagaId, StatusCandidatura status,
+                                                      int page, int pageSize) {
+        Specification<Candidatura> filtro = (root, query, builder) -> status == null
+                ? builder.equal(root.get("vagaId"), vagaId)
+                : builder.and(builder.equal(root.get("vagaId"), vagaId),
+                        builder.equal(root.get("status"), status));
+        Page<Candidatura> resultado = candidaturas.findAll(filtro, PageRequest.of(page, pageSize,
+                Sort.by(Sort.Direction.DESC, "criadoEm")));
+        return new PaginaGenerico<>(resultado.getContent(), resultado.getTotalElements());
     }
 
     public Optional<Candidatura> buscarPorIdParaAtualizacao(UUID id) {

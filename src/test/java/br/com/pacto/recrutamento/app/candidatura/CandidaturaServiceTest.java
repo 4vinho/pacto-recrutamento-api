@@ -6,6 +6,7 @@ import br.com.pacto.recrutamento.app.ports.out.candidato.model.CandidaturaDoCand
 import br.com.pacto.recrutamento.app.usecases.candidatura.CandidaturaService;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.entities.*;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import br.com.pacto.recrutamento.core.enums.StatusVaga;
@@ -30,6 +31,21 @@ class CandidaturaServiceTest {
     private final Eventos eventos = new Eventos();
     private final CandidaturaService service = new CandidaturaService(candidatos,
             candidaturas, vagas, perguntas, requisitos, new Autorizacao(), eventos);
+
+    @Test
+    void responsavelListaCandidaturasDaVaga() {
+        Vaga vaga = vagaPublicada();
+        vagas.salvar(vaga);
+        Candidatura candidatura = new Candidatura(candidatoId, vaga.getId());
+        candidaturas.salvar(candidatura);
+
+        TypedPagedResponse<CandidaturaDTO> resposta = service.listarCandidaturasDaVaga(
+                new ListarCandidaturasDaVagaDTO(responsavel, vaga.getId(), null, 0, 20));
+
+        assertEquals(200, resposta.getStatusCode());
+        assertEquals(1, resposta.getTotalItems());
+        assertEquals(candidatoId, resposta.getData().get(0).getCandidatoId());
+    }
 
     @Test
     void criaCandidaturaEnviadaParaCandidatoEmVagaAbertaEPublicaEventoAposSalvar() {
@@ -426,6 +442,16 @@ class CandidaturaServiceTest {
         private boolean falharPorUnicidade;
         private boolean falharRespostasPorUnicidade;
         private boolean salvouAntesDoEvento;
+
+        public PaginaGenerico<Candidatura> listarPorVaga(UUID vagaId, StatusCandidatura status,
+                                                          int page, int pageSize) {
+            List<Candidatura> itens = new ArrayList<>();
+            for (Candidatura candidatura : dados.values()) {
+                if (vagaId.equals(candidatura.getVagaId())
+                        && (status == null || status == candidatura.getStatus())) itens.add(candidatura);
+            }
+            return new PaginaGenerico<>(itens, itens.size());
+        }
 
         public Optional<Candidatura> buscarPorId(UUID id) {
             return Optional.ofNullable(dados.get(id));

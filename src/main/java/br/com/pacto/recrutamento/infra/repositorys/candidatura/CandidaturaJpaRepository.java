@@ -2,6 +2,7 @@ package br.com.pacto.recrutamento.infra.repositorys.candidatura;
 
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +11,7 @@ import javax.persistence.LockModeType;
 
 import java.util.UUID;
 
-public interface CandidaturaJpaRepository extends JpaRepository<Candidatura, UUID> {
+public interface CandidaturaJpaRepository extends JpaRepository<Candidatura, UUID>, JpaSpecificationExecutor<Candidatura> {
     boolean existsByCandidatoIdAndVagaId(UUID candidatoId, UUID vagaId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

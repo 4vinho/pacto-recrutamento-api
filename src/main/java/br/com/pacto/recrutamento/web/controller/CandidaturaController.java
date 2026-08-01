@@ -7,6 +7,7 @@ import br.com.pacto.recrutamento.web.support.HttpResponses;
 import br.com.pacto.recrutamento.app.dtos.candidatura.*;
 import br.com.pacto.recrutamento.app.ports.in.candidatura.CandidaturaUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import br.com.pacto.recrutamento.core.enums.NivelAtendimentoRequisito;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,18 @@ public class CandidaturaController {
 
     public CandidaturaController(CandidaturaUseCase service) {
         this.service = service;
+    }
+
+    @GetMapping("/vagas/{vagaId}/candidaturas")
+    public ResponseEntity<TypedPagedResponse<CandidaturaDTO>> listarPorVaga(
+            Authentication authentication, @PathVariable UUID vagaId,
+            @RequestParam(required = false) StatusCandidatura status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int pageSize) {
+        TypedPagedResponse<CandidaturaDTO> resposta = service.listarCandidaturasDaVaga(
+                new ListarCandidaturasDaVagaDTO(AuthenticatedUser.id(authentication), vagaId,
+                        status, page, pageSize));
+        return ResponseEntity.status(resposta.getStatusCode()).body(resposta);
     }
 
     @PostMapping("/vagas/{vagaId}/candidaturas")

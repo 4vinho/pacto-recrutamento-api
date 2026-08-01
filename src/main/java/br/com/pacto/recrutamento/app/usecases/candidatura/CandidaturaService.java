@@ -7,6 +7,8 @@ import br.com.pacto.recrutamento.app.ports.in.candidatura.CandidaturaUseCase;
 import br.com.pacto.recrutamento.app.ports.out.candidato.CandidatoPort;
 import br.com.pacto.recrutamento.app.ports.out.candidatura.*;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
+import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.entities.*;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,32 @@ public class CandidaturaService implements CandidaturaUseCase {
         this.requisitos = requisitos;
         this.autorizacao = autorizacao;
         this.eventos = eventos;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TypedPagedResponse<CandidaturaDTO> listarCandidaturasDaVaga(
+            ListarCandidaturasDaVagaDTO query) {
+        if (query == null || query.getUsuarioId() == null || query.getVagaId() == null
+                || query.getPage() < 0 || query.getPageSize() <= 0 || query.getPageSize() > 100) {
+            int page = query == null || query.getPage() < 0 ? 0 : query.getPage();
+            int size = query == null || query.getPageSize() <= 0 ? 20 : query.getPageSize();
+            return new TypedPagedResponse<>(400, "Consulta de candidaturas invalida",
+                    Collections.<CandidaturaDTO>emptyList(), page, size, 0);
+        }
+        Vaga vaga = vagas.buscarPorId(query.getVagaId()).orElse(null);
+        if (vaga == null) return new TypedPagedResponse<>(404, VAGA_NAO_ENCONTRADA,
+                Collections.<CandidaturaDTO>emptyList(), query.getPage(), query.getPageSize(), 0);
+        if (!autorizacao.podeGerenciar(query.getUsuarioId(), vaga)) {
+            return new TypedPagedResponse<>(403, USUARIO_NAO_AUTORIZADO_CONSULTAR_CANDIDATURA,
+                    Collections.<CandidaturaDTO>emptyList(), query.getPage(), query.getPageSize(), 0);
+        }
+        PaginaGenerico<Candidatura> pagina = candidaturas.listarPorVaga(query.getVagaId(),
+                query.getStatus(), query.getPage(), query.getPageSize());
+        List<CandidaturaDTO> dados = pagina.getItens().stream().map(this::paraDto)
+                .collect(java.util.stream.Collectors.toList());
+        return new TypedPagedResponse<>(200, "Candidaturas encontradas", dados,
+                query.getPage(), query.getPageSize(), pagina.getTotalItens());
     }
 
     @Override
