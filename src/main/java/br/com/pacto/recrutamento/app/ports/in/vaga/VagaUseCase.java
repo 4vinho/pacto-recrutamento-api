@@ -11,6 +11,8 @@ public interface VagaUseCase {
 
     TypedResponse<VagaDTO> criarVaga(CriarVagaDTO command);
 
+    TypedResponse<VagaDetalheDTO> criarVagaCompleta(CriarVagaCompletaDTO command);
+
     TypedResponse<VagaDTO> atualizarVaga(AtualizarVagaDTO command);
 
     TypedResponse<VagaDTO> alterarStatusVaga(AlterarStatusVagaDTO command);

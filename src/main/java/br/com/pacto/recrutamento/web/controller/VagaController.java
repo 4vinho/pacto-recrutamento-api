@@ -19,6 +19,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.NotEmpty;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -60,6 +62,22 @@ public class VagaController {
         return HttpResponses.from(service.criarVaga(
                 new CriarVagaDTO(AuthenticatedUser.id(auth), request.responsaveisIds,
                         request.titulo, request.descricao)));
+    }
+
+    @PostMapping("/completa")
+    public ResponseEntity<TypedResponse<VagaDetalheDTO>> criarCompleta(
+            Authentication auth, @Valid @RequestBody VagaCompletaRequest request) {
+        UUID usuarioId = AuthenticatedUser.id(auth);
+        Set<UUID> responsaveis = request.responsaveisIds == null || request.responsaveisIds.isEmpty()
+                ? Collections.singleton(usuarioId) : request.responsaveisIds;
+        List<CriarVagaCompletaDTO.Pergunta> perguntas = request.perguntas.stream()
+                .map(item -> new CriarVagaCompletaDTO.Pergunta(item.enunciado, item.tipoResposta,
+                        item.obrigatoria, item.ordem)).collect(java.util.stream.Collectors.toList());
+        List<CriarVagaCompletaDTO.Requisito> requisitos = request.requisitos.stream()
+                .map(item -> new CriarVagaCompletaDTO.Requisito(item.descricao, item.obrigatorio))
+                .collect(java.util.stream.Collectors.toList());
+        return HttpResponses.from(service.criarVagaCompleta(new CriarVagaCompletaDTO(usuarioId,
+                responsaveis, request.titulo, request.descricao, perguntas, requisitos)));
     }
 
     @PutMapping("/{vagaId}")
@@ -146,6 +164,18 @@ public class VagaController {
         public String titulo;
         @NotBlank
         public String descricao;
+    }
+
+    public static class VagaCompletaRequest {
+        public Set<@NotNull UUID> responsaveisIds;
+        @NotBlank
+        public String titulo;
+        @NotBlank
+        public String descricao;
+        @NotNull
+        public List<@Valid PerguntaRequest> perguntas;
+        @NotNull
+        public List<@Valid RequisitoRequest> requisitos;
     }
 
     public static class StatusRequest {

@@ -48,6 +48,16 @@ Serviços:
 
 Os dados do PostgreSQL e do MinIO são mantidos em volumes nomeados.
 
+## Contas iniciais
+
+Na primeira inicialização do banco, o Flyway cria uma conta para cada perfil:
+
+| Perfil | E-mail | Senha |
+| --- | --- | --- |
+| Administrador | `socrates@pacto.com` | `socrates` |
+| Responsável por vaga | `platao@pacto.com` | `platao` |
+| Candidato | `aristoteles@pacto.com` | `aristoteles` |
+
 ## Executar sem Docker
 
 Defina obrigatoriamente `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`,

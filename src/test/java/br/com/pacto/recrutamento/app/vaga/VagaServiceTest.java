@@ -50,6 +50,42 @@ class VagaServiceTest {
     }
 
     @Test
+    void criaVagaCompletaComPerguntasERequisitos() {
+        CriarVagaCompletaDTO command = new CriarVagaCompletaDTO(administrador,
+                Collections.singleton(administrador), "Dev Java", "Descricao",
+                Collections.singletonList(new CriarVagaCompletaDTO.Pergunta(
+                        "Fale sobre Java", TipoResposta.TEXTO, true, 1)),
+                Collections.singletonList(new CriarVagaCompletaDTO.Requisito("Java", true)));
+
+        TypedResponse<VagaDetalheDTO> resposta = service.criarVagaCompleta(command);
+
+        assertEquals(201, resposta.getStatusCode());
+        assertEquals(1, vagas.dados.size());
+        assertEquals(1, perguntas.dados.size());
+        assertEquals(1, requisitos.dados.size());
+        assertEquals(resposta.getData().getId(), perguntas.dados.values().iterator().next().getVagaId());
+        assertEquals(resposta.getData().getId(), requisitos.dados.values().iterator().next().getVagaId());
+        assertEquals(1, resposta.getData().getPerguntas().size());
+        assertEquals(1, resposta.getData().getRequisitos().size());
+    }
+
+    @Test
+    void validaTodoLoteAntesDeCriarVagaCompleta() {
+        CriarVagaCompletaDTO command = new CriarVagaCompletaDTO(administrador,
+                Collections.singleton(administrador), "Dev Java", "Descricao",
+                Collections.singletonList(new CriarVagaCompletaDTO.Pergunta(
+                        "Pergunta", TipoResposta.TEXTO, true, 0)),
+                Collections.<CriarVagaCompletaDTO.Requisito>emptyList());
+
+        TypedResponse<VagaDetalheDTO> resposta = service.criarVagaCompleta(command);
+
+        assertEquals(400, resposta.getStatusCode());
+        assertTrue(vagas.dados.isEmpty());
+        assertTrue(perguntas.dados.isEmpty());
+        assertTrue(requisitos.dados.isEmpty());
+    }
+
+    @Test
     void listaSomentePublicadasParaUsuarioComum() {
         Vaga publicada = vaga();
         publicada.setStatus(StatusVaga.PUBLICADA);

@@ -16,6 +16,7 @@ import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
 import br.com.pacto.recrutamento.core.entities.Vaga;
 import br.com.pacto.recrutamento.core.enums.StatusVaga;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
@@ -92,6 +93,43 @@ public class VagaService implements VagaUseCase {
         if (!autorizacao.podeManterVagas(command.getUsuarioSolicitanteId())) return vagaErro(403, ACESSO_NAO_AUTORIZADO);
         if (!responsaveisAutorizados(command.getResponsaveisIds())) return vagaErro(422, RESPONSAVEL_VAGA_INVALIDO);
         return vagaResposta(201, "Vaga criada", vagas.salvar(new Vaga(command.getResponsaveisIds(), command.getTitulo(), command.getDescricao())));
+    }
+
+    @Override
+    @Transactional
+    public TypedResponse<VagaDetalheDTO> criarVagaCompleta(CriarVagaCompletaDTO command) {
+        if (comandoCompletoInvalido(command))
+            return new TypedResponse<>(400, DADOS_VAGA_INVALIDOS, null);
+        if (!autorizacao.podeManterVagas(command.getUsuarioSolicitanteId()))
+            return new TypedResponse<>(403, ACESSO_NAO_AUTORIZADO, null);
+        if (!responsaveisAutorizados(command.getResponsaveisIds()))
+            return new TypedResponse<>(422, RESPONSAVEL_VAGA_INVALIDO, null);
+
+        Vaga vaga = vagas.salvar(new Vaga(command.getResponsaveisIds(), command.getTitulo(),
+                command.getDescricao()));
+        List<PerguntaVagaDTO> perguntasDto = command.getPerguntas().stream().map(item -> {
+            PerguntaVaga pergunta = new PerguntaVaga();
+            pergunta.setVagaId(vaga.getId());
+            pergunta.setEnunciado(item.getEnunciado());
+            pergunta.setTipoResposta(item.getTipoResposta());
+            pergunta.setObrigatoria(item.isObrigatoria());
+            pergunta.setOrdem(item.getOrdem());
+            PerguntaVaga salva = perguntas.salvar(pergunta);
+            return new PerguntaVagaDTO(salva.getId(), salva.getEnunciado(), salva.getTipoResposta(),
+                    salva.isObrigatoria(), salva.getOrdem());
+        }).collect(Collectors.toList());
+        List<RequisitoVagaDTO> requisitosDto = command.getRequisitos().stream().map(item -> {
+            RequisitoVaga requisito = new RequisitoVaga();
+            requisito.setVagaId(vaga.getId());
+            requisito.setDescricao(item.getDescricao());
+            requisito.setObrigatorio(item.isObrigatorio());
+            RequisitoVaga salvo = requisitos.salvar(requisito);
+            return new RequisitoVagaDTO(salvo.getId(), salvo.getDescricao(), salvo.isObrigatorio());
+        }).collect(Collectors.toList());
+
+        VagaDetalheDTO detalhe = new VagaDetalheDTO(vaga.getId(), vaga.getResponsaveisIds(),
+                vaga.getTitulo(), vaga.getDescricao(), vaga.getStatus(), requisitosDto, perguntasDto);
+        return new TypedResponse<>(201, "Vaga completa criada", detalhe);
     }
 
     @Override
@@ -217,6 +255,17 @@ public class VagaService implements VagaUseCase {
 
     private boolean camposVagaInvalidos(String titulo, String descricao) {
         return emBranco(titulo) || emBranco(descricao);
+    }
+
+    private boolean comandoCompletoInvalido(CriarVagaCompletaDTO command) {
+        if (command == null || responsaveisInvalidos(command.getResponsaveisIds())
+                || camposVagaInvalidos(command.getTitulo(), command.getDescricao())
+                || command.getPerguntas() == null || command.getRequisitos() == null)
+            return true;
+        return command.getPerguntas().stream().anyMatch(item -> item == null
+                || emBranco(item.getEnunciado()) || item.getTipoResposta() == null || item.getOrdem() <= 0)
+                || command.getRequisitos().stream().anyMatch(item -> item == null
+                || emBranco(item.getDescricao()));
     }
 
     private boolean perguntaInvalida(SalvarPerguntaVagaDTO command) {
