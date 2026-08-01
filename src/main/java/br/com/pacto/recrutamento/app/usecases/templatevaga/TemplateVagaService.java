@@ -72,6 +72,27 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public TypedResponse<TemplateVagaDetalheDTO> consultarTemplate(ConsultarTemplateVagaDTO query) {
+        if (query == null || query.getUsuarioId() == null || query.getTemplateId() == null) {
+            return erro(400, DADOS_TEMPLATE_INVALIDOS);
+        }
+        if (!administrador(query.getUsuarioId())) return erro(403, ACESSO_NAO_AUTORIZADO);
+        TemplateVaga template = templates.buscarAtivoPorId(query.getTemplateId()).orElse(null);
+        if (template == null) return erro(404, TEMPLATE_NAO_ENCONTRADO);
+        List<PerguntaTemplateVagaDTO> perguntasDto = perguntas.listarAtivasDoTemplate(template.getId())
+                .stream().map(p -> new PerguntaTemplateVagaDTO(p.getId(), p.getEnunciado(),
+                        p.getTipoResposta(), p.isObrigatoria(), p.getOrdem()))
+                .collect(Collectors.toList());
+        List<RequisitoTemplateVagaDTO> requisitosDto = requisitos.listarAtivosDoTemplate(template.getId())
+                .stream().map(r -> new RequisitoTemplateVagaDTO(r.getId(), r.getDescricao(),
+                        r.isObrigatorio())).collect(Collectors.toList());
+        return new TypedResponse<>(200, "Template encontrado", new TemplateVagaDetalheDTO(
+                template.getId(), template.getResponsavelId(), template.getTitulo(),
+                template.getDescricao(), requisitosDto, perguntasDto));
+    }
+
+    @Override
     public TypedResponse<TemplateVagaDTO> criarTemplate(CriarTemplateVagaDTO command) {
         if (command == null || command.getResponsavelId() == null
                 || camposTemplateInvalidos(command.getTitulo(), command.getDescricao())) {

@@ -8,6 +8,8 @@ import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 public interface TemplateVagaUseCase {
     TypedPagedResponse<TemplateVagaDTO> listarTemplates(ListarTemplatesVagaDTO query);
 
+    TypedResponse<TemplateVagaDetalheDTO> consultarTemplate(ConsultarTemplateVagaDTO query);
+
     TypedResponse<TemplateVagaDTO> criarTemplate(CriarTemplateVagaDTO command);
 
     TypedResponse<TemplateVagaDTO> atualizarTemplate(AtualizarTemplateVagaDTO command);

@@ -5,6 +5,7 @@ import br.com.pacto.recrutamento.app.dtos.templatevaga.CriarVagaAPartirDoTemplat
 import br.com.pacto.recrutamento.app.dtos.templatevaga.ExcluirItemTemplateVagaDTO;
 import br.com.pacto.recrutamento.app.dtos.templatevaga.SalvarPerguntaTemplateVagaDTO;
 import br.com.pacto.recrutamento.app.dtos.templatevaga.ListarTemplatesVagaDTO;
+import br.com.pacto.recrutamento.app.dtos.templatevaga.ConsultarTemplateVagaDTO;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.app.usecases.templatevaga.TemplateVagaService;
 import br.com.pacto.recrutamento.core.entities.*;
@@ -17,6 +18,26 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TemplateVagaServiceTest {
+    @Test
+    void consultaTemplateComPerguntasERequisitos() {
+        Memoria memoria = new Memoria();
+        TemplateVaga template = memoria.template();
+        PerguntaTemplateVaga pergunta = new PerguntaTemplateVaga();
+        pergunta.setTemplateVagaId(template.getId());
+        pergunta.setEnunciado("Questao");
+        pergunta.setTipoResposta(TipoResposta.TEXTO);
+        pergunta.setOrdem(1);
+        memoria.perguntas.salvar(pergunta);
+        RequisitoTemplateVaga requisito = new RequisitoTemplateVaga();
+        requisito.setTemplateVagaId(template.getId());
+        requisito.setDescricao("Java");
+        memoria.requisitos.salvar(requisito);
+
+        assertEquals(1, memoria.service(true).consultarTemplate(new ConsultarTemplateVagaDTO(
+                UUID.randomUUID(), template.getId())).getData().getPerguntas().size());
+        assertEquals(1, memoria.service(true).consultarTemplate(new ConsultarTemplateVagaDTO(
+                UUID.randomUUID(), template.getId())).getData().getRequisitos().size());
+    }
     @Test
     void listaTemplatesParaAdministrador() {
         Memoria memoria = new Memoria();

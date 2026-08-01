@@ -40,6 +40,13 @@ public class TemplateVagaController {
         return ResponseEntity.status(resposta.getStatusCode()).body(resposta);
     }
 
+    @GetMapping("/{templateId}")
+    public ResponseEntity<TypedResponse<TemplateVagaDetalheDTO>> consultar(
+            Authentication auth, @PathVariable UUID templateId) {
+        return HttpResponses.from(service.consultarTemplate(new ConsultarTemplateVagaDTO(
+                AuthenticatedUser.id(auth), templateId)));
+    }
+
     @PostMapping
     public ResponseEntity<TypedResponse<TemplateVagaDTO>> criar(
             Authentication auth, @Valid @RequestBody TemplateRequest request) {
