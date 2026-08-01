@@ -7,6 +7,8 @@ import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Candidato;
+import br.com.pacto.recrutamento.core.entities.Curriculo;
+import br.com.pacto.recrutamento.app.ports.out.curriculo.CurriculoPort;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +23,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CandidatoServiceTest {
 
     private final CandidatoPort repository = new CandidatoRepositoryFalso();
-    private final CandidatoService service = new CandidatoService(repository);
+    private final CurriculoRepositoryFalso curriculos = new CurriculoRepositoryFalso();
+    private final CandidatoService service = new CandidatoService(repository, curriculos);
+
+    @Test
+    void consultaPerfilComResumoDoCurriculoAtual() {
+        UUID usuarioId = UUID.randomUUID();
+        Candidato candidato = repository.salvar(new Candidato(usuarioId, LocalDate.of(2020, 1, 1)));
+        curriculos.atual = new Curriculo(candidato.getId(), "curriculos/cv.pdf", "cv.pdf",
+                "application/pdf", 100, "abc");
+
+        TypedResponse<CandidatoDTO> resposta = service.consultarMeuPerfil(
+                new ConsultarMeuPerfilDTO(usuarioId));
+
+        assertThat(resposta.getStatusCode()).isEqualTo(200);
+        assertThat(resposta.getData().getCurriculo().getNomeOriginal()).isEqualTo("cv.pdf");
+    }
 
     @Test
     void criaPerfilDoUsuarioQuandoAindaNaoExiste() {
@@ -150,6 +167,18 @@ class CandidatoServiceTest {
                 UUID usuarioId, int page, int pageSize) {
             ultimoUsuarioConsultado = usuarioId;
             return pagina;
+        }
+    }
+
+    private static class CurriculoRepositoryFalso implements CurriculoPort {
+        private Curriculo atual;
+        public Optional<Curriculo> buscarAtivoPorCandidato(UUID candidatoId) {
+            return Optional.ofNullable(atual).filter(c -> candidatoId.equals(c.getCandidatoId()));
+        }
+        public Optional<Curriculo> buscarAtivoPorId(UUID id) { return Optional.empty(); }
+        public void salvar(Curriculo curriculo) { atual = curriculo; }
+        public void substituir(Curriculo anterior, Curriculo novo, OffsetDateTime excluidoEm) {
+            atual = novo;
         }
     }
 }

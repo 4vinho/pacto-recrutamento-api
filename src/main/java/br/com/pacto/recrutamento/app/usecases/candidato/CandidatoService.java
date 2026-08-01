@@ -3,6 +3,8 @@ package br.com.pacto.recrutamento.app.usecases.candidato;
 import br.com.pacto.recrutamento.app.dtos.candidato.*;
 import br.com.pacto.recrutamento.app.ports.in.candidato.CandidatoUseCase;
 import br.com.pacto.recrutamento.app.ports.out.candidato.CandidatoPort;
+import br.com.pacto.recrutamento.app.ports.out.curriculo.CurriculoPort;
+import br.com.pacto.recrutamento.app.dtos.curriculo.CurriculoDTO;
 import br.com.pacto.recrutamento.app.ports.out.candidato.model.CandidaturaDoCandidato;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
@@ -19,9 +21,26 @@ import static br.com.pacto.recrutamento.core.common.ErrorMessages.*;
 @Service
 public class CandidatoService implements CandidatoUseCase {
     private final CandidatoPort candidatoRepository;
+    private final CurriculoPort curriculos;
 
-    public CandidatoService(CandidatoPort candidatoRepository) {
+    public CandidatoService(CandidatoPort candidatoRepository, CurriculoPort curriculos) {
         this.candidatoRepository = candidatoRepository;
+        this.curriculos = curriculos;
+    }
+
+    @Override
+    public TypedResponse<CandidatoDTO> consultarMeuPerfil(ConsultarMeuPerfilDTO query) {
+        if (query == null || query.getUsuarioId() == null) {
+            return erro(400, USUARIO_AUTENTICADO_OBRIGATORIO);
+        }
+        Candidato candidato = candidatoRepository.buscarPorUsuarioId(query.getUsuarioId()).orElse(null);
+        if (candidato == null) return erro(404, PERFIL_CANDIDATO_NAO_ENCONTRADO);
+        CurriculoDTO curriculo = curriculos.buscarAtivoPorCandidato(candidato.getId())
+                .map(c -> new CurriculoDTO(c.getId(), c.getNomeOriginal(), c.getContentType(),
+                        c.getTamanhoBytes(), c.getChecksumSha256()))
+                .orElse(null);
+        return new TypedResponse<>(200, "Perfil de candidato encontrado", new CandidatoDTO(
+                candidato.getId(), candidato.getUsuarioId(), candidato.getDataAdmissao(), curriculo));
     }
 
     @Override

@@ -5,6 +5,8 @@ import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 
 public interface CandidatoUseCase {
+    TypedResponse<CandidatoDTO> consultarMeuPerfil(ConsultarMeuPerfilDTO query);
+
     TypedResponse<CandidatoDTO> criarCandidato(CriarCandidatoDTO command);
 
     TypedResponse<CandidatoDTO> atualizarCandidato(AtualizarCandidatoDTO command);

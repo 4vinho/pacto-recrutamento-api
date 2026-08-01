@@ -26,6 +26,12 @@ public class CandidatoController {
         this.service = service;
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<TypedResponse<CandidatoDTO>> consultar(Authentication authentication) {
+        return HttpResponses.from(service.consultarMeuPerfil(
+                new ConsultarMeuPerfilDTO(AuthenticatedUser.id(authentication))));
+    }
+
     @PostMapping
     public ResponseEntity<TypedResponse<CandidatoDTO>> criar(
             Authentication authentication, @Valid @RequestBody CandidatoRequest request) {
