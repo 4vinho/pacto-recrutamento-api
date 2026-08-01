@@ -61,6 +61,7 @@ public final class ErrorMessages {
     public static final String USUARIO_NAO_AUTORIZADO_ALTERAR_CANDIDATURA = "Usuario nao autorizado a alterar a candidatura";
     public static final String USUARIO_NAO_AUTORIZADO_CONSULTAR_CANDIDATURA = "Usuario nao autorizado a consultar a candidatura";
     public static final String VAGA_NAO_ACEITA_CANDIDATURAS = "Vaga nao aceita candidaturas";
+    public static final String VAGA_PUBLICADA_NAO_PODE_SER_EDITADA = "Vaga publicada nao pode ser editada";
     public static final String VAGA_NAO_ENCONTRADA = "Vaga nao encontrada";
 
     private ErrorMessages() { }
