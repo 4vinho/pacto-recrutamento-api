@@ -23,6 +23,14 @@ public interface CandidaturaPort {
 
     boolean existePorUsuarioIdEVagaId(UUID usuarioId, UUID vagaId);
 
+    default List<RespostaCandidatura> listarRespostas(UUID candidaturaId) {
+        return java.util.Collections.emptyList();
+    }
+
+    default List<RespostaRequisitoCandidatura> listarRespostasRequisitos(UUID candidaturaId) {
+        return java.util.Collections.emptyList();
+    }
+
     Candidatura salvar(Candidatura candidatura);
 
     void registrarRespostasPerguntasAtomicamente(Candidatura candidatura,

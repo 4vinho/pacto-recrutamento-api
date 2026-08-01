@@ -282,7 +282,8 @@ class VagaServiceTest {
         private final Map<UUID, Vaga> dados = new HashMap<>();
 
         public PaginaGenerico<Vaga> listar(String busca, StatusVaga status, int page, int pageSize,
-                                           String ordenarPor, boolean ascendente) {
+                                           String ordenarPor, boolean ascendente,
+                                           UUID excluirCandidaturasDoUsuarioId) {
             List<Vaga> itens = dados.values().stream()
                     .filter(v -> v.getExcluidoEm() == null)
                     .filter(v -> status == null || v.getStatus() == status)

@@ -9,7 +9,8 @@ import java.util.UUID;
 
 public interface VagaPort {
     PaginaGenerico<Vaga> listar(String busca, StatusVaga status, int page, int pageSize,
-                                String ordenarPor, boolean ascendente);
+                                String ordenarPor, boolean ascendente,
+                                UUID excluirCandidaturasDoUsuarioId);
 
     Optional<Vaga> buscarAtivaPorId(UUID id);
 

@@ -265,11 +265,11 @@ public class CandidaturaService implements CandidaturaUseCase {
             return erro(404, CANDIDATURA_NAO_ENCONTRADA);
         }
         if (pertenceAoUsuario(candidatura, query.getUsuarioSolicitanteId())) {
-            return new TypedResponse<>(200, "Candidatura encontrada", paraDto(candidatura));
+            return new TypedResponse<>(200, "Candidatura encontrada", paraDtoDetalhado(candidatura));
         }
         Vaga vaga = vagas.buscarPorId(candidatura.getVagaId()).orElse(null);
         if (vaga != null && autorizacao.podeGerenciar(query.getUsuarioSolicitanteId(), vaga)) {
-            return new TypedResponse<>(200, "Candidatura encontrada", paraDto(candidatura));
+            return new TypedResponse<>(200, "Candidatura encontrada", paraDtoDetalhado(candidatura));
         }
         return erro(403, USUARIO_NAO_AUTORIZADO_CONSULTAR_CANDIDATURA);
     }
@@ -384,5 +384,31 @@ public class CandidaturaService implements CandidaturaUseCase {
         return new CandidaturaDTO(candidatura.getId(), candidatura.getUsuarioId(), candidatura.getVagaId(),
                 tituloVaga, candidatura.getStatus(), candidatura.getCriadoEm(), candidatura.isPerguntasRespondidas(),
                 candidatura.isRequisitosRespondidos());
+    }
+
+    private CandidaturaDTO paraDtoDetalhado(Candidatura candidatura) {
+        Map<UUID, String> perguntasPorId = new HashMap<>();
+        for (PerguntaVaga pergunta : perguntas.listarAtivasPorVagaId(candidatura.getVagaId())) {
+            perguntasPorId.put(pergunta.getId(), pergunta.getEnunciado());
+        }
+        List<CandidaturaDTO.RespostaDetalhe> respostasDto = new ArrayList<>();
+        for (RespostaCandidatura resposta : candidaturas.listarRespostas(candidatura.getId())) {
+            respostasDto.add(new CandidaturaDTO.RespostaDetalhe(
+                    perguntasPorId.getOrDefault(resposta.getPerguntaId(), "Pergunta"), resposta.getValor()));
+        }
+        Map<UUID, String> requisitosPorId = new HashMap<>();
+        for (RequisitoVaga requisito : requisitos.listarAtivosPorVagaId(candidatura.getVagaId())) {
+            requisitosPorId.put(requisito.getId(), requisito.getDescricao());
+        }
+        List<CandidaturaDTO.RequisitoDetalhe> requisitosDto = new ArrayList<>();
+        for (RespostaRequisitoCandidatura resposta : candidaturas.listarRespostasRequisitos(candidatura.getId())) {
+            requisitosDto.add(new CandidaturaDTO.RequisitoDetalhe(
+                    requisitosPorId.getOrDefault(resposta.getRequisitoId(), "Requisito"), resposta.getNivel()));
+        }
+        CandidaturaDTO basico = paraDto(candidatura);
+        return new CandidaturaDTO(basico.getId(), basico.getUsuarioId(), basico.getVagaId(),
+                basico.getTituloVaga(), basico.getStatus(), basico.getCriadaEm(),
+                basico.isPerguntasRespondidas(), basico.isRequisitosRespondidos(),
+                respostasDto, requisitosDto);
     }
 }

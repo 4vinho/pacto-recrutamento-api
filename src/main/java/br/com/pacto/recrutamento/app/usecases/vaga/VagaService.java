@@ -55,8 +55,11 @@ public class VagaService implements VagaUseCase {
                     Collections.<VagaDTO>emptyList(), page, size, 0);
         }
         StatusVaga status = autorizado(query.getUsuarioId()) ? query.getStatus() : StatusVaga.PUBLICADA;
+        UUID excluirCandidaturasDoUsuarioId = autorizado(query.getUsuarioId())
+                ? null : query.getUsuarioId();
         PaginaGenerico<Vaga> pagina = vagas.listar(query.getBusca(), status, query.getPage(),
-                query.getPageSize(), query.getOrdenarPor(), query.isAscendente());
+                query.getPageSize(), query.getOrdenarPor(), query.isAscendente(),
+                excluirCandidaturasDoUsuarioId);
         List<VagaDTO> dados = pagina.getItens().stream().map(this::paraDto).collect(Collectors.toList());
         return new TypedPagedResponse<>(200, "Vagas encontradas", dados, query.getPage(),
                 query.getPageSize(), pagina.getTotalItens());

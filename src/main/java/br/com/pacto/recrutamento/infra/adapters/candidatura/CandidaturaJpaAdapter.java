@@ -67,6 +67,14 @@ public class CandidaturaJpaAdapter implements CandidaturaPort {
         return candidaturas.existsByUsuarioIdAndVagaId(usuarioId, vagaId);
     }
 
+    public List<RespostaCandidatura> listarRespostas(UUID candidaturaId) {
+        return respostas.findAllByCandidaturaId(candidaturaId);
+    }
+
+    public List<RespostaRequisitoCandidatura> listarRespostasRequisitos(UUID candidaturaId) {
+        return respostasRequisitos.findAllByCandidaturaId(candidaturaId);
+    }
+
     @Transactional
     public Candidatura salvar(Candidatura candidatura) {
         try {
