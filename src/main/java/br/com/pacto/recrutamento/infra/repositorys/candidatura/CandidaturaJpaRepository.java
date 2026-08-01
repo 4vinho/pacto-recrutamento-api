@@ -12,7 +12,7 @@ import javax.persistence.LockModeType;
 import java.util.UUID;
 
 public interface CandidaturaJpaRepository extends JpaRepository<Candidatura, UUID>, JpaSpecificationExecutor<Candidatura> {
-    boolean existsByCandidatoIdAndVagaId(UUID candidatoId, UUID vagaId);
+    boolean existsByUsuarioIdAndVagaId(UUID usuarioId, UUID vagaId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select c from Candidatura c where c.id = :id")

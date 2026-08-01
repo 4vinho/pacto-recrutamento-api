@@ -22,7 +22,7 @@ import static br.com.pacto.recrutamento.core.common.ErrorMessages.ARQUIVO_MUITO_
 import static br.com.pacto.recrutamento.core.common.ErrorMessages.ARQUIVO_OBRIGATORIO;
 
 @RestController
-@RequestMapping("/candidatos/me/curriculo")
+@RequestMapping("/candidaturas/{candidaturaId}/curriculo")
 @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTH)
 public class CurriculoController {
     private static final long TAMANHO_MAXIMO = 5L * 1024L * 1024L;
@@ -34,24 +34,24 @@ public class CurriculoController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<TypedResponse<CurriculoDTO>> enviar(
-            Authentication authentication,
+            Authentication authentication, @PathVariable UUID candidaturaId,
             @RequestPart("arquivo") MultipartFile arquivo,
             @RequestParam(defaultValue = "false") boolean substituir) throws IOException {
         validarArquivo(arquivo);
         UUID usuarioId = AuthenticatedUser.id(authentication);
         if (substituir) {
             return HttpResponses.from(service.substituirCurriculo(new SubstituirCurriculoDTO(
-                    usuarioId, arquivo.getOriginalFilename(), arquivo.getContentType(), arquivo.getBytes())));
+                    usuarioId, candidaturaId, arquivo.getOriginalFilename(), arquivo.getContentType(), arquivo.getBytes())));
         }
         return HttpResponses.from(service.enviarCurriculo(new EnviarCurriculoDTO(
-                usuarioId, arquivo.getOriginalFilename(), arquivo.getContentType(), arquivo.getBytes())));
+                usuarioId, candidaturaId, arquivo.getOriginalFilename(), arquivo.getContentType(), arquivo.getBytes())));
     }
 
     @GetMapping("/url")
     public ResponseEntity<TypedResponse<UrlTemporariaCurriculoDTO>> gerarUrl(
-            Authentication authentication, @RequestParam UUID curriculoId) {
+            Authentication authentication, @PathVariable UUID candidaturaId) {
         return HttpResponses.from(service.gerarUrlTemporariaCurriculo(
-                new GerarUrlTemporariaCurriculoDTO(AuthenticatedUser.id(authentication), curriculoId)));
+                new GerarUrlTemporariaCurriculoDTO(AuthenticatedUser.id(authentication), candidaturaId)));
     }
 
     private void validarArquivo(MultipartFile arquivo) {

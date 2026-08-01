@@ -31,6 +31,17 @@ public class CandidaturaController {
         this.service = service;
     }
 
+    @GetMapping("/candidaturas/me")
+    public ResponseEntity<TypedPagedResponse<CandidaturaDTO>> listarMinhas(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int pageSize) {
+        TypedPagedResponse<CandidaturaDTO> resposta = service.listarMinhasCandidaturas(
+                new ListarMinhasCandidaturasDTO(
+                        AuthenticatedUser.id(authentication), page, pageSize));
+        return ResponseEntity.status(resposta.getStatusCode()).body(resposta);
+    }
+
     @GetMapping("/vagas/{vagaId}/candidaturas")
     public ResponseEntity<TypedPagedResponse<CandidaturaDTO>> listarPorVaga(
             Authentication authentication, @PathVariable UUID vagaId,

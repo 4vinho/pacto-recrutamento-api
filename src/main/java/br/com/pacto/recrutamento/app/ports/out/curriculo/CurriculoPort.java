@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CurriculoPort {
-    Optional<Curriculo> buscarAtivoPorCandidato(UUID candidatoId);
+    Optional<Curriculo> buscarAtivoPorCandidatura(UUID candidaturaId);
 
     Optional<Curriculo> buscarAtivoPorId(UUID curriculoId);
 

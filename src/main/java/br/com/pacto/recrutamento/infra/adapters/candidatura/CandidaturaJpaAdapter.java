@@ -51,12 +51,20 @@ public class CandidaturaJpaAdapter implements CandidaturaPort {
         return new PaginaGenerico<>(resultado.getContent(), resultado.getTotalElements());
     }
 
+    @Override
+    public PaginaGenerico<Candidatura> listarPorUsuario(UUID usuarioId, int page, int pageSize) {
+        Page<Candidatura> resultado = candidaturas.findAll(
+                (root, query, builder) -> builder.equal(root.get("usuarioId"), usuarioId),
+                PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "criadoEm")));
+        return new PaginaGenerico<>(resultado.getContent(), resultado.getTotalElements());
+    }
+
     public Optional<Candidatura> buscarPorIdParaAtualizacao(UUID id) {
         return candidaturas.findByIdForUpdate(id);
     }
 
-    public boolean existePorCandidatoIdEVagaId(UUID candidatoId, UUID vagaId) {
-        return candidaturas.existsByCandidatoIdAndVagaId(candidatoId, vagaId);
+    public boolean existePorUsuarioIdEVagaId(UUID usuarioId, UUID vagaId) {
+        return candidaturas.existsByUsuarioIdAndVagaId(usuarioId, vagaId);
     }
 
     @Transactional

@@ -1,4 +1,4 @@
-package br.com.pacto.recrutamento.app.dtos.candidato;
+package br.com.pacto.recrutamento.app.dtos.candidatura;
 
 import java.util.UUID;
 
@@ -13,15 +13,7 @@ public class ListarMinhasCandidaturasDTO {
         this.pageSize = pageSize;
     }
 
-    public UUID getUsuarioId() {
-        return usuarioId;
-    }
-
-    public int getPage() {
-        return page;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
+    public UUID getUsuarioId() { return usuarioId; }
+    public int getPage() { return page; }
+    public int getPageSize() { return pageSize; }
 }

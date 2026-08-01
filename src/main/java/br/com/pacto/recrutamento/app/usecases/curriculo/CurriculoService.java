@@ -5,10 +5,12 @@ import static br.com.pacto.recrutamento.core.common.ErrorMessages.*;
 import br.com.pacto.recrutamento.app.dtos.curriculo.*;
 import br.com.pacto.recrutamento.app.ports.in.curriculo.CurriculoUseCase;
 import br.com.pacto.recrutamento.app.ports.out.curriculo.ArquivoStoragePort;
-import br.com.pacto.recrutamento.app.ports.out.curriculo.CandidatoConsultaPort;
+import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
 import br.com.pacto.recrutamento.app.ports.out.curriculo.CurriculoPort;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Curriculo;
+import br.com.pacto.recrutamento.core.entities.Candidatura;
+import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -30,46 +32,57 @@ public class CurriculoService implements CurriculoUseCase {
 
     private final CurriculoPort repositorio;
     private final ArquivoStoragePort storage;
-    private final CandidatoConsultaPort candidatos;
+    private final CandidaturaPort candidaturas;
     private final Clock clock;
 
     public CurriculoService(CurriculoPort repositorio, ArquivoStoragePort storage,
-                            CandidatoConsultaPort candidatos, Clock clock) {
+                            CandidaturaPort candidaturas, Clock clock) {
         this.repositorio = repositorio;
         this.storage = storage;
-        this.candidatos = candidatos;
+        this.candidaturas = candidaturas;
         this.clock = clock;
     }
 
     @Override
     public TypedResponse<CurriculoDTO> enviarCurriculo(EnviarCurriculoDTO command) {
-        if (command == null || command.getUsuarioId() == null) {
+        if (command == null || command.getUsuarioId() == null || command.getCandidaturaId() == null) {
             return erro(400, DADOS_INVALIDOS);
         }
         Arquivo recebido = Arquivo.de(command.getNomeOriginal(), command.getConteudo());
         if (!recebido.nomeValido()) return erro(400, NOME_ARQUIVO_CURRICULO_INVALIDO);
         if (!recebido.ehPdfValido()) return erro(400, CURRICULO_PDF_INVALIDO);
-        Optional<UUID> candidatoId = candidatos.buscarIdPorUsuario(command.getUsuarioId());
-        if (!candidatoId.isPresent()) return erro(404, CANDIDATO_NAO_ENCONTRADO);
-        if (repositorio.buscarAtivoPorCandidato(candidatoId.get()).isPresent()) {
+        Optional<Candidatura> candidatura = candidaturas.buscarPorIdParaAtualizacao(command.getCandidaturaId());
+        if (!candidatura.isPresent()) return erro(404, CANDIDATURA_NAO_ENCONTRADA);
+        if (!candidatura.get().getUsuarioId().equals(command.getUsuarioId()))
+            return erro(403, CANDIDATURA_NAO_PERTENCE_AO_USUARIO);
+        if (candidatura.get().getStatus() != StatusCandidatura.RASCUNHO)
+            return erro(422, TRANSICAO_CANDIDATURA_INVALIDA);
+        if (repositorio.buscarAtivoPorCandidatura(command.getCandidaturaId()).isPresent()) {
             return erro(409, CURRICULO_ATIVO_EXISTENTE);
         }
-        return salvarNovo(candidatoId.get(), recebido);
+        TypedResponse<CurriculoDTO> resposta = salvarNovo(command.getCandidaturaId(), recebido);
+        if (resposta.getStatusCode() < 300) {
+            candidatura.get().registrarCurriculoEnviado();
+            candidaturas.salvar(candidatura.get());
+        }
+        return resposta;
     }
 
     @Override
     public TypedResponse<CurriculoDTO> substituirCurriculo(SubstituirCurriculoDTO command) {
-        if (command == null || command.getUsuarioId() == null) {
+        if (command == null || command.getUsuarioId() == null || command.getCandidaturaId() == null) {
             return erro(400, DADOS_INVALIDOS);
         }
         Arquivo recebido = Arquivo.de(command.getNomeOriginal(), command.getConteudo());
         if (!recebido.nomeValido()) return erro(400, NOME_ARQUIVO_CURRICULO_INVALIDO);
         if (!recebido.ehPdfValido()) return erro(400, CURRICULO_PDF_INVALIDO);
-        Optional<UUID> candidatoId = candidatos.buscarIdPorUsuario(command.getUsuarioId());
-        if (!candidatoId.isPresent()) return erro(404, CANDIDATO_NAO_ENCONTRADO);
-        Optional<Curriculo> anterior = repositorio.buscarAtivoPorCandidato(candidatoId.get());
+        Optional<Candidatura> candidatura = candidaturas.buscarPorId(command.getCandidaturaId());
+        if (!candidatura.isPresent()) return erro(404, CANDIDATURA_NAO_ENCONTRADA);
+        if (!candidatura.get().getUsuarioId().equals(command.getUsuarioId()))
+            return erro(403, CANDIDATURA_NAO_PERTENCE_AO_USUARIO);
+        Optional<Curriculo> anterior = repositorio.buscarAtivoPorCandidatura(command.getCandidaturaId());
         if (!anterior.isPresent()) return erro(404, CURRICULO_ATIVO_NAO_ENCONTRADO);
-        Curriculo novo = novoCurriculo(candidatoId.get(), recebido);
+        Curriculo novo = novoCurriculo(command.getCandidaturaId(), recebido);
         try {
             storage.armazenar(novo.getStorageKey(), recebido.conteudo, PDF);
             repositorio.substituir(anterior.get(), novo, agora());
@@ -85,13 +98,14 @@ public class CurriculoService implements CurriculoUseCase {
     public TypedResponse<UrlTemporariaCurriculoDTO> gerarUrlTemporariaCurriculo(
             GerarUrlTemporariaCurriculoDTO query) {
         if (query == null || query.getUsuarioSolicitanteId() == null
-                || query.getCurriculoId() == null) {
+                || query.getCandidaturaId() == null) {
             return new TypedResponse<UrlTemporariaCurriculoDTO>(400, DADOS_INVALIDOS, null);
         }
-        Optional<Curriculo> curriculo = repositorio.buscarAtivoPorId(query.getCurriculoId());
+        Optional<Curriculo> curriculo = repositorio.buscarAtivoPorCandidatura(query.getCandidaturaId());
         if (!curriculo.isPresent())
             return new TypedResponse<UrlTemporariaCurriculoDTO>(404, CURRICULO_NAO_ENCONTRADO, null);
-        if (!candidatos.pertenceAoUsuario(curriculo.get().getCandidatoId(), query.getUsuarioSolicitanteId())) {
+        Optional<Candidatura> candidatura = candidaturas.buscarPorId(query.getCandidaturaId());
+        if (!candidatura.isPresent() || !candidatura.get().getUsuarioId().equals(query.getUsuarioSolicitanteId())) {
             return new TypedResponse<UrlTemporariaCurriculoDTO>(403, ACESSO_NAO_AUTORIZADO_ACENTUADO, null);
         }
         try {
@@ -104,8 +118,8 @@ public class CurriculoService implements CurriculoUseCase {
         }
     }
 
-    private TypedResponse<CurriculoDTO> salvarNovo(UUID candidatoId, Arquivo recebido) {
-        Curriculo novo = novoCurriculo(candidatoId, recebido);
+    private TypedResponse<CurriculoDTO> salvarNovo(UUID candidaturaId, Arquivo recebido) {
+        Curriculo novo = novoCurriculo(candidaturaId, recebido);
         try {
             storage.armazenar(novo.getStorageKey(), recebido.conteudo, PDF);
             repositorio.salvar(novo);
@@ -116,9 +130,9 @@ public class CurriculoService implements CurriculoUseCase {
         }
     }
 
-    private Curriculo novoCurriculo(UUID candidatoId, Arquivo arquivo) {
+    private Curriculo novoCurriculo(UUID candidaturaId, Arquivo arquivo) {
         UUID id = UUID.randomUUID();
-        return new Curriculo(candidatoId, "curriculos/" + candidatoId + "/" + id + ".pdf",
+        return new Curriculo(candidaturaId, "candidaturas/" + candidaturaId + "/curriculo/" + id + ".pdf",
                 arquivo.nomeOriginal, PDF, arquivo.conteudo.length, arquivo.checksum());
     }
 

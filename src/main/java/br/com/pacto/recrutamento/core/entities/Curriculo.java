@@ -12,8 +12,8 @@ import java.util.UUID;
 public class Curriculo extends EntidadeAuditavel {
     private static final long TAMANHO_MAXIMO_BYTES = 5L * 1024 * 1024;
 
-    @Column(name = "candidato_id", nullable = false)
-    private UUID candidatoId;
+    @Column(name = "candidatura_id", nullable = false)
+    private UUID candidaturaId;
     @Column(name = "storage_key", nullable = false, length = 500)
     private String storageKey;
     @Column(name = "nome_original", nullable = false, length = 255)
@@ -30,10 +30,10 @@ public class Curriculo extends EntidadeAuditavel {
     public Curriculo() {
     }
 
-    public Curriculo(UUID candidatoId, String storageKey, String nomeOriginal,
+    public Curriculo(UUID candidaturaId, String storageKey, String nomeOriginal,
                      String contentType, long tamanhoBytes, String checksumSha256) {
         super(UUID.randomUUID());
-        this.candidatoId = candidatoId;
+        this.candidaturaId = candidaturaId;
         this.storageKey = storageKey;
         this.nomeOriginal = nomeOriginal;
         this.contentType = contentType;
@@ -41,12 +41,12 @@ public class Curriculo extends EntidadeAuditavel {
         this.checksumSha256 = checksumSha256;
     }
 
-    public UUID getCandidatoId() {
-        return candidatoId;
+    public UUID getCandidaturaId() {
+        return candidaturaId;
     }
 
-    public void setCandidatoId(UUID candidatoId) {
-        this.candidatoId = candidatoId;
+    public void setCandidaturaId(UUID candidaturaId) {
+        this.candidaturaId = candidaturaId;
     }
 
     public String getStorageKey() {

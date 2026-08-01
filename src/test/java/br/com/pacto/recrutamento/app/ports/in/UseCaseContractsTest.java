@@ -1,6 +1,5 @@
 package br.com.pacto.recrutamento.app.ports.in;
 
-import br.com.pacto.recrutamento.app.ports.in.candidato.CandidatoUseCase;
 import br.com.pacto.recrutamento.app.ports.in.candidatura.CandidaturaUseCase;
 import br.com.pacto.recrutamento.app.ports.in.curriculo.CurriculoUseCase;
 import br.com.pacto.recrutamento.app.ports.in.notificacao.NotificacaoUseCase;
@@ -21,7 +20,6 @@ class UseCaseContractsTest {
 
     private final List<Class<?>> services = Arrays.asList(
             UsuarioUseCase.class,
-            CandidatoUseCase.class,
             CurriculoUseCase.class,
             VagaUseCase.class,
             CandidaturaUseCase.class,

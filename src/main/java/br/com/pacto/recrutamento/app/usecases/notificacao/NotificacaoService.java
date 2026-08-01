@@ -39,7 +39,7 @@ public class NotificacaoService implements NotificacaoUseCase {
             return resposta(202);
         }
         LinkedHashSet<UUID> usuarios = new LinkedHashSet<>(encontrados.get().getResponsaveisIds());
-        usuarios.add(encontrados.get().getCandidatoId());
+        usuarios.add(encontrados.get().getUsuarioId());
         for (UUID usuarioId : usuarios) {
             processar(evento.getEventoId(), usuarioId, TipoNotificacao.CANDIDATURA_CRIADA, "Nova candidatura", "Uma candidatura foi criada.");
         }
@@ -56,7 +56,7 @@ public class NotificacaoService implements NotificacaoUseCase {
         if (!encontrados.isPresent()) {
             return resposta(202);
         }
-        processar(evento.getEventoId(), encontrados.get().getCandidatoId(), TipoNotificacao.STATUS_CANDIDATURA_ALTERADO,
+        processar(evento.getEventoId(), encontrados.get().getUsuarioId(), TipoNotificacao.STATUS_CANDIDATURA_ALTERADO,
                 "Status da candidatura atualizado", "O status da candidatura foi atualizado.");
         return resposta(202);
     }

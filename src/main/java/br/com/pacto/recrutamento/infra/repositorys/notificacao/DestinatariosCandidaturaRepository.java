@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface DestinatariosCandidaturaRepository extends Repository<Candidatura, UUID> {
-    @Query(value = "select vr.usuario_id as responsavelId, c.usuario_id as candidatoId "
+    @Query(value = "select vr.usuario_id as responsavelId, ca.usuario_id as usuarioId "
             + "from candidaturas ca join vagas_responsaveis vr on vr.vaga_id = ca.vaga_id "
-            + "join candidatos c on c.id = ca.candidato_id where ca.id = :candidaturaId",
+            + "where ca.id = :candidaturaId",
             nativeQuery = true)
     List<DestinatariosCandidaturaProjection> buscarPorCandidatura(@Param("candidaturaId") UUID candidaturaId);
 }

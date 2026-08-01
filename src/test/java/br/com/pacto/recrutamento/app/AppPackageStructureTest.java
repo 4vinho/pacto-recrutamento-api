@@ -1,13 +1,11 @@
 package br.com.pacto.recrutamento.app;
 
-import br.com.pacto.recrutamento.app.ports.out.candidato.CandidatoPort;
 import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
 import br.com.pacto.recrutamento.app.ports.out.curriculo.CurriculoPort;
 import br.com.pacto.recrutamento.app.ports.out.notificacao.NotificacaoPort;
 import br.com.pacto.recrutamento.app.ports.out.templatevaga.TemplateVagaPort;
 import br.com.pacto.recrutamento.app.ports.out.usuario.UsuarioPort;
 import br.com.pacto.recrutamento.app.ports.out.vaga.VagaPort;
-import br.com.pacto.recrutamento.app.usecases.candidato.CandidatoService;
 import br.com.pacto.recrutamento.app.usecases.candidatura.CandidaturaService;
 import br.com.pacto.recrutamento.app.usecases.curriculo.CurriculoService;
 import br.com.pacto.recrutamento.app.usecases.notificacao.NotificacaoService;
@@ -22,7 +20,6 @@ class AppPackageStructureTest {
 
     @Test
     void implementacoesFicamOrganizadasPorCasoDeUso() {
-        assertPackage("br.com.pacto.recrutamento.app.usecases.candidato", CandidatoService.class);
         assertPackage("br.com.pacto.recrutamento.app.usecases.candidatura", CandidaturaService.class);
         assertPackage("br.com.pacto.recrutamento.app.usecases.curriculo", CurriculoService.class);
         assertPackage("br.com.pacto.recrutamento.app.usecases.notificacao", NotificacaoService.class);
@@ -33,8 +30,6 @@ class AppPackageStructureTest {
 
     @Test
     void portasFicamSeparadasPorEntidade() {
-        assertPackage("br.com.pacto.recrutamento.app.ports.out.candidato",
-                CandidatoPort.class);
         assertPackage("br.com.pacto.recrutamento.app.ports.out.candidatura",
                 CandidaturaPort.class);
         assertPackage("br.com.pacto.recrutamento.app.ports.out.curriculo",

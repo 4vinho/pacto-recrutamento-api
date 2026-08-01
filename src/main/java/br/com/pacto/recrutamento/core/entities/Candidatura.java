@@ -8,12 +8,12 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "candidaturas", uniqueConstraints = @UniqueConstraint(
-        name = "uk_candidaturas_candidato_vaga", columnNames = {"candidato_id", "vaga_id"}))
+        name = "uk_candidaturas_usuario_vaga", columnNames = {"usuario_id", "vaga_id"}))
 public class Candidatura {
     @Id
     private UUID id;
-    @Column(name = "candidato_id", nullable = false)
-    private UUID candidatoId;
+    @Column(name = "usuario_id", nullable = false)
+    private UUID usuarioId;
     @Column(name = "vaga_id", nullable = false)
     private UUID vagaId;
     @Enumerated(EnumType.STRING)
@@ -29,6 +29,8 @@ public class Candidatura {
     private boolean perguntasRespondidas;
     @Column(name = "requisitos_respondidos", nullable = false)
     private boolean requisitosRespondidos;
+    @Column(name = "curriculo_enviado", nullable = false)
+    private boolean curriculoEnviado;
 
     public Candidatura() {
         id = UUID.randomUUID();
@@ -36,9 +38,9 @@ public class Candidatura {
         atualizadoEm = criadoEm;
     }
 
-    public Candidatura(UUID candidatoId, UUID vagaId) {
+    public Candidatura(UUID usuarioId, UUID vagaId) {
         this();
-        this.candidatoId = candidatoId;
+        this.usuarioId = usuarioId;
         this.vagaId = vagaId;
     }
 
@@ -83,9 +85,15 @@ public class Candidatura {
     }
 
     private void enviarSeCompleta() {
-        if (status == StatusCandidatura.RASCUNHO && perguntasRespondidas && requisitosRespondidos) {
+        if (status == StatusCandidatura.RASCUNHO && perguntasRespondidas
+                && requisitosRespondidos && curriculoEnviado) {
             setStatus(StatusCandidatura.ENVIADA);
         }
+    }
+
+    public void registrarCurriculoEnviado() {
+        curriculoEnviado = true;
+        enviarSeCompleta();
     }
 
     public UUID getId() {
@@ -96,12 +104,12 @@ public class Candidatura {
         this.id = id;
     }
 
-    public UUID getCandidatoId() {
-        return candidatoId;
+    public UUID getUsuarioId() {
+        return usuarioId;
     }
 
-    public void setCandidatoId(UUID candidatoId) {
-        this.candidatoId = candidatoId;
+    public void setUsuarioId(UUID usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     public UUID getVagaId() {
@@ -177,6 +185,7 @@ public class Candidatura {
     public boolean isPerguntasRespondidas() { return perguntasRespondidas; }
 
     public boolean isRequisitosRespondidos() { return requisitosRespondidos; }
+    public boolean isCurriculoEnviado() { return curriculoEnviado; }
 
     public void setPerguntasRespondidas(boolean perguntasRespondidas) {
         this.perguntasRespondidas = perguntasRespondidas;
@@ -184,5 +193,9 @@ public class Candidatura {
 
     public void setRequisitosRespondidos(boolean requisitosRespondidos) {
         this.requisitosRespondidos = requisitosRespondidos;
+    }
+
+    public void setCurriculoEnviado(boolean curriculoEnviado) {
+        this.curriculoEnviado = curriculoEnviado;
     }
 }

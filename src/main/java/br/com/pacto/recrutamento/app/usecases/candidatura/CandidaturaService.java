@@ -4,7 +4,6 @@ import static br.com.pacto.recrutamento.core.common.ErrorMessages.*;
 
 import br.com.pacto.recrutamento.app.dtos.candidatura.*;
 import br.com.pacto.recrutamento.app.ports.in.candidatura.CandidaturaUseCase;
-import br.com.pacto.recrutamento.app.ports.out.candidato.CandidatoPort;
 import br.com.pacto.recrutamento.app.ports.out.candidatura.*;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
@@ -22,7 +21,6 @@ import java.util.*;
 
 @Service
 public class CandidaturaService implements CandidaturaUseCase {
-    private final CandidatoPort candidatos;
     private final CandidaturaPort candidaturas;
     private final VagaCandidaturaPort vagas;
     private final PerguntaCandidaturaPort perguntas;
@@ -30,20 +28,35 @@ public class CandidaturaService implements CandidaturaUseCase {
     private final AutorizacaoResponsavelCandidaturaPort autorizacao;
     private final EventosCandidaturaPort eventos;
 
-    public CandidaturaService(CandidatoPort candidatos,
-                              CandidaturaPort candidaturas,
+    public CandidaturaService(CandidaturaPort candidaturas,
                               VagaCandidaturaPort vagas,
                               PerguntaCandidaturaPort perguntas,
                               RequisitoCandidaturaPort requisitos,
                               AutorizacaoResponsavelCandidaturaPort autorizacao,
                               EventosCandidaturaPort eventos) {
-        this.candidatos = candidatos;
         this.candidaturas = candidaturas;
         this.vagas = vagas;
         this.perguntas = perguntas;
         this.requisitos = requisitos;
         this.autorizacao = autorizacao;
         this.eventos = eventos;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TypedPagedResponse<CandidaturaDTO> listarMinhasCandidaturas(
+            ListarMinhasCandidaturasDTO query) {
+        if (query == null || query.getUsuarioId() == null || query.getPage() < 0
+                || query.getPageSize() <= 0 || query.getPageSize() > 100) {
+            return new TypedPagedResponse<>(400, "Consulta de candidaturas invalida",
+                    Collections.<CandidaturaDTO>emptyList(), 0, 20, 0);
+        }
+        PaginaGenerico<Candidatura> pagina = candidaturas.listarPorUsuario(
+                query.getUsuarioId(), query.getPage(), query.getPageSize());
+        List<CandidaturaDTO> dados = pagina.getItens().stream().map(this::paraDto)
+                .collect(java.util.stream.Collectors.toList());
+        return new TypedPagedResponse<>(200, "Candidaturas encontradas", dados,
+                query.getPage(), query.getPageSize(), pagina.getTotalItens());
     }
 
     @Override
@@ -78,10 +91,6 @@ public class CandidaturaService implements CandidaturaUseCase {
         if (command == null || command.getUsuarioId() == null || command.getVagaId() == null) {
             return erro(400, DADOS_CANDIDATURA_INVALIDOS);
         }
-        Candidato candidato = candidatos.buscarPorUsuarioId(command.getUsuarioId()).orElse(null);
-        if (candidato == null) {
-            return erro(403, USUARIO_SEM_PERFIL_CANDIDATO);
-        }
         Vaga vaga = vagas.buscarPorId(command.getVagaId()).orElse(null);
         if (vaga == null) {
             return erro(404, VAGA_NAO_ENCONTRADA);
@@ -89,10 +98,10 @@ public class CandidaturaService implements CandidaturaUseCase {
         if (!vaga.aceitaCandidatura()) {
             return erro(422, VAGA_NAO_ACEITA_CANDIDATURAS);
         }
-        if (candidaturas.existePorCandidatoIdEVagaId(candidato.getId(), vaga.getId())) {
+        if (candidaturas.existePorUsuarioIdEVagaId(command.getUsuarioId(), vaga.getId())) {
             return erro(409, CANDIDATURA_DUPLICADA);
         }
-        Candidatura candidatura = new Candidatura(candidato.getId(), vaga.getId());
+        Candidatura candidatura = new Candidatura(command.getUsuarioId(), vaga.getId());
         boolean possuiPerguntas = !perguntas.listarAtivasPorVagaId(vaga.getId()).isEmpty();
         boolean possuiRequisitos = !requisitos.listarAtivosPorVagaId(vaga.getId()).isEmpty();
         candidatura.configurarEtapas(possuiPerguntas, possuiRequisitos);
@@ -122,7 +131,7 @@ public class CandidaturaService implements CandidaturaUseCase {
             return erro(404, CANDIDATURA_NAO_ENCONTRADA);
         }
         if (!pertenceAoUsuario(candidatura, command.getUsuarioId())) {
-            return erro(403, CANDIDATURA_NAO_PERTENCE_AO_CANDIDATO);
+            return erro(403, CANDIDATURA_NAO_PERTENCE_AO_USUARIO);
         }
         if (candidatura.getStatus() != StatusCandidatura.RASCUNHO) {
             return erro(422, TRANSICAO_CANDIDATURA_INVALIDA);
@@ -159,7 +168,7 @@ public class CandidaturaService implements CandidaturaUseCase {
                 command.getCandidaturaId()).orElse(null);
         if (candidatura == null) return erro(404, CANDIDATURA_NAO_ENCONTRADA);
         if (!pertenceAoUsuario(candidatura, command.getUsuarioId())) {
-            return erro(403, CANDIDATURA_NAO_PERTENCE_AO_CANDIDATO);
+            return erro(403, CANDIDATURA_NAO_PERTENCE_AO_USUARIO);
         }
         if (candidatura.getStatus() != StatusCandidatura.RASCUNHO) {
             return erro(422, TRANSICAO_CANDIDATURA_INVALIDA);
@@ -225,7 +234,7 @@ public class CandidaturaService implements CandidaturaUseCase {
             return erro(404, CANDIDATURA_NAO_ENCONTRADA);
         }
         if (!pertenceAoUsuario(candidatura, command.getUsuarioId())) {
-            return erro(403, CANDIDATURA_NAO_PERTENCE_AO_CANDIDATO);
+            return erro(403, CANDIDATURA_NAO_PERTENCE_AO_USUARIO);
         }
         if (candidatura.getStatus() != StatusCandidatura.RASCUNHO
                 && candidatura.getStatus() != StatusCandidatura.ENVIADA
@@ -266,8 +275,7 @@ public class CandidaturaService implements CandidaturaUseCase {
     }
 
     private boolean pertenceAoUsuario(Candidatura candidatura, UUID usuarioId) {
-        Optional<Candidato> candidato = candidatos.buscarPorUsuarioId(usuarioId);
-        return candidato.isPresent() && candidatura.getCandidatoId().equals(candidato.get().getId());
+        return candidatura.getUsuarioId().equals(usuarioId);
     }
 
     private List<RespostaCandidatura> validarLote(
@@ -371,8 +379,10 @@ public class CandidaturaService implements CandidaturaUseCase {
     }
 
     private CandidaturaDTO paraDto(Candidatura candidatura) {
-        return new CandidaturaDTO(candidatura.getId(), candidatura.getCandidatoId(), candidatura.getVagaId(),
-                candidatura.getStatus(), candidatura.getCriadoEm(), candidatura.isPerguntasRespondidas(),
+        String tituloVaga = vagas.buscarPorId(candidatura.getVagaId())
+                .map(Vaga::getTitulo).orElse(null);
+        return new CandidaturaDTO(candidatura.getId(), candidatura.getUsuarioId(), candidatura.getVagaId(),
+                tituloVaga, candidatura.getStatus(), candidatura.getCriadoEm(), candidatura.isPerguntasRespondidas(),
                 candidatura.isRequisitosRespondidos());
     }
 }

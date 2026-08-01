@@ -27,6 +27,6 @@ public class DestinatariosCandidaturaJpaAdapter implements DestinatariosCandidat
             responsaveis.add(projecao.getResponsavelId());
         }
         return Optional.of(new DestinatariosCandidatura(
-                responsaveis, projecoes.get(0).getCandidatoId()));
+                responsaveis, projecoes.get(0).getUsuarioId()));
     }
 }

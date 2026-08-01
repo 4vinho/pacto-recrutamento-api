@@ -7,18 +7,18 @@ import java.util.UUID;
 
 public class DestinatariosCandidatura {
     private final Collection<UUID> responsaveisIds;
-    private final UUID candidatoId;
+    private final UUID usuarioId;
 
-    public DestinatariosCandidatura(Collection<UUID> responsaveisIds, UUID candidatoId) {
+    public DestinatariosCandidatura(Collection<UUID> responsaveisIds, UUID usuarioId) {
         this.responsaveisIds = Collections.unmodifiableSet(new LinkedHashSet<>(responsaveisIds));
-        this.candidatoId = candidatoId;
+        this.usuarioId = usuarioId;
     }
 
     public Collection<UUID> getResponsaveisIds() {
         return responsaveisIds;
     }
 
-    public UUID getCandidatoId() {
-        return candidatoId;
+    public UUID getUsuarioId() {
+        return usuarioId;
     }
 }

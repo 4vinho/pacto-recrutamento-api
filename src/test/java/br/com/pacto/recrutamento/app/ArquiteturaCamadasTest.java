@@ -1,6 +1,5 @@
 package br.com.pacto.recrutamento.app;
 
-import br.com.pacto.recrutamento.app.usecases.candidato.CandidatoService;
 import br.com.pacto.recrutamento.app.usecases.candidatura.CandidaturaService;
 import br.com.pacto.recrutamento.app.usecases.curriculo.CurriculoService;
 import br.com.pacto.recrutamento.app.usecases.notificacao.NotificacaoService;
@@ -50,7 +49,6 @@ class ArquiteturaCamadasTest {
     @Test
     void casosDeUsoImplementamPortasDeEntradaEDependemDePortasDeSaida() {
         Class<?>[] services = {
-                CandidatoService.class,
                 CandidaturaService.class,
                 CurriculoService.class,
                 NotificacaoService.class,

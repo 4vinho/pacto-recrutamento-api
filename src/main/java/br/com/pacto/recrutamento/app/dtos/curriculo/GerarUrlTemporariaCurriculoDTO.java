@@ -4,18 +4,18 @@ import java.util.UUID;
 
 public class GerarUrlTemporariaCurriculoDTO {
     private final UUID usuarioSolicitanteId;
-    private final UUID curriculoId;
+    private final UUID candidaturaId;
 
-    public GerarUrlTemporariaCurriculoDTO(UUID usuarioSolicitanteId, UUID curriculoId) {
+    public GerarUrlTemporariaCurriculoDTO(UUID usuarioSolicitanteId, UUID candidaturaId) {
         this.usuarioSolicitanteId = usuarioSolicitanteId;
-        this.curriculoId = curriculoId;
+        this.candidaturaId = candidaturaId;
     }
 
     public UUID getUsuarioSolicitanteId() {
         return usuarioSolicitanteId;
     }
 
-    public UUID getCurriculoId() {
-        return curriculoId;
+    public UUID getCandidaturaId() {
+        return candidaturaId;
     }
 }

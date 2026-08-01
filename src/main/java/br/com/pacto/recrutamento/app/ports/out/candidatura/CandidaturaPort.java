@@ -15,12 +15,13 @@ public interface CandidaturaPort {
                                                        int page, int pageSize) {
         throw new UnsupportedOperationException();
     }
+    PaginaGenerico<Candidatura> listarPorUsuario(UUID usuarioId, int page, int pageSize);
 
     Optional<Candidatura> buscarPorId(UUID candidaturaId);
 
     Optional<Candidatura> buscarPorIdParaAtualizacao(UUID candidaturaId);
 
-    boolean existePorCandidatoIdEVagaId(UUID candidatoId, UUID vagaId);
+    boolean existePorUsuarioIdEVagaId(UUID usuarioId, UUID vagaId);
 
     Candidatura salvar(Candidatura candidatura);
 

@@ -21,11 +21,11 @@ public class CurriculoRepositorioJpaAdapter implements CurriculoPort {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Curriculo> buscarAtivoPorCandidato(UUID candidatoId) {
+    public Optional<Curriculo> buscarAtivoPorCandidatura(UUID candidaturaId) {
         List<Curriculo> encontrados = entityManager.createQuery(
-                        "select c from Curriculo c where c.candidatoId = :candidatoId and c.excluidoEm is null",
+                        "select c from Curriculo c where c.candidaturaId = :candidaturaId and c.excluidoEm is null",
                         Curriculo.class)
-                .setParameter("candidatoId", candidatoId)
+                .setParameter("candidaturaId", candidaturaId)
                 .setMaxResults(1)
                 .getResultList();
         return primeiro(encontrados);

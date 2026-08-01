@@ -7,10 +7,9 @@ public final class ErrorMessages {
     public static final String ARQUIVO_MUITO_GRANDE = "O arquivo deve possuir no máximo 5 MB.";
     public static final String ARQUIVO_OBRIGATORIO = "O arquivo é obrigatório.";
     public static final String CANCELAMENTO_NAO_PERMITIDO = "Cancelamento nao permitido para o estado atual";
-    public static final String CANDIDATO_NAO_ENCONTRADO = "Candidato não encontrado";
     public static final String CANDIDATURA_DUPLICADA = "Candidato ja possui candidatura para esta vaga";
     public static final String CANDIDATURA_NAO_ENCONTRADA = "Candidatura nao encontrada";
-    public static final String CANDIDATURA_NAO_PERTENCE_AO_CANDIDATO = "Candidatura nao pertence ao candidato";
+    public static final String CANDIDATURA_NAO_PERTENCE_AO_USUARIO = "Candidatura nao pertence ao usuario";
     public static final String CONSULTA_CANDIDATURA_INVALIDA = "Consulta de candidatura invalida";
     public static final String CURRICULO_ATIVO_EXISTENTE = "Já existe um currículo ativo";
     public static final String CURRICULO_ATIVO_NAO_ENCONTRADO = "Currículo ativo não encontrado";
@@ -39,8 +38,6 @@ public final class ErrorMessages {
     public static final String EXCECAO_NEGOCIO_STATUS_INVALIDO =
             "Exceções de negócio devem utilizar status HTTP 4xx.";
     public static final String NAO_AUTENTICADO = "Não autenticado.";
-    public static final String PERFIL_CANDIDATO_EXISTENTE = "O usuario ja possui perfil de candidato";
-    public static final String PERFIL_CANDIDATO_NAO_ENCONTRADO = "Perfil de candidato nao encontrado";
     public static final String PERGUNTA_NAO_ENCONTRADA = "Pergunta nao encontrada";
     public static final String PERGUNTAS_JA_RESPONDIDAS = "Uma ou mais perguntas ja foram respondidas";
     public static final String REQUISITOS_JA_RESPONDIDOS = "Um ou mais requisitos ja foram respondidos";
@@ -63,7 +60,6 @@ public final class ErrorMessages {
     public static final String USUARIO_AUTENTICADO_OBRIGATORIO = "O usuario autenticado e obrigatorio";
     public static final String USUARIO_NAO_AUTORIZADO_ALTERAR_CANDIDATURA = "Usuario nao autorizado a alterar a candidatura";
     public static final String USUARIO_NAO_AUTORIZADO_CONSULTAR_CANDIDATURA = "Usuario nao autorizado a consultar a candidatura";
-    public static final String USUARIO_SEM_PERFIL_CANDIDATO = "Usuario nao possui perfil de candidato";
     public static final String VAGA_NAO_ACEITA_CANDIDATURAS = "Vaga nao aceita candidaturas";
     public static final String VAGA_NAO_ENCONTRADA = "Vaga nao encontrada";
 

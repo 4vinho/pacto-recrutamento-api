@@ -21,7 +21,7 @@ class CurriculoArchitectureTest {
                 .map(Field::getType)
                 .filter(Class::isInterface)
                 .map(type -> type.getPackage().getName()))
-                .allMatch("br.com.pacto.recrutamento.app.ports.out.curriculo"::equals);
+                .allMatch(nome -> nome.startsWith("br.com.pacto.recrutamento.app.ports.out."));
     }
 
 }
