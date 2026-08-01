@@ -34,13 +34,17 @@ public class CandidaturasVagaController {
     public ResponseEntity<TypedPagedResponse<CandidaturaDTO>> listar(
             Authentication authentication, @PathVariable UUID vagaId,
             @RequestParam(required = false) StatusCandidatura status,
+            @RequestParam(required = false) String busca,
+            @RequestParam(required = false) UUID requisitoId,
             @RequestParam(required = false) NivelAtendimentoRequisito nivelMinimo,
             @RequestParam(required = false) Integer tempoEmpresaMeses,
+            @RequestParam(required = false) Boolean atendeTodosRequisitos,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int pageSize) {
         TypedPagedResponse<CandidaturaDTO> resposta = service.listarCandidaturasDaVaga(
                 new ListarCandidaturasDaVagaDTO(AuthenticatedUser.id(authentication), vagaId,
-                        status, nivelMinimo, tempoEmpresaMeses, page, pageSize));
+                        status, busca, requisitoId, nivelMinimo, tempoEmpresaMeses,
+                        atendeTodosRequisitos, page, pageSize));
         return ResponseEntity.status(resposta.getStatusCode()).body(resposta);
     }
 

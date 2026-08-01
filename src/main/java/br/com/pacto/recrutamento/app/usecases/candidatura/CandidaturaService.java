@@ -93,9 +93,10 @@ public class CandidaturaService implements CandidaturaUseCase {
                     Collections.<CandidaturaDTO>emptyList(), query.getPage(), query.getPageSize(), 0);
         }
         PaginaGenerico<Candidatura> pagina = candidaturas.listarPorVaga(query.getVagaId(),
-                query.getStatus(), query.getNivelMinimo(), query.getTempoEmpresaMeses(),
+                query.getStatus(), query.getBusca(), query.getRequisitoId(), query.getNivelMinimo(),
+                query.getTempoEmpresaMeses(), query.getAtendeTodosRequisitos(),
                 query.getPage(), query.getPageSize());
-        List<CandidaturaDTO> dados = pagina.getItens().stream().map(mapper::paraDto)
+        List<CandidaturaDTO> dados = pagina.getItens().stream().map(mapper::paraDtoComRequisitos)
                 .collect(java.util.stream.Collectors.toList());
         return new TypedPagedResponse<>(200, "Candidaturas encontradas", dados,
                 query.getPage(), query.getPageSize(), pagina.getTotalItens());

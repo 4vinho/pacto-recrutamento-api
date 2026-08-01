@@ -84,17 +84,37 @@ public class CandidaturaJpaAdapter implements CandidaturaPort {
 
     @Override
     public PaginaGenerico<Candidatura> listarPorVaga(UUID vagaId, StatusCandidatura status,
-            NivelAtendimentoRequisito nivelMinimo, Integer tempoEmpresaMeses,
+            String busca, UUID requisitoId, NivelAtendimentoRequisito nivelMinimo,
+            Integer tempoEmpresaMeses, Boolean atendeTodosRequisitos,
             int page, int pageSize) {
         Specification<Candidatura> filtro = (root, query, builder) -> {
             javax.persistence.criteria.Predicate predicate = builder.equal(root.get("vagaId"), vagaId);
             if (status != null) predicate = builder.and(predicate, builder.equal(root.get("status"), status));
-            if (nivelMinimo != null) {
+            if (busca != null && !busca.trim().isEmpty()) {
+                String termo = "%" + busca.trim().toLowerCase() + "%";
+                Subquery<UUID> sub = query.subquery(UUID.class);
+                javax.persistence.criteria.Root<br.com.pacto.recrutamento.core.entities.Usuario> usuario =
+                        sub.from(br.com.pacto.recrutamento.core.entities.Usuario.class);
+                sub.select(usuario.get("id")).where(builder.or(
+                        builder.like(builder.lower(usuario.get("nome")), termo),
+                        builder.like(builder.lower(usuario.get("email")), termo)));
+                predicate = builder.and(predicate, root.get("usuarioId").in(sub));
+            }
+            if (requisitoId != null && nivelMinimo != null) {
                 Subquery<UUID> sub = query.subquery(UUID.class);
                 javax.persistence.criteria.Root<RespostaRequisitoCandidatura> resposta = sub.from(RespostaRequisitoCandidatura.class);
                 java.util.List<NivelAtendimentoRequisito> niveis = niveisAPartirDe(nivelMinimo);
-                sub.select(resposta.get("candidaturaId")).where(resposta.get("nivel").in(niveis));
+                sub.select(resposta.get("candidaturaId")).where(builder.and(
+                        builder.equal(resposta.get("requisitoId"), requisitoId),
+                        resposta.get("nivel").in(niveis)));
                 predicate = builder.and(predicate, root.get("id").in(sub));
+            }
+            if (Boolean.TRUE.equals(atendeTodosRequisitos)) {
+                Subquery<UUID> sub = query.subquery(UUID.class);
+                javax.persistence.criteria.Root<RespostaRequisitoCandidatura> resposta = sub.from(RespostaRequisitoCandidatura.class);
+                sub.select(resposta.get("candidaturaId")).where(builder.not(
+                        resposta.get("nivel").in(niveisAPartirDe(NivelAtendimentoRequisito.ALTO))));
+                predicate = builder.and(predicate, builder.not(root.get("id").in(sub)));
             }
             if (tempoEmpresaMeses != null) {
                 java.time.LocalDate limite = java.time.LocalDate.now().minusMonths(tempoEmpresaMeses);

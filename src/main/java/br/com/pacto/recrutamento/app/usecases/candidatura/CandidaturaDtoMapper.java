@@ -48,6 +48,23 @@ class CandidaturaDtoMapper {
         return paraDtoDetalhado(candidatura, true);
     }
 
+    CandidaturaDTO paraDtoComRequisitos(Candidatura candidatura) {
+        CandidaturaDTO basico = paraDto(candidatura);
+        Map<UUID, String> descricoes = new HashMap<>();
+        for (RequisitoVaga requisito : requisitos.listarAtivosPorVagaId(candidatura.getVagaId()))
+            descricoes.put(requisito.getId(), requisito.getDescricao());
+        List<CandidaturaDTO.RequisitoDetalhe> itens = new ArrayList<>();
+        for (RespostaRequisitoCandidatura resposta : candidaturas.listarRespostasRequisitos(candidatura.getId()))
+            itens.add(new CandidaturaDTO.RequisitoDetalhe(
+                    descricoes.getOrDefault(resposta.getRequisitoId(), "Requisito"), resposta.getNivel()));
+        return new CandidaturaDTO(basico.getId(), basico.getUsuarioId(), basico.getNomeCandidato(),
+                basico.getEmailCandidato(), basico.getTelefoneCandidato(), basico.getVagaId(),
+                basico.getTituloVaga(), basico.getStatus(), basico.getCriadaEm(),
+                basico.isPerguntasRespondidas(), basico.isRequisitosRespondidos(),
+                Collections.<CandidaturaDTO.RespostaDetalhe>emptyList(), itens,
+                Collections.<HistoricoCandidaturaDTO>emptyList(), null, candidatura.getVersao());
+    }
+
     CandidaturaDTO paraDtoDetalhadoCandidato(Candidatura candidatura) {
         return paraDtoDetalhado(candidatura, false);
     }

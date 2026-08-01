@@ -28,7 +28,8 @@ public interface CandidaturaPort {
     }
 
     default PaginaGenerico<Candidatura> listarPorVaga(UUID vagaId, StatusCandidatura status,
-            NivelAtendimentoRequisito nivelMinimo, Integer tempoEmpresaMeses,
+            String busca, UUID requisitoId, NivelAtendimentoRequisito nivelMinimo,
+            Integer tempoEmpresaMeses, Boolean atendeTodosRequisitos,
             int page, int pageSize) {
         return listarPorVaga(vagaId, status, page, pageSize);
     }

@@ -12,15 +12,19 @@ public class ListarCandidaturasDaVagaDTO {
     private final int pageSize;
     private final NivelAtendimentoRequisito nivelMinimo;
     private final Integer tempoEmpresaMeses;
+    private final String busca;
+    private final UUID requisitoId;
+    private final Boolean atendeTodosRequisitos;
 
     public ListarCandidaturasDaVagaDTO(UUID usuarioId, UUID vagaId,
             StatusCandidatura status, int page, int pageSize) {
-        this(usuarioId, vagaId, status, null, null, page, pageSize);
+        this(usuarioId, vagaId, status, null, null, null, null, null, page, pageSize);
     }
 
     public ListarCandidaturasDaVagaDTO(UUID usuarioId, UUID vagaId,
-            StatusCandidatura status, NivelAtendimentoRequisito nivelMinimo,
-            Integer tempoEmpresaMeses, int page, int pageSize) {
+            StatusCandidatura status, String busca, UUID requisitoId,
+            NivelAtendimentoRequisito nivelMinimo, Integer tempoEmpresaMeses,
+            Boolean atendeTodosRequisitos, int page, int pageSize) {
         this.usuarioId = usuarioId;
         this.vagaId = vagaId;
         this.status = status;
@@ -28,6 +32,9 @@ public class ListarCandidaturasDaVagaDTO {
         this.pageSize = pageSize;
         this.nivelMinimo = nivelMinimo;
         this.tempoEmpresaMeses = tempoEmpresaMeses;
+        this.busca = busca;
+        this.requisitoId = requisitoId;
+        this.atendeTodosRequisitos = atendeTodosRequisitos;
     }
     public UUID getUsuarioId() { return usuarioId; }
     public UUID getVagaId() { return vagaId; }
@@ -36,4 +43,7 @@ public class ListarCandidaturasDaVagaDTO {
     public int getPageSize() { return pageSize; }
     public NivelAtendimentoRequisito getNivelMinimo() { return nivelMinimo; }
     public Integer getTempoEmpresaMeses() { return tempoEmpresaMeses; }
+    public String getBusca() { return busca; }
+    public UUID getRequisitoId() { return requisitoId; }
+    public Boolean getAtendeTodosRequisitos() { return atendeTodosRequisitos; }
 }
