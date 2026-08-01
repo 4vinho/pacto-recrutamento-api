@@ -305,7 +305,8 @@ public class CandidaturaService implements CandidaturaUseCase {
             return erro(404, CANDIDATURA_NAO_ENCONTRADA);
         }
         if (pertenceAoUsuario(candidatura, query.getUsuarioSolicitanteId())) {
-            return new TypedResponse<>(200, "Candidatura encontrada", mapper.paraDtoDetalhado(candidatura));
+            return new TypedResponse<>(200, "Candidatura encontrada",
+                    mapper.paraDtoDetalhadoCandidato(candidatura));
         }
         Vaga vaga = vagas.buscarPorId(candidatura.getVagaId()).orElse(null);
         if (vaga != null && autorizacao.podeGerenciar(query.getUsuarioSolicitanteId(), vaga)) {

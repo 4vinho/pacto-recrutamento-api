@@ -45,6 +45,15 @@ class CandidaturaDtoMapper {
     }
 
     CandidaturaDTO paraDtoDetalhado(Candidatura candidatura) {
+        return paraDtoDetalhado(candidatura, true);
+    }
+
+    CandidaturaDTO paraDtoDetalhadoCandidato(Candidatura candidatura) {
+        return paraDtoDetalhado(candidatura, false);
+    }
+
+    private CandidaturaDTO paraDtoDetalhado(
+            Candidatura candidatura, boolean incluirAvaliacaoInterna) {
         Map<UUID, String> perguntasPorId = new HashMap<>();
         for (PerguntaVaga pergunta : perguntas.listarAtivasPorVagaId(candidatura.getVagaId()))
             perguntasPorId.put(pergunta.getId(), pergunta.getEnunciado());
@@ -66,10 +75,14 @@ class CandidaturaDtoMapper {
 
         List<HistoricoCandidaturaDTO> historico = new ArrayList<>();
         String feedback = null;
-        for (HistoricoCandidatura item : candidaturas.listarHistorico(candidatura.getId())) {
-            historico.add(new HistoricoCandidaturaDTO(item.getId(), item.getStatusAnterior(),
-                    item.getNovoStatus(), item.getFeedback(), item.getCriadoEm()));
-            if (item.getFeedback() != null && !item.getFeedback().isEmpty()) feedback = item.getFeedback();
+        if (incluirAvaliacaoInterna) {
+            for (HistoricoCandidatura item : candidaturas.listarHistorico(candidatura.getId())) {
+                historico.add(new HistoricoCandidaturaDTO(item.getId(), item.getStatusAnterior(),
+                        item.getNovoStatus(), item.getFeedback(), item.getCriadoEm()));
+                if (item.getFeedback() != null && !item.getFeedback().isEmpty()) {
+                    feedback = item.getFeedback();
+                }
+            }
         }
         CandidaturaDTO basico = paraDto(candidatura);
         return new CandidaturaDTO(basico.getId(), basico.getUsuarioId(), basico.getNomeCandidato(),

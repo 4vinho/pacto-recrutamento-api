@@ -6,6 +6,8 @@ import br.com.pacto.recrutamento.app.dtos.curriculo.*;
 import br.com.pacto.recrutamento.app.ports.in.curriculo.CurriculoUseCase;
 import br.com.pacto.recrutamento.app.ports.out.curriculo.ArquivoStoragePort;
 import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
+import br.com.pacto.recrutamento.app.ports.out.candidatura.AutorizacaoResponsavelCandidaturaPort;
+import br.com.pacto.recrutamento.app.ports.out.candidatura.VagaCandidaturaPort;
 import br.com.pacto.recrutamento.app.ports.out.curriculo.CurriculoPort;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Curriculo;
@@ -34,13 +36,18 @@ public class CurriculoService implements CurriculoUseCase {
     private final CurriculoPort repositorio;
     private final ArquivoStoragePort storage;
     private final CandidaturaPort candidaturas;
+    private final VagaCandidaturaPort vagas;
+    private final AutorizacaoResponsavelCandidaturaPort autorizacao;
     private final Clock clock;
 
     public CurriculoService(CurriculoPort repositorio, ArquivoStoragePort storage,
-                            CandidaturaPort candidaturas, Clock clock) {
+                            CandidaturaPort candidaturas, VagaCandidaturaPort vagas,
+                            AutorizacaoResponsavelCandidaturaPort autorizacao, Clock clock) {
         this.repositorio = repositorio;
         this.storage = storage;
         this.candidaturas = candidaturas;
+        this.vagas = vagas;
+        this.autorizacao = autorizacao;
         this.clock = clock;
     }
 
@@ -107,7 +114,14 @@ public class CurriculoService implements CurriculoUseCase {
         if (!curriculo.isPresent())
             return new TypedResponse<UrlTemporariaCurriculoDTO>(404, CURRICULO_NAO_ENCONTRADO, null);
         Optional<Candidatura> candidatura = candidaturas.buscarPorId(query.getCandidaturaId());
-        if (!candidatura.isPresent() || !candidatura.get().getUsuarioId().equals(query.getUsuarioSolicitanteId())) {
+        if (!candidatura.isPresent()) {
+            return new TypedResponse<UrlTemporariaCurriculoDTO>(404, CANDIDATURA_NAO_ENCONTRADA, null);
+        }
+        boolean proprietario = candidatura.get().getUsuarioId().equals(query.getUsuarioSolicitanteId());
+        boolean podeGerenciar = vagas.buscarPorId(candidatura.get().getVagaId())
+                .map(vaga -> autorizacao.podeGerenciar(query.getUsuarioSolicitanteId(), vaga))
+                .orElse(false);
+        if (!proprietario && !podeGerenciar) {
             return new TypedResponse<UrlTemporariaCurriculoDTO>(403, ACESSO_NAO_AUTORIZADO_ACENTUADO, null);
         }
         try {
