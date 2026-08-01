@@ -35,3 +35,7 @@ notification:
   retry:
     delay-ms: 60000
     max-attempts: 5
+
+realtime:
+  redis:
+    listener-enabled: false

@@ -24,7 +24,6 @@ public class CandidaturaService implements CandidaturaUseCase {
     private final RequisitoCandidaturaPort requisitos;
     private final AutorizacaoResponsavelCandidaturaPort autorizacao;
     private final QuadroCandidaturasCachePort quadroCache;
-    private final ValidadorRespostasCandidatura validadorRespostas;
     private final CandidaturaDtoMapper mapper;
     private final PublicadorEventosCandidatura publicadorEventos;
 
@@ -34,7 +33,6 @@ public class CandidaturaService implements CandidaturaUseCase {
                               RequisitoCandidaturaPort requisitos,
                               AutorizacaoResponsavelCandidaturaPort autorizacao,
                               QuadroCandidaturasCachePort quadroCache,
-                              ValidadorRespostasCandidatura validadorRespostas,
                               CandidaturaDtoMapper mapper,
                               PublicadorEventosCandidatura publicadorEventos) {
         this.candidaturas = candidaturas;
@@ -43,7 +41,6 @@ public class CandidaturaService implements CandidaturaUseCase {
         this.requisitos = requisitos;
         this.autorizacao = autorizacao;
         this.quadroCache = quadroCache;
-        this.validadorRespostas = validadorRespostas;
         this.mapper = mapper;
         this.publicadorEventos = publicadorEventos;
     }
@@ -175,17 +172,14 @@ public class CandidaturaService implements CandidaturaUseCase {
         if (candidatura.isPerguntasRespondidas()) {
             return erro(409, PERGUNTAS_JA_RESPONDIDAS);
         }
-        if (!validadorRespostas.estruturaValida(command.getRespostas())) {
-            return erro(400, LOTE_RESPOSTAS_INVALIDO);
-        }
         List<PerguntaVaga> perguntasDaVaga = perguntas.listarAtivasPorVagaId(candidatura.getVagaId());
-        List<RespostaCandidatura> lote = validadorRespostas.validarPerguntas(
+        Optional<List<RespostaCandidatura>> lote = ValidadorRespostasCandidatura.validarPerguntas(
                 candidatura, command.getRespostas(), perguntasDaVaga);
-        if (lote == null) {
+        if (!lote.isPresent()) {
             return erro(422, LOTE_RESPOSTAS_INCOMPATIVEL);
         }
         try {
-            candidaturas.registrarRespostasPerguntasAtomicamente(candidatura, lote);
+            candidaturas.registrarRespostasPerguntasAtomicamente(candidatura, lote.get());
         } catch (CandidaturaPort.RespostasDuplicadasException ex) {
             return erro(409, PERGUNTAS_JA_RESPONDIDAS);
         }
@@ -214,11 +208,11 @@ public class CandidaturaService implements CandidaturaUseCase {
         }
         List<RequisitoVaga> requisitosDaVaga = requisitos.listarAtivosPorVagaId(
                 candidatura.getVagaId());
-        List<RespostaRequisitoCandidatura> lote = validadorRespostas.validarRequisitos(
+        Optional<List<RespostaRequisitoCandidatura>> lote = ValidadorRespostasCandidatura.validarRequisitos(
                 candidatura, command.getRespostas(), requisitosDaVaga);
-        if (lote == null) return erro(422, LOTE_REQUISITOS_INCOMPATIVEL);
+        if (!lote.isPresent()) return erro(422, LOTE_REQUISITOS_INCOMPATIVEL);
         try {
-            candidaturas.registrarRespostasRequisitosAtomicamente(candidatura, lote);
+            candidaturas.registrarRespostasRequisitosAtomicamente(candidatura, lote.get());
         } catch (CandidaturaPort.RequisitosJaRespondidosException ex) {
             return erro(409, REQUISITOS_JA_RESPONDIDOS);
         }

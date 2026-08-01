@@ -7,8 +7,6 @@ import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
 import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaRequisitoCandidatura;
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -17,40 +15,41 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-@Component
-class ValidadorRespostasCandidatura {
-    boolean estruturaValida(List<RespostaCandidaturaDTO> respostas) {
-        Set<UUID> perguntas = new HashSet<>();
-        for (RespostaCandidaturaDTO resposta : respostas) {
-            if (resposta == null || resposta.getPerguntaId() == null || resposta.getValor() == null
-                    || !perguntas.add(resposta.getPerguntaId())) return false;
-        }
-        return true;
-    }
+final class ValidadorRespostasCandidatura {
+    private ValidadorRespostasCandidatura() { }
 
-    List<RespostaCandidatura> validarPerguntas(Candidatura candidatura,
+    static Optional<List<RespostaCandidatura>> validarPerguntas(Candidatura candidatura,
             List<RespostaCandidaturaDTO> respostas, List<PerguntaVaga> perguntasDaVaga) {
         Map<UUID, PerguntaVaga> porId = new HashMap<>();
         for (PerguntaVaga pergunta : perguntasDaVaga) porId.put(pergunta.getId(), pergunta);
         List<RespostaCandidatura> lote = new ArrayList<>();
         Set<UUID> respondidas = new HashSet<>();
         for (RespostaCandidaturaDTO resposta : respostas) {
+            if (resposta == null || resposta.getPerguntaId() == null
+                    || resposta.getValor() == null
+                    || !respondidas.add(resposta.getPerguntaId())) {
+                return Optional.empty();
+            }
             PerguntaVaga pergunta = porId.get(resposta.getPerguntaId());
-            if (pergunta == null || !valorValido(pergunta, resposta.getValor())) return null;
-            respondidas.add(pergunta.getId());
+            if (pergunta == null || !valorValido(pergunta, resposta.getValor())) {
+                return Optional.empty();
+            }
             lote.add(new RespostaCandidatura(candidatura.getId(), pergunta.getId(),
                     resposta.getValor().trim()));
         }
         for (PerguntaVaga pergunta : perguntasDaVaga) {
-            if (pergunta.isObrigatoria() && !respondidas.contains(pergunta.getId())) return null;
+            if (pergunta.isObrigatoria() && !respondidas.contains(pergunta.getId())) {
+                return Optional.empty();
+            }
         }
-        return lote;
+        return Optional.of(lote);
     }
 
-    List<RespostaRequisitoCandidatura> validarRequisitos(Candidatura candidatura,
+    static Optional<List<RespostaRequisitoCandidatura>> validarRequisitos(Candidatura candidatura,
             List<RespostaRequisitoCandidaturaDTO> respostas, List<RequisitoVaga> requisitosDaVaga) {
         Map<UUID, RequisitoVaga> porId = new HashMap<>();
         for (RequisitoVaga requisito : requisitosDaVaga) porId.put(requisito.getId(), requisito);
@@ -59,17 +58,19 @@ class ValidadorRespostasCandidatura {
         for (RespostaRequisitoCandidaturaDTO resposta : respostas) {
             if (resposta == null || resposta.getRequisitoId() == null || resposta.getNivel() == null
                     || !respondidos.add(resposta.getRequisitoId())
-                    || !porId.containsKey(resposta.getRequisitoId())) return null;
+                    || !porId.containsKey(resposta.getRequisitoId())) return Optional.empty();
             lote.add(new RespostaRequisitoCandidatura(candidatura.getId(),
                     resposta.getRequisitoId(), resposta.getNivel()));
         }
         for (RequisitoVaga requisito : requisitosDaVaga) {
-            if (requisito.isObrigatorio() && !respondidos.contains(requisito.getId())) return null;
+            if (requisito.isObrigatorio() && !respondidos.contains(requisito.getId())) {
+                return Optional.empty();
+            }
         }
-        return lote;
+        return Optional.of(lote);
     }
 
-    private boolean valorValido(PerguntaVaga pergunta, String valor) {
+    private static boolean valorValido(PerguntaVaga pergunta, String valor) {
         if (valor == null || valor.trim().isEmpty()) return false;
         String normalizado = valor.trim();
         try {

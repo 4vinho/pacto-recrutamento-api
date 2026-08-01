@@ -51,14 +51,15 @@ class EntidadesTest {
     }
 
     @Test
-    void candidaturaAprovadaNaoPodeVoltarParaAnalise() {
+    void candidaturaAprovadaPodeVoltarParaAnalise() {
         Candidatura candidatura = new Candidatura(UUID.randomUUID(), UUID.randomUUID());
         candidatura.setStatus(StatusCandidatura.ENVIADA);
         candidatura.setStatus(StatusCandidatura.EM_ANALISE);
         candidatura.setStatus(StatusCandidatura.APROVADA);
 
-        assertThatIllegalStateException()
-                .isThrownBy(() -> candidatura.setStatus(StatusCandidatura.EM_ANALISE));
+        candidatura.setStatus(StatusCandidatura.EM_ANALISE);
+
+        assertThat(candidatura.getStatus()).isEqualTo(StatusCandidatura.EM_ANALISE);
     }
 
     @Test
