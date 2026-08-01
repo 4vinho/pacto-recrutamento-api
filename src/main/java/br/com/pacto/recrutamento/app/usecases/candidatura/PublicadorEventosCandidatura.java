@@ -5,8 +5,6 @@ import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.UUID;
 
 @Component
 class PublicadorEventosCandidatura {
@@ -14,10 +12,6 @@ class PublicadorEventosCandidatura {
 
     PublicadorEventosCandidatura(EventosCandidaturaPort eventos) {
         this.eventos = eventos;
-    }
-
-    void quadroConsultado(UUID vagaId, List<Candidatura> candidaturas) {
-        eventos.quadroConsultado(vagaId, candidaturas);
     }
 
     void publicarCriacao(Candidatura candidatura) {

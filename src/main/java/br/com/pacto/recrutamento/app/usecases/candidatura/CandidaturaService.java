@@ -23,7 +23,6 @@ public class CandidaturaService implements CandidaturaUseCase {
     private final PerguntaCandidaturaPort perguntas;
     private final RequisitoCandidaturaPort requisitos;
     private final AutorizacaoResponsavelCandidaturaPort autorizacao;
-    private final QuadroCandidaturasCachePort quadroCache;
     private final CandidaturaDtoMapper mapper;
     private final PublicadorEventosCandidatura publicadorEventos;
 
@@ -32,7 +31,6 @@ public class CandidaturaService implements CandidaturaUseCase {
                               PerguntaCandidaturaPort perguntas,
                               RequisitoCandidaturaPort requisitos,
                               AutorizacaoResponsavelCandidaturaPort autorizacao,
-                              QuadroCandidaturasCachePort quadroCache,
                               CandidaturaDtoMapper mapper,
                               PublicadorEventosCandidatura publicadorEventos) {
         this.candidaturas = candidaturas;
@@ -40,7 +38,6 @@ public class CandidaturaService implements CandidaturaUseCase {
         this.perguntas = perguntas;
         this.requisitos = requisitos;
         this.autorizacao = autorizacao;
-        this.quadroCache = quadroCache;
         this.mapper = mapper;
         this.publicadorEventos = publicadorEventos;
     }
@@ -95,25 +92,11 @@ public class CandidaturaService implements CandidaturaUseCase {
             return new TypedPagedResponse<>(403, USUARIO_NAO_AUTORIZADO_CONSULTAR_CANDIDATURA,
                     Collections.<CandidaturaDTO>emptyList(), query.getPage(), query.getPageSize(), 0);
         }
-        boolean consultaCompleta = query.getPage() == 0 && query.getPageSize() == 100
-                && query.getStatus() == null && query.getNivelMinimo() == null
-                && query.getTempoEmpresaMeses() == null;
-        if (consultaCompleta) {
-            Optional<List<CandidaturaDTO>> cache = quadroCache.buscar(query.getVagaId());
-            if (cache.isPresent()) {
-                return new TypedPagedResponse<>(200, "Candidaturas encontradas", cache.get(),
-                        0, 100, cache.get().size());
-            }
-        }
         PaginaGenerico<Candidatura> pagina = candidaturas.listarPorVaga(query.getVagaId(),
                 query.getStatus(), query.getNivelMinimo(), query.getTempoEmpresaMeses(),
                 query.getPage(), query.getPageSize());
-        if (consultaCompleta) {
-            publicadorEventos.quadroConsultado(query.getVagaId(), pagina.getItens());
-        }
         List<CandidaturaDTO> dados = pagina.getItens().stream().map(mapper::paraDto)
                 .collect(java.util.stream.Collectors.toList());
-        if (consultaCompleta) quadroCache.salvar(query.getVagaId(), dados);
         return new TypedPagedResponse<>(200, "Candidaturas encontradas", dados,
                 query.getPage(), query.getPageSize(), pagina.getTotalItens());
     }
@@ -256,7 +239,6 @@ public class CandidaturaService implements CandidaturaUseCase {
                 command.getFeedback()));
         publicarAlteracao(candidatura, anterior);
         CandidaturaDTO atualizado = mapper.paraDto(candidatura);
-        quadroCache.salvar(candidatura.getVagaId(), atualizado);
         return new TypedResponse<>(200, "Status da candidatura atualizado", atualizado);
     }
 
@@ -320,7 +302,6 @@ public class CandidaturaService implements CandidaturaUseCase {
     }
 
     private void publicarCriacao(Candidatura candidatura) {
-        quadroCache.salvar(candidatura.getVagaId(), mapper.paraDto(candidatura));
         publicadorEventos.publicarCriacao(candidatura);
     }
 
