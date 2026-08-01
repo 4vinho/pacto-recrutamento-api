@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 @Repository
 public class RequisitoVagaJpaAdapter implements RequisitoVagaPort, RequisitoVagaTemplatePort {
@@ -20,6 +21,10 @@ public class RequisitoVagaJpaAdapter implements RequisitoVagaPort, RequisitoVaga
     public Optional<RequisitoVaga> buscarAtivoPorId(UUID id) {
         if (id == null) return Optional.empty();
         return repository.findByIdAndExcluidoEmIsNull(id);
+    }
+
+    public List<RequisitoVaga> listarAtivosPorVagaId(UUID vagaId) {
+        return repository.findAllByVagaIdAndExcluidoEmIsNullOrderByCriadoEmAsc(vagaId);
     }
 
     public RequisitoVaga salvar(RequisitoVaga requisito) {

@@ -62,6 +62,29 @@ public class VagaService implements VagaUseCase {
     }
 
     @Override
+    public TypedResponse<VagaDetalheDTO> consultarVaga(ConsultarVagaDTO query) {
+        if (query == null || query.getUsuarioId() == null || query.getVagaId() == null) {
+            return new TypedResponse<>(400, "Consulta de vaga invalida", null);
+        }
+        Optional<Vaga> vaga = vagas.buscarAtivaPorId(query.getVagaId());
+        if (!vaga.isPresent() || (!autorizado(query.getUsuarioId())
+                && vaga.get().getStatus() != StatusVaga.PUBLICADA)) {
+            return new TypedResponse<>(404, VAGA_NAO_ENCONTRADA, null);
+        }
+        List<RequisitoVagaDTO> requisitosDto = requisitos.listarAtivosPorVagaId(query.getVagaId())
+                .stream().map(r -> new RequisitoVagaDTO(r.getId(), r.getDescricao(), r.isObrigatorio()))
+                .collect(Collectors.toList());
+        List<PerguntaVagaDTO> perguntasDto = perguntas.listarAtivasPorVagaId(query.getVagaId())
+                .stream().map(p -> new PerguntaVagaDTO(p.getId(), p.getEnunciado(),
+                        p.getTipoResposta(), p.isObrigatoria(), p.getOrdem()))
+                .collect(Collectors.toList());
+        Vaga v = vaga.get();
+        return new TypedResponse<>(200, "Vaga encontrada", new VagaDetalheDTO(v.getId(),
+                v.getResponsaveisIds(), v.getTitulo(), v.getDescricao(), v.getStatus(),
+                requisitosDto, perguntasDto));
+    }
+
+    @Override
     public TypedResponse<VagaDTO> criarVaga(CriarVagaDTO command) {
         if (command == null || responsaveisInvalidos(command.getResponsaveisIds())
                 || camposVagaInvalidos(command.getTitulo(), command.getDescricao()))

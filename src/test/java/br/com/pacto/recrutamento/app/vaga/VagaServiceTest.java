@@ -75,6 +75,31 @@ class VagaServiceTest {
     }
 
     @Test
+    void consultaVagaComPerguntasERequisitos() {
+        Vaga vaga = vaga();
+        vaga.setStatus(StatusVaga.PUBLICADA);
+        vagas.salvar(vaga);
+        perguntas.salvar(pergunta(vaga.getId()));
+        requisitos.salvar(requisito(vaga.getId()));
+
+        TypedResponse<VagaDetalheDTO> resposta = service.consultarVaga(
+                new ConsultarVagaDTO(naoAutorizado, vaga.getId()));
+
+        assertEquals(200, resposta.getStatusCode());
+        assertEquals(1, resposta.getData().getPerguntas().size());
+        assertEquals(1, resposta.getData().getRequisitos().size());
+    }
+
+    @Test
+    void ocultaRascunhoDeUsuarioComum() {
+        Vaga vaga = vaga();
+        vagas.salvar(vaga);
+
+        assertEquals(404, service.consultarVaga(
+                new ConsultarVagaDTO(naoAutorizado, vaga.getId())).getStatusCode());
+    }
+
+    @Test
     void rejeitaCriacaoPorUsuarioSemPapelAutorizado() {
         TypedResponse<VagaDTO> resposta = service.criarVaga(new CriarVagaDTO(naoAutorizado,
                 Collections.singleton(administrador), "Dev Java", "Descricao"));
@@ -244,6 +269,11 @@ class VagaServiceTest {
     private static final class MemoriaPerguntas implements PerguntaVagaPort {
         private final Map<UUID, PerguntaVaga> dados = new HashMap<>();
 
+        public List<PerguntaVaga> listarAtivasPorVagaId(UUID vagaId) {
+            return dados.values().stream().filter(p -> vagaId.equals(p.getVagaId()))
+                    .filter(p -> p.getExcluidoEm() == null).collect(Collectors.toList());
+        }
+
         public Optional<PerguntaVaga> buscarAtivaPorId(UUID id) {
             return Optional.ofNullable(dados.get(id)).filter(p -> p.getExcluidoEm() == null);
         }
@@ -257,6 +287,11 @@ class VagaServiceTest {
 
     private static final class MemoriaRequisitos implements RequisitoVagaPort {
         private final Map<UUID, RequisitoVaga> dados = new HashMap<>();
+
+        public List<RequisitoVaga> listarAtivosPorVagaId(UUID vagaId) {
+            return dados.values().stream().filter(r -> vagaId.equals(r.getVagaId()))
+                    .filter(r -> r.getExcluidoEm() == null).collect(Collectors.toList());
+        }
 
         public Optional<RequisitoVaga> buscarAtivoPorId(UUID id) {
             return Optional.ofNullable(dados.get(id)).filter(r -> r.getExcluidoEm() == null);

@@ -47,6 +47,13 @@ public class VagaController {
         return ResponseEntity.status(resposta.getStatusCode()).body(resposta);
     }
 
+    @GetMapping("/{vagaId}")
+    public ResponseEntity<TypedResponse<VagaDetalheDTO>> consultar(
+            Authentication auth, @PathVariable UUID vagaId) {
+        return HttpResponses.from(service.consultarVaga(
+                new ConsultarVagaDTO(AuthenticatedUser.id(auth), vagaId)));
+    }
+
     @PostMapping
     public ResponseEntity<TypedResponse<VagaDTO>> criar(
             Authentication auth, @Valid @RequestBody VagaRequest request) {

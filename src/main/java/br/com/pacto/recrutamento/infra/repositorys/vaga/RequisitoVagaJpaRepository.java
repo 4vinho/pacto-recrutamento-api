@@ -9,5 +9,6 @@ import java.util.UUID;
 
 public interface RequisitoVagaJpaRepository extends JpaRepository<RequisitoVaga, UUID> {
     List<RequisitoVaga> findAllByVagaIdAndExcluidoEmIsNull(UUID vagaId);
+    List<RequisitoVaga> findAllByVagaIdAndExcluidoEmIsNullOrderByCriadoEmAsc(UUID vagaId);
     Optional<RequisitoVaga> findByIdAndExcluidoEmIsNull(UUID id);
 }

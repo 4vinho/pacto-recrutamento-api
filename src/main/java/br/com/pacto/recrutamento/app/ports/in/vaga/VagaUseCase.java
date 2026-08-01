@@ -7,6 +7,8 @@ import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 public interface VagaUseCase {
     TypedPagedResponse<VagaDTO> listarVagas(ListarVagasDTO query);
 
+    TypedResponse<VagaDetalheDTO> consultarVaga(ConsultarVagaDTO query);
+
     TypedResponse<VagaDTO> criarVaga(CriarVagaDTO command);
 
     TypedResponse<VagaDTO> atualizarVaga(AtualizarVagaDTO command);

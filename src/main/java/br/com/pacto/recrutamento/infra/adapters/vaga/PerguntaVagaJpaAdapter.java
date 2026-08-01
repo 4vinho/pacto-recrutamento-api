@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 @Repository
 public class PerguntaVagaJpaAdapter implements PerguntaVagaPort, PerguntaVagaTemplatePort {
@@ -20,6 +21,10 @@ public class PerguntaVagaJpaAdapter implements PerguntaVagaPort, PerguntaVagaTem
     public Optional<PerguntaVaga> buscarAtivaPorId(UUID id) {
         if (id == null) return Optional.empty();
         return repository.findByIdAndExcluidoEmIsNull(id);
+    }
+
+    public List<PerguntaVaga> listarAtivasPorVagaId(UUID vagaId) {
+        return repository.findAllByVagaIdAndExcluidoEmIsNullOrderByOrdemAsc(vagaId);
     }
 
     public PerguntaVaga salvar(PerguntaVaga pergunta) {
