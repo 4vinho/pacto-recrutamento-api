@@ -60,6 +60,13 @@ services:
         mc anonymous set none "local/$${MINIO_BUCKET}"
     restart: "no"
 
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    restart: unless-stopped
+
   api:
     build:
       context: .
@@ -74,6 +81,12 @@ services:
       MINIO_BUCKET: ${MINIO_BUCKET:?MINIO_BUCKET deve ser informado}
       SERVER_PORT: ${SERVER_PORT:?SERVER_PORT deve ser informado}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET deve ser informado}
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_FROM: ${MAIL_FROM:-nao-responda@pacto.local}
+      PASSWORD_RESET_URL: ${PASSWORD_RESET_URL:-http://localhost:3000/redefinir-senha}
+      NOTIFICATION_RETRY_DELAY_MS: ${NOTIFICATION_RETRY_DELAY_MS:-60000}
+      NOTIFICATION_MAX_ATTEMPTS: ${NOTIFICATION_MAX_ATTEMPTS:-5}
     ports:
       - "${SERVER_PORT:?SERVER_PORT deve ser informado}:8080"
     depends_on:
@@ -83,6 +96,8 @@ services:
         condition: service_healthy
       minio-init:
         condition: service_completed_successfully
+      mailpit:
+        condition: service_started
     develop:
       watch:
         - path: ./src

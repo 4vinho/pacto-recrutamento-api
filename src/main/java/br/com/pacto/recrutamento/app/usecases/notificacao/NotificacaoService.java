@@ -12,7 +12,9 @@ import br.com.pacto.recrutamento.core.entities.Notificacao;
 import br.com.pacto.recrutamento.core.enums.TipoNotificacao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 
+import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,6 +24,10 @@ public class NotificacaoService implements NotificacaoUseCase {
     private final DestinatariosCandidaturaPort destinatarios;
     private final NotificacaoPort notificacoes;
     private final CanalNotificacaoPort canal;
+    @Value("${notification.retry.delay-ms:60000}")
+    private long atrasoRetentativaMs = 60000;
+    @Value("${notification.retry.max-attempts:5}")
+    private int maximoTentativas = 5;
 
     public NotificacaoService(DestinatariosCandidaturaPort destinatarios, NotificacaoPort notificacoes, CanalNotificacaoPort canal) {
         this.destinatarios = destinatarios;
@@ -41,7 +47,8 @@ public class NotificacaoService implements NotificacaoUseCase {
         LinkedHashSet<UUID> usuarios = new LinkedHashSet<>(encontrados.get().getResponsaveisIds());
         usuarios.add(encontrados.get().getUsuarioId());
         for (UUID usuarioId : usuarios) {
-            processar(evento.getEventoId(), usuarioId, TipoNotificacao.CANDIDATURA_CRIADA, "Nova candidatura", "Uma candidatura foi criada.");
+            processar(evento.getEventoId(), usuarioId, TipoNotificacao.CANDIDATURA_CRIADA,
+                    "Nova candidatura", "A candidatura " + evento.getCandidaturaId() + " foi criada.");
         }
         return resposta(202);
     }
@@ -57,7 +64,8 @@ public class NotificacaoService implements NotificacaoUseCase {
             return resposta(202);
         }
         processar(evento.getEventoId(), encontrados.get().getUsuarioId(), TipoNotificacao.STATUS_CANDIDATURA_ALTERADO,
-                "Status da candidatura atualizado", "O status da candidatura foi atualizado.");
+                "Status da candidatura atualizado", "A candidatura " + evento.getCandidaturaId()
+                        + " foi atualizada para " + evento.getNovoStatus() + ".");
         return resposta(202);
     }
 
@@ -66,6 +74,22 @@ public class NotificacaoService implements NotificacaoUseCase {
         Notificacao notificacao = existente.orElseGet(
                 () -> notificacoes.salvar(new Notificacao(eventoId, usuarioId, tipo, titulo, mensagem))
         );
+        if (notificacao.getStatus() == br.com.pacto.recrutamento.core.enums.StatusNotificacao.ENVIADA) {
+            return;
+        }
+        enviar(notificacao);
+    }
+
+    @Override
+    @Transactional
+    public void reprocessarFalhas() {
+        OffsetDateTime limite = OffsetDateTime.now().minusNanos(atrasoRetentativaMs * 1_000_000);
+        for (Notificacao notificacao : notificacoes.buscarParaReprocessamento(limite, maximoTentativas)) {
+            enviar(notificacao);
+        }
+    }
+
+    private void enviar(Notificacao notificacao) {
         try {
             canal.enviar(notificacao);
             notificacao.registrarEnvio();

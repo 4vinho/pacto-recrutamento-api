@@ -15,6 +15,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class NotificacaoServiceTest {
     @Test
+    void eventoJaEnviadoNaoDuplicaNotificacao() {
+        Memoria memoria = new Memoria();
+        UUID evento = UUID.randomUUID();
+        NotificacaoService service = new NotificacaoService(memoria, memoria, memoria);
+        CandidaturaCriadaDTO dto = new CandidaturaCriadaDTO(evento, memoria.candidaturaId, OffsetDateTime.now());
+
+        service.processarCandidaturaCriada(dto);
+        int enviosIniciais = memoria.envios;
+        service.processarCandidaturaCriada(dto);
+
+        assertThat(memoria.envios).isEqualTo(enviosIniciais);
+    }
+
+    @Test
     void persistirIntencaoAntesDoCanalNotificaResponsavelECandidato() {
         Memoria memoria = new Memoria();
         UUID evento = UUID.randomUUID();
@@ -49,6 +63,7 @@ class NotificacaoServiceTest {
         private final List<Notificacao> persistidas = new ArrayList<>();
         private final List<StatusNotificacao> statusesPersistidos = new ArrayList<>();
         private boolean falhar;
+        private int envios;
 
         public Optional<DestinatariosCandidatura> buscarPorCandidatura(UUID id) {
             return Optional.of(new DestinatariosCandidatura(
@@ -66,7 +81,12 @@ class NotificacaoServiceTest {
             return notificacao;
         }
 
+        public List<Notificacao> buscarParaReprocessamento(OffsetDateTime limite, int maximoTentativas) {
+            return Collections.emptyList();
+        }
+
         public void enviar(Notificacao notificacao) {
+            envios++;
             if (falhar) throw new RuntimeException("senha=segredo");
         }
     }

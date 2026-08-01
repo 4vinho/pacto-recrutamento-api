@@ -8,4 +8,6 @@ public interface NotificacaoUseCase {
     TypedResponse<Void> processarCandidaturaCriada(CandidaturaCriadaDTO event);
 
     TypedResponse<Void> processarStatusCandidaturaAlterado(StatusCandidaturaAlteradoDTO event);
+
+    void reprocessarFalhas();
 }

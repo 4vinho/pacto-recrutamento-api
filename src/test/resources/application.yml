@@ -24,3 +24,11 @@ storage:
 security:
   jwt:
     secret: uma-chave-de-teste-com-pelo-menos-trinta-e-dois-bytes
+
+notification:
+  mail:
+    from: nao-responda@pacto.local
+    password-reset-url: http://localhost:3000/redefinir-senha
+  retry:
+    delay-ms: 60000
+    max-attempts: 5

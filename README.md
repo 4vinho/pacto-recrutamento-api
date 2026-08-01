@@ -45,6 +45,7 @@ Serviços:
 - PostgreSQL: `localhost:5432`
 - MinIO API: `http://localhost:9000`
 - MinIO Console: `http://localhost:9001`
+- Mailpit (caixa de e-mail local): `http://localhost:8025`
 
 Os dados do PostgreSQL e do MinIO são mantidos em volumes nomeados.
 
