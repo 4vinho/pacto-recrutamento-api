@@ -10,7 +10,6 @@ import br.com.pacto.recrutamento.app.ports.in.candidatura.CandidaturaUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
-import br.com.pacto.recrutamento.core.enums.NivelAtendimentoRequisito;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -20,30 +19,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.time.OffsetDateTime;
-import br.com.pacto.recrutamento.web.realtime.QuadroCandidaturasSse;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTH)
 public class CandidaturaController {
     private final CandidaturaUseCase service;
-    private final QuadroCandidaturasSse realtime;
 
-    public CandidaturaController(CandidaturaUseCase service, QuadroCandidaturasSse realtime) {
+    public CandidaturaController(CandidaturaUseCase service) {
         this.service = service;
-        this.realtime = realtime;
-    }
-
-    @GetMapping(value = "/vagas/{vagaId}/candidaturas/eventos", produces = "text/event-stream")
-    public ResponseEntity<SseEmitter> acompanhar(
-            Authentication authentication, @PathVariable UUID vagaId) {
-        TypedPagedResponse<CandidaturaDTO> acesso = service.listarCandidaturasDaVaga(
-                new ListarCandidaturasDaVagaDTO(
-                        AuthenticatedUser.id(authentication), vagaId, null, 0, 1));
-        if (acesso.getStatusCode() != 200) {
-            return ResponseEntity.status(acesso.getStatusCode()).build();
-        }
-        return ResponseEntity.ok(realtime.assinar(vagaId));
     }
 
     @GetMapping("/candidaturas/me")
@@ -68,27 +51,6 @@ public class CandidaturaController {
         return HttpResponses.from(service.resumirMinhasCandidaturas(
                 new ListarMinhasCandidaturasDTO(
                         AuthenticatedUser.id(authentication), 0, 1, null, inicio, fim)));
-    }
-
-    @GetMapping("/vagas/{vagaId}/candidaturas")
-    public ResponseEntity<TypedPagedResponse<CandidaturaDTO>> listarPorVaga(
-            Authentication authentication, @PathVariable UUID vagaId,
-            @RequestParam(required = false) StatusCandidatura status,
-            @RequestParam(required = false) NivelAtendimentoRequisito nivelMinimo,
-            @RequestParam(required = false) Integer tempoEmpresaMeses,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int pageSize) {
-        TypedPagedResponse<CandidaturaDTO> resposta = service.listarCandidaturasDaVaga(
-                new ListarCandidaturasDaVagaDTO(AuthenticatedUser.id(authentication), vagaId,
-                        status, nivelMinimo, tempoEmpresaMeses, page, pageSize));
-        return ResponseEntity.status(resposta.getStatusCode()).body(resposta);
-    }
-
-    @PostMapping("/vagas/{vagaId}/candidaturas")
-    public ResponseEntity<TypedResponse<CandidaturaDTO>> criar(
-            Authentication authentication, @PathVariable UUID vagaId) {
-        return HttpResponses.from(service.criarCandidatura(
-                new CriarCandidaturaDTO(AuthenticatedUser.id(authentication), vagaId)));
     }
 
     @PostMapping("/candidaturas/{candidaturaId}/respostas")
