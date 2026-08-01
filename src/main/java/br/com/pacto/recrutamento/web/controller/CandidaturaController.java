@@ -22,14 +22,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.time.OffsetDateTime;
+import br.com.pacto.recrutamento.web.realtime.QuadroCandidaturasSse;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTH)
 public class CandidaturaController {
     private final CandidaturaUseCase service;
+    private final QuadroCandidaturasSse realtime;
 
-    public CandidaturaController(CandidaturaUseCase service) {
+    public CandidaturaController(CandidaturaUseCase service, QuadroCandidaturasSse realtime) {
         this.service = service;
+        this.realtime = realtime;
+    }
+
+    @GetMapping(value = "/vagas/{vagaId}/candidaturas/eventos", produces = "text/event-stream")
+    public ResponseEntity<SseEmitter> acompanhar(
+            Authentication authentication, @PathVariable UUID vagaId) {
+        TypedPagedResponse<CandidaturaDTO> acesso = service.listarCandidaturasDaVaga(
+                new ListarCandidaturasDaVagaDTO(
+                        AuthenticatedUser.id(authentication), vagaId, null, 0, 1));
+        if (acesso.getStatusCode() != 200) {
+            return ResponseEntity.status(acesso.getStatusCode()).build();
+        }
+        return ResponseEntity.ok(realtime.assinar(vagaId));
     }
 
     @GetMapping("/candidaturas/me")

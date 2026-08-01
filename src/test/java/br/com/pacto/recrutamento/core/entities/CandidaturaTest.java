@@ -33,4 +33,18 @@ class CandidaturaTest {
 
         assertThat(candidatura.getStatus()).isEqualTo(StatusCandidatura.ENVIADA);
     }
+
+    @Test
+    void permiteReabrirUmaDecisaoFinalParaAnalise() {
+        Candidatura candidatura = new Candidatura(UUID.randomUUID(), UUID.randomUUID());
+        candidatura.setStatus(StatusCandidatura.ENVIADA);
+        candidatura.setStatus(StatusCandidatura.EM_ANALISE);
+        candidatura.setStatus(StatusCandidatura.APROVADA);
+
+        candidatura.setStatus(StatusCandidatura.EM_ANALISE);
+        candidatura.setStatus(StatusCandidatura.REJEITADA);
+        candidatura.setStatus(StatusCandidatura.EM_ANALISE);
+
+        assertThat(candidatura.getStatus()).isEqualTo(StatusCandidatura.EM_ANALISE);
+    }
 }

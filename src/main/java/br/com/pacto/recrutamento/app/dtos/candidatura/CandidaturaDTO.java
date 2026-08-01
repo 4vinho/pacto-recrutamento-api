@@ -7,10 +7,15 @@ import java.util.UUID;
 import java.util.List;
 import java.util.Collections;
 import br.com.pacto.recrutamento.core.enums.NivelAtendimentoRequisito;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CandidaturaDTO {
     private final UUID id;
     private final UUID usuarioId;
+    private final String nomeCandidato;
+    private final String emailCandidato;
+    private final String telefoneCandidato;
     private final UUID vagaId;
     private final String tituloVaga;
     private final StatusCandidatura status;
@@ -53,8 +58,33 @@ public class CandidaturaDTO {
                           boolean perguntasRespondidas, boolean requisitosRespondidos,
                           List<RespostaDetalhe> respostas, List<RequisitoDetalhe> requisitos,
                           List<HistoricoCandidaturaDTO> historico, String feedback, long versao) {
+        this(id, usuarioId, null, null, null, vagaId, tituloVaga, status, criadaEm,
+                perguntasRespondidas, requisitosRespondidos, respostas, requisitos,
+                historico, feedback, versao);
+    }
+
+    @JsonCreator
+    public CandidaturaDTO(@JsonProperty("id") UUID id,
+                          @JsonProperty("usuarioId") UUID usuarioId,
+                          @JsonProperty("nomeCandidato") String nomeCandidato,
+                          @JsonProperty("emailCandidato") String emailCandidato,
+                          @JsonProperty("telefoneCandidato") String telefoneCandidato,
+                          @JsonProperty("vagaId") UUID vagaId,
+                          @JsonProperty("tituloVaga") String tituloVaga,
+                          @JsonProperty("status") StatusCandidatura status,
+                          @JsonProperty("criadaEm") OffsetDateTime criadaEm,
+                          @JsonProperty("perguntasRespondidas") boolean perguntasRespondidas,
+                          @JsonProperty("requisitosRespondidos") boolean requisitosRespondidos,
+                          @JsonProperty("respostas") List<RespostaDetalhe> respostas,
+                          @JsonProperty("requisitos") List<RequisitoDetalhe> requisitos,
+                          @JsonProperty("historico") List<HistoricoCandidaturaDTO> historico,
+                          @JsonProperty("feedback") String feedback,
+                          @JsonProperty("versao") long versao) {
         this.id = id;
         this.usuarioId = usuarioId;
+        this.nomeCandidato = nomeCandidato;
+        this.emailCandidato = emailCandidato;
+        this.telefoneCandidato = telefoneCandidato;
         this.vagaId = vagaId;
         this.tituloVaga = tituloVaga;
         this.status = status;
@@ -75,6 +105,9 @@ public class CandidaturaDTO {
     public UUID getUsuarioId() {
         return usuarioId;
     }
+    public String getNomeCandidato() { return nomeCandidato; }
+    public String getEmailCandidato() { return emailCandidato; }
+    public String getTelefoneCandidato() { return telefoneCandidato; }
 
     public UUID getVagaId() {
         return vagaId;

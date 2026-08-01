@@ -10,6 +10,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "usuarios", uniqueConstraints = @UniqueConstraint(name = "uk_usuarios_email", columnNames = "email"))
 public class Usuario extends EntidadeAuditavel {
+    @Column(name = "nome", length = 120)
+    private String nome;
     @Column(name = "email", nullable = false, length = 254)
     private String email;
     @Column(name = "telefone", length = 20)
@@ -37,6 +39,9 @@ public class Usuario extends EntidadeAuditavel {
         this.email = normalizarEmail(email);
         this.senhaHash = senhaHash;
     }
+
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome == null ? null : nome.trim(); }
 
     private String normalizarEmail(String email) {
         return email == null ? null : email.trim().toLowerCase();

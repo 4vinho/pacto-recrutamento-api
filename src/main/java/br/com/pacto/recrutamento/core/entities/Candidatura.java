@@ -158,6 +158,9 @@ public class Candidatura {
                     || novoStatus == StatusCandidatura.REJEITADA
                     || novoStatus == StatusCandidatura.CANCELADA;
         }
+        if (status == StatusCandidatura.APROVADA || status == StatusCandidatura.REJEITADA) {
+            return novoStatus == StatusCandidatura.EM_ANALISE;
+        }
         return false;
     }
 

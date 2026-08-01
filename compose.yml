@@ -1,4 +1,15 @@
 services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
   postgres:
     image: postgres:14-alpine
     environment:
@@ -87,6 +98,7 @@ services:
       PASSWORD_RESET_URL: ${PASSWORD_RESET_URL:-http://localhost:3000/redefinir-senha}
       NOTIFICATION_RETRY_DELAY_MS: ${NOTIFICATION_RETRY_DELAY_MS:-60000}
       NOTIFICATION_MAX_ATTEMPTS: ${NOTIFICATION_MAX_ATTEMPTS:-5}
+      REDIS_HOST: redis
     ports:
       - "${SERVER_PORT:?SERVER_PORT deve ser informado}:8080"
     depends_on:
@@ -98,6 +110,8 @@ services:
         condition: service_completed_successfully
       mailpit:
         condition: service_started
+      redis:
+        condition: service_healthy
     develop:
       watch:
         - path: ./src

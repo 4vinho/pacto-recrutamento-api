@@ -5,6 +5,7 @@ import static br.com.pacto.recrutamento.core.common.ErrorMessages.*;
 import br.com.pacto.recrutamento.app.dtos.candidatura.*;
 import br.com.pacto.recrutamento.app.ports.in.candidatura.CandidaturaUseCase;
 import br.com.pacto.recrutamento.app.ports.out.candidatura.*;
+import br.com.pacto.recrutamento.app.ports.out.usuario.UsuarioPort;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
@@ -27,19 +28,24 @@ public class CandidaturaService implements CandidaturaUseCase {
     private final RequisitoCandidaturaPort requisitos;
     private final AutorizacaoResponsavelCandidaturaPort autorizacao;
     private final EventosCandidaturaPort eventos;
+    private final UsuarioPort usuarios;
+    private final QuadroCandidaturasCachePort quadroCache;
 
     public CandidaturaService(CandidaturaPort candidaturas,
                               VagaCandidaturaPort vagas,
                               PerguntaCandidaturaPort perguntas,
                               RequisitoCandidaturaPort requisitos,
                               AutorizacaoResponsavelCandidaturaPort autorizacao,
-                              EventosCandidaturaPort eventos) {
+                              EventosCandidaturaPort eventos, UsuarioPort usuarios,
+                              QuadroCandidaturasCachePort quadroCache) {
         this.candidaturas = candidaturas;
         this.vagas = vagas;
         this.perguntas = perguntas;
         this.requisitos = requisitos;
         this.autorizacao = autorizacao;
         this.eventos = eventos;
+        this.usuarios = usuarios;
+        this.quadroCache = quadroCache;
     }
 
     @Override
@@ -92,11 +98,25 @@ public class CandidaturaService implements CandidaturaUseCase {
             return new TypedPagedResponse<>(403, USUARIO_NAO_AUTORIZADO_CONSULTAR_CANDIDATURA,
                     Collections.<CandidaturaDTO>emptyList(), query.getPage(), query.getPageSize(), 0);
         }
+        boolean consultaCompleta = query.getPage() == 0 && query.getPageSize() == 100
+                && query.getStatus() == null && query.getNivelMinimo() == null
+                && query.getTempoEmpresaMeses() == null;
+        if (consultaCompleta) {
+            Optional<List<CandidaturaDTO>> cache = quadroCache.buscar(query.getVagaId());
+            if (cache.isPresent()) {
+                return new TypedPagedResponse<>(200, "Candidaturas encontradas", cache.get(),
+                        0, 100, cache.get().size());
+            }
+        }
         PaginaGenerico<Candidatura> pagina = candidaturas.listarPorVaga(query.getVagaId(),
                 query.getStatus(), query.getNivelMinimo(), query.getTempoEmpresaMeses(),
                 query.getPage(), query.getPageSize());
+        if (consultaCompleta) {
+            eventos.quadroConsultado(query.getVagaId(), pagina.getItens());
+        }
         List<CandidaturaDTO> dados = pagina.getItens().stream().map(this::paraDto)
                 .collect(java.util.stream.Collectors.toList());
+        if (consultaCompleta) quadroCache.salvar(query.getVagaId(), dados);
         return new TypedPagedResponse<>(200, "Candidaturas encontradas", dados,
                 query.getPage(), query.getPageSize(), pagina.getTotalItens());
     }
@@ -241,7 +261,9 @@ public class CandidaturaService implements CandidaturaUseCase {
                 command.getUsuarioSolicitanteId(), anterior, candidatura.getStatus(),
                 command.getFeedback()));
         publicarAlteracao(candidatura, anterior);
-        return new TypedResponse<>(200, "Status da candidatura atualizado", paraDto(candidatura));
+        CandidaturaDTO atualizado = paraDto(candidatura);
+        quadroCache.salvar(candidatura.getVagaId(), atualizado);
+        return new TypedResponse<>(200, "Status da candidatura atualizado", atualizado);
     }
 
     @Override
@@ -383,6 +405,7 @@ public class CandidaturaService implements CandidaturaUseCase {
     }
 
     private void publicarCriacao(Candidatura candidatura) {
+        quadroCache.salvar(candidatura.getVagaId(), paraDto(candidatura));
         try {
             eventos.candidaturaCriada(candidatura);
         } catch (RuntimeException ignored) {
@@ -405,9 +428,15 @@ public class CandidaturaService implements CandidaturaUseCase {
     private CandidaturaDTO paraDto(Candidatura candidatura) {
         String tituloVaga = vagas.buscarPorId(candidatura.getVagaId())
                 .map(Vaga::getTitulo).orElse(null);
-        return new CandidaturaDTO(candidatura.getId(), candidatura.getUsuarioId(), candidatura.getVagaId(),
+        Usuario candidato = usuarios.buscarPorId(candidatura.getUsuarioId()).orElse(null);
+        return new CandidaturaDTO(candidatura.getId(), candidatura.getUsuarioId(),
+                candidato == null ? null : candidato.getNome(),
+                candidato == null ? null : candidato.getEmail(),
+                candidato == null ? null : candidato.getTelefone(), candidatura.getVagaId(),
                 tituloVaga, candidatura.getStatus(), candidatura.getCriadoEm(), candidatura.isPerguntasRespondidas(),
-                candidatura.isRequisitosRespondidos());
+                candidatura.isRequisitosRespondidos(), Collections.<CandidaturaDTO.RespostaDetalhe>emptyList(),
+                Collections.<CandidaturaDTO.RequisitoDetalhe>emptyList(),
+                Collections.<HistoricoCandidaturaDTO>emptyList(), null, candidatura.getVersao());
     }
 
     private CandidaturaDTO paraDtoDetalhado(Candidatura candidatura) {
@@ -437,7 +466,8 @@ public class CandidaturaService implements CandidaturaUseCase {
             if (item.getFeedback() != null && !item.getFeedback().isEmpty()) feedback = item.getFeedback();
         }
         CandidaturaDTO basico = paraDto(candidatura);
-        return new CandidaturaDTO(basico.getId(), basico.getUsuarioId(), basico.getVagaId(),
+        return new CandidaturaDTO(basico.getId(), basico.getUsuarioId(), basico.getNomeCandidato(),
+                basico.getEmailCandidato(), basico.getTelefoneCandidato(), basico.getVagaId(),
                 basico.getTituloVaga(), basico.getStatus(), basico.getCriadaEm(),
                 basico.isPerguntasRespondidas(), basico.isRequisitosRespondidos(),
                 respostasDto, requisitosDto, historico, feedback, candidatura.getVersao());

@@ -30,7 +30,7 @@ public class AuthController {
     @PostMapping("/cadastro")
     public ResponseEntity<TypedResponse<UsuarioDTO>> cadastrar(@Valid @RequestBody CadastroRequest request) {
         return HttpResponses.from(service.cadastrarUsuario(
-                new CadastrarUsuarioDTO(request.email, request.telefone, request.senha)));
+                new CadastrarUsuarioDTO(request.nome, request.email, request.telefone, request.senha)));
     }
 
     @PostMapping("/login")
@@ -66,6 +66,9 @@ public class AuthController {
     }
 
     public static class CadastroRequest {
+        @NotBlank
+        @Size(max = 120)
+        public String nome;
         @NotBlank
         @Email
         public String email;

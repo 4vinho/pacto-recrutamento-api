@@ -59,6 +59,7 @@ public class UsuarioService implements UsuarioUseCase {
         Optional<Papel> papel = papeis.buscarPorNome(NomePapel.CANDIDATO);
         if (!papel.isPresent()) return resposta(500, CADASTRO_NAO_CONCLUIDO, null);
         Usuario usuario = new Usuario(email, senhas.codificar(command.getSenha()));
+        usuario.setNome(command.getNome());
         usuario.setTelefone(command.getTelefone());
         usuario.setPapeis(Collections.singleton(papel.get()));
         Usuario salvo = usuarios.salvar(usuario);
@@ -181,7 +182,7 @@ public class UsuarioService implements UsuarioUseCase {
     }
 
     private UsuarioDTO usuarioDto(Usuario usuario) {
-        return new UsuarioDTO(usuario.getId(), usuario.getEmail(), usuario.getTelefone());
+        return new UsuarioDTO(usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getTelefone());
     }
 
     private <T> TypedResponse<T> resposta(int status, String mensagem, T dados) {
