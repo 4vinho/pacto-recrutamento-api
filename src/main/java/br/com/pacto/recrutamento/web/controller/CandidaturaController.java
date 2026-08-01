@@ -3,6 +3,7 @@ package br.com.pacto.recrutamento.web.controller;
 import br.com.pacto.recrutamento.web.config.OpenApiConfiguration;
 import br.com.pacto.recrutamento.web.security.AuthenticatedUser;
 import br.com.pacto.recrutamento.web.support.HttpResponses;
+import br.com.pacto.recrutamento.web.request.candidatura.*;
 
 import br.com.pacto.recrutamento.app.dtos.candidatura.*;
 import br.com.pacto.recrutamento.app.ports.in.candidatura.CandidaturaUseCase;
@@ -15,9 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -121,7 +119,7 @@ public class CandidaturaController {
     @PatchMapping("/candidaturas/{candidaturaId}/status")
     public ResponseEntity<TypedResponse<CandidaturaDTO>> atualizarStatus(
             Authentication authentication, @PathVariable UUID candidaturaId,
-            @Valid @RequestBody StatusRequest request) {
+            @Valid @RequestBody AtualizarStatusCandidaturaRequest request) {
         return HttpResponses.from(service.atualizarStatusCandidatura(
                 new AtualizarStatusCandidaturaDTO(
                         AuthenticatedUser.id(authentication), candidaturaId, request.status,
@@ -142,38 +140,4 @@ public class CandidaturaController {
                 new ConsultarCandidaturaDTO(AuthenticatedUser.id(authentication), candidaturaId)));
     }
 
-    public static class RespostasRequest {
-        @NotEmpty
-        @Valid
-        public List<RespostaRequest> respostas;
-    }
-
-    public static class RespostaRequest {
-        @NotNull
-        public UUID perguntaId;
-        @NotBlank
-        public String valor;
-    }
-
-    public static class RequisitosRequest {
-        @NotEmpty
-        @Valid
-        public List<RespostaRequisitoRequest> respostas;
-    }
-
-    public static class RespostaRequisitoRequest {
-        @NotNull
-        public UUID requisitoId;
-        @NotNull
-        public NivelAtendimentoRequisito nivel;
-    }
-
-    public static class StatusRequest {
-        @NotNull
-        public StatusCandidatura status;
-        @NotNull
-        public Long versao;
-        @javax.validation.constraints.Size(max = 2000)
-        public String feedback;
-    }
 }

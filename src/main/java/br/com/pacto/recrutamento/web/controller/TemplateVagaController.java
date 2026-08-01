@@ -3,6 +3,9 @@ package br.com.pacto.recrutamento.web.controller;
 import br.com.pacto.recrutamento.web.config.OpenApiConfiguration;
 import br.com.pacto.recrutamento.web.security.AuthenticatedUser;
 import br.com.pacto.recrutamento.web.support.HttpResponses;
+import br.com.pacto.recrutamento.web.request.templatevaga.SalvarTemplateVagaRequest;
+import br.com.pacto.recrutamento.web.request.vaga.SalvarPerguntaRequest;
+import br.com.pacto.recrutamento.web.request.vaga.SalvarRequisitoRequest;
 
 import br.com.pacto.recrutamento.app.dtos.templatevaga.*;
 import br.com.pacto.recrutamento.app.dtos.vaga.VagaDTO;
@@ -15,9 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @RestController
@@ -49,7 +49,7 @@ public class TemplateVagaController {
 
     @PostMapping
     public ResponseEntity<TypedResponse<TemplateVagaDTO>> criar(
-            Authentication auth, @Valid @RequestBody TemplateRequest request) {
+            Authentication auth, @Valid @RequestBody SalvarTemplateVagaRequest request) {
         return HttpResponses.from(service.criarTemplate(new CriarTemplateVagaDTO(
                 AuthenticatedUser.id(auth), request.titulo, request.descricao)));
     }
@@ -57,7 +57,7 @@ public class TemplateVagaController {
     @PutMapping("/{templateId}")
     public ResponseEntity<TypedResponse<TemplateVagaDTO>> atualizar(
             Authentication auth, @PathVariable UUID templateId,
-            @Valid @RequestBody TemplateRequest request) {
+            @Valid @RequestBody SalvarTemplateVagaRequest request) {
         return HttpResponses.from(service.atualizarTemplate(new AtualizarTemplateVagaDTO(
                 AuthenticatedUser.id(auth), templateId, request.titulo, request.descricao)));
     }
@@ -72,7 +72,7 @@ public class TemplateVagaController {
     @PostMapping("/{templateId}/perguntas")
     public ResponseEntity<TypedResponse<PerguntaTemplateVagaDTO>> criarPergunta(
             Authentication auth, @PathVariable UUID templateId,
-            @Valid @RequestBody PerguntaRequest request) {
+            @Valid @RequestBody SalvarPerguntaRequest request) {
         return HttpResponses.from(service.criarPerguntaDoTemplate(pergunta(
                 AuthenticatedUser.id(auth), templateId, null, request)));
     }
@@ -80,7 +80,7 @@ public class TemplateVagaController {
     @PutMapping("/{templateId}/perguntas/{perguntaId}")
     public ResponseEntity<TypedResponse<PerguntaTemplateVagaDTO>> atualizarPergunta(
             Authentication auth, @PathVariable UUID templateId, @PathVariable UUID perguntaId,
-            @Valid @RequestBody PerguntaRequest request) {
+            @Valid @RequestBody SalvarPerguntaRequest request) {
         return HttpResponses.from(service.atualizarPerguntaDoTemplate(pergunta(
                 AuthenticatedUser.id(auth), templateId, perguntaId, request)));
     }
@@ -95,7 +95,7 @@ public class TemplateVagaController {
     @PostMapping("/{templateId}/requisitos")
     public ResponseEntity<TypedResponse<RequisitoTemplateVagaDTO>> criarRequisito(
             Authentication auth, @PathVariable UUID templateId,
-            @Valid @RequestBody RequisitoRequest request) {
+            @Valid @RequestBody SalvarRequisitoRequest request) {
         return HttpResponses.from(service.criarRequisitoDoTemplate(requisito(
                 AuthenticatedUser.id(auth), templateId, null, request)));
     }
@@ -103,7 +103,7 @@ public class TemplateVagaController {
     @PutMapping("/{templateId}/requisitos/{requisitoId}")
     public ResponseEntity<TypedResponse<RequisitoTemplateVagaDTO>> atualizarRequisito(
             Authentication auth, @PathVariable UUID templateId, @PathVariable UUID requisitoId,
-            @Valid @RequestBody RequisitoRequest request) {
+            @Valid @RequestBody SalvarRequisitoRequest request) {
         return HttpResponses.from(service.atualizarRequisitoDoTemplate(requisito(
                 AuthenticatedUser.id(auth), templateId, requisitoId, request)));
     }
@@ -123,37 +123,15 @@ public class TemplateVagaController {
     }
 
     private SalvarPerguntaTemplateVagaDTO pergunta(
-            UUID usuarioId, UUID templateId, UUID perguntaId, PerguntaRequest request) {
+            UUID usuarioId, UUID templateId, UUID perguntaId, SalvarPerguntaRequest request) {
         return new SalvarPerguntaTemplateVagaDTO(usuarioId, templateId, perguntaId,
                 request.enunciado, request.tipoResposta, request.obrigatoria, request.ordem);
     }
 
     private SalvarRequisitoTemplateVagaDTO requisito(
-            UUID usuarioId, UUID templateId, UUID requisitoId, RequisitoRequest request) {
+            UUID usuarioId, UUID templateId, UUID requisitoId, SalvarRequisitoRequest request) {
         return new SalvarRequisitoTemplateVagaDTO(
                 usuarioId, templateId, requisitoId, request.descricao, request.obrigatorio);
     }
 
-    public static class TemplateRequest {
-        @NotBlank
-        public String titulo;
-        @NotBlank
-        public String descricao;
-    }
-
-    public static class PerguntaRequest {
-        @NotBlank
-        public String enunciado;
-        @NotNull
-        public TipoResposta tipoResposta;
-        public boolean obrigatoria;
-        @Min(0)
-        public int ordem;
-    }
-
-    public static class RequisitoRequest {
-        @NotBlank
-        public String descricao;
-        public boolean obrigatorio;
-    }
 }

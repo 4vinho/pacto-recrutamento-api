@@ -2,6 +2,7 @@ package br.com.pacto.recrutamento.web.controller;
 
 import br.com.pacto.recrutamento.web.security.AuthenticatedUser;
 import br.com.pacto.recrutamento.web.support.HttpResponses;
+import br.com.pacto.recrutamento.web.request.auth.*;
 
 import br.com.pacto.recrutamento.app.dtos.usuario.*;
 import br.com.pacto.recrutamento.app.ports.in.usuario.UsuarioUseCase;
@@ -14,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 @RestController
 @RequestMapping("/auth")
@@ -65,44 +63,4 @@ public class AuthController {
                 new RedefinirSenhaDTO(request.token, request.novaSenha)));
     }
 
-    public static class CadastroRequest {
-        @NotBlank
-        @Size(max = 120)
-        public String nome;
-        @NotBlank
-        @Email
-        public String email;
-        @NotBlank
-        public String telefone;
-        @NotBlank
-        @Size(min = 8, max = 72)
-        public String senha;
-    }
-
-    public static class LoginRequest {
-        @NotBlank
-        @Email
-        public String email;
-        @NotBlank
-        public String senha;
-    }
-
-    public static class TokenRequest {
-        @NotBlank
-        public String refreshToken;
-    }
-
-    public static class RecuperacaoRequest {
-        @NotBlank
-        @Email
-        public String email;
-    }
-
-    public static class RedefinicaoRequest {
-        @NotBlank
-        public String token;
-        @NotBlank
-        @Size(min = 8, max = 72)
-        public String novaSenha;
-    }
 }

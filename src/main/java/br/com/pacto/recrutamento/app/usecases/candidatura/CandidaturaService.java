@@ -5,7 +5,6 @@ import static br.com.pacto.recrutamento.core.common.ErrorMessages.*;
 import br.com.pacto.recrutamento.app.dtos.candidatura.*;
 import br.com.pacto.recrutamento.app.ports.in.candidatura.CandidaturaUseCase;
 import br.com.pacto.recrutamento.app.ports.out.candidatura.*;
-import br.com.pacto.recrutamento.app.ports.out.usuario.UsuarioPort;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
@@ -14,10 +13,7 @@ import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @Service
@@ -27,25 +23,29 @@ public class CandidaturaService implements CandidaturaUseCase {
     private final PerguntaCandidaturaPort perguntas;
     private final RequisitoCandidaturaPort requisitos;
     private final AutorizacaoResponsavelCandidaturaPort autorizacao;
-    private final EventosCandidaturaPort eventos;
-    private final UsuarioPort usuarios;
     private final QuadroCandidaturasCachePort quadroCache;
+    private final ValidadorRespostasCandidatura validadorRespostas;
+    private final CandidaturaDtoMapper mapper;
+    private final PublicadorEventosCandidatura publicadorEventos;
 
     public CandidaturaService(CandidaturaPort candidaturas,
                               VagaCandidaturaPort vagas,
                               PerguntaCandidaturaPort perguntas,
                               RequisitoCandidaturaPort requisitos,
                               AutorizacaoResponsavelCandidaturaPort autorizacao,
-                              EventosCandidaturaPort eventos, UsuarioPort usuarios,
-                              QuadroCandidaturasCachePort quadroCache) {
+                              QuadroCandidaturasCachePort quadroCache,
+                              ValidadorRespostasCandidatura validadorRespostas,
+                              CandidaturaDtoMapper mapper,
+                              PublicadorEventosCandidatura publicadorEventos) {
         this.candidaturas = candidaturas;
         this.vagas = vagas;
         this.perguntas = perguntas;
         this.requisitos = requisitos;
         this.autorizacao = autorizacao;
-        this.eventos = eventos;
-        this.usuarios = usuarios;
         this.quadroCache = quadroCache;
+        this.validadorRespostas = validadorRespostas;
+        this.mapper = mapper;
+        this.publicadorEventos = publicadorEventos;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class CandidaturaService implements CandidaturaUseCase {
         PaginaGenerico<Candidatura> pagina = candidaturas.listarPorUsuario(
                 query.getUsuarioId(), query.getStatus(), query.getInicio(), query.getFim(),
                 query.getPage(), query.getPageSize());
-        List<CandidaturaDTO> dados = pagina.getItens().stream().map(this::paraDto)
+        List<CandidaturaDTO> dados = pagina.getItens().stream().map(mapper::paraDto)
                 .collect(java.util.stream.Collectors.toList());
         return new TypedPagedResponse<>(200, "Candidaturas encontradas", dados,
                 query.getPage(), query.getPageSize(), pagina.getTotalItens());
@@ -112,9 +112,9 @@ public class CandidaturaService implements CandidaturaUseCase {
                 query.getStatus(), query.getNivelMinimo(), query.getTempoEmpresaMeses(),
                 query.getPage(), query.getPageSize());
         if (consultaCompleta) {
-            eventos.quadroConsultado(query.getVagaId(), pagina.getItens());
+            publicadorEventos.quadroConsultado(query.getVagaId(), pagina.getItens());
         }
-        List<CandidaturaDTO> dados = pagina.getItens().stream().map(this::paraDto)
+        List<CandidaturaDTO> dados = pagina.getItens().stream().map(mapper::paraDto)
                 .collect(java.util.stream.Collectors.toList());
         if (consultaCompleta) quadroCache.salvar(query.getVagaId(), dados);
         return new TypedPagedResponse<>(200, "Candidaturas encontradas", dados,
@@ -151,7 +151,7 @@ public class CandidaturaService implements CandidaturaUseCase {
         }
         String mensagem = candidatura.getStatus() == StatusCandidatura.RASCUNHO
                 ? "Candidatura criada como rascunho" : "Candidatura criada";
-        return new TypedResponse<>(201, mensagem, paraDto(candidatura));
+        return new TypedResponse<>(201, mensagem, mapper.paraDto(candidatura));
     }
 
     @Override
@@ -175,11 +175,11 @@ public class CandidaturaService implements CandidaturaUseCase {
         if (candidatura.isPerguntasRespondidas()) {
             return erro(409, PERGUNTAS_JA_RESPONDIDAS);
         }
-        if (!estruturaDoLoteValida(command.getRespostas())) {
+        if (!validadorRespostas.estruturaValida(command.getRespostas())) {
             return erro(400, LOTE_RESPOSTAS_INVALIDO);
         }
         List<PerguntaVaga> perguntasDaVaga = perguntas.listarAtivasPorVagaId(candidatura.getVagaId());
-        List<RespostaCandidatura> lote = validarLote(
+        List<RespostaCandidatura> lote = validadorRespostas.validarPerguntas(
                 candidatura, command.getRespostas(), perguntasDaVaga);
         if (lote == null) {
             return erro(422, LOTE_RESPOSTAS_INCOMPATIVEL);
@@ -190,7 +190,7 @@ public class CandidaturaService implements CandidaturaUseCase {
             return erro(409, PERGUNTAS_JA_RESPONDIDAS);
         }
         if (candidatura.getStatus() == StatusCandidatura.ENVIADA) publicarCriacao(candidatura);
-        return new TypedResponse<>(200, "Respostas registradas", paraDto(candidatura));
+        return new TypedResponse<>(200, "Respostas registradas", mapper.paraDto(candidatura));
     }
 
     @Override
@@ -214,7 +214,7 @@ public class CandidaturaService implements CandidaturaUseCase {
         }
         List<RequisitoVaga> requisitosDaVaga = requisitos.listarAtivosPorVagaId(
                 candidatura.getVagaId());
-        List<RespostaRequisitoCandidatura> lote = validarRequisitos(
+        List<RespostaRequisitoCandidatura> lote = validadorRespostas.validarRequisitos(
                 candidatura, command.getRespostas(), requisitosDaVaga);
         if (lote == null) return erro(422, LOTE_REQUISITOS_INCOMPATIVEL);
         try {
@@ -223,7 +223,7 @@ public class CandidaturaService implements CandidaturaUseCase {
             return erro(409, REQUISITOS_JA_RESPONDIDOS);
         }
         if (candidatura.getStatus() == StatusCandidatura.ENVIADA) publicarCriacao(candidatura);
-        return new TypedResponse<>(200, "Requisitos registrados", paraDto(candidatura));
+        return new TypedResponse<>(200, "Requisitos registrados", mapper.paraDto(candidatura));
     }
 
     @Override
@@ -261,7 +261,7 @@ public class CandidaturaService implements CandidaturaUseCase {
                 command.getUsuarioSolicitanteId(), anterior, candidatura.getStatus(),
                 command.getFeedback()));
         publicarAlteracao(candidatura, anterior);
-        CandidaturaDTO atualizado = paraDto(candidatura);
+        CandidaturaDTO atualizado = mapper.paraDto(candidatura);
         quadroCache.salvar(candidatura.getVagaId(), atualizado);
         return new TypedResponse<>(200, "Status da candidatura atualizado", atualizado);
     }
@@ -297,7 +297,7 @@ public class CandidaturaService implements CandidaturaUseCase {
         candidaturas.salvarHistorico(new HistoricoCandidatura(candidatura.getId(),
                 command.getUsuarioId(), anterior, candidatura.getStatus(), null));
         publicarAlteracao(candidatura, anterior);
-        return new TypedResponse<>(200, "Candidatura cancelada", paraDto(candidatura));
+        return new TypedResponse<>(200, "Candidatura cancelada", mapper.paraDto(candidatura));
     }
 
     @Override
@@ -311,11 +311,11 @@ public class CandidaturaService implements CandidaturaUseCase {
             return erro(404, CANDIDATURA_NAO_ENCONTRADA);
         }
         if (pertenceAoUsuario(candidatura, query.getUsuarioSolicitanteId())) {
-            return new TypedResponse<>(200, "Candidatura encontrada", paraDtoDetalhado(candidatura));
+            return new TypedResponse<>(200, "Candidatura encontrada", mapper.paraDtoDetalhado(candidatura));
         }
         Vaga vaga = vagas.buscarPorId(candidatura.getVagaId()).orElse(null);
         if (vaga != null && autorizacao.podeGerenciar(query.getUsuarioSolicitanteId(), vaga)) {
-            return new TypedResponse<>(200, "Candidatura encontrada", paraDtoDetalhado(candidatura));
+            return new TypedResponse<>(200, "Candidatura encontrada", mapper.paraDtoDetalhado(candidatura));
         }
         return erro(403, USUARIO_NAO_AUTORIZADO_CONSULTAR_CANDIDATURA);
     }
@@ -324,152 +324,17 @@ public class CandidaturaService implements CandidaturaUseCase {
         return candidatura.getUsuarioId().equals(usuarioId);
     }
 
-    private List<RespostaCandidatura> validarLote(
-            Candidatura candidatura, List<RespostaCandidaturaDTO> respostas,
-            List<PerguntaVaga> perguntasDaVaga) {
-        Map<UUID, PerguntaVaga> perguntasPorId = new HashMap<>();
-        for (PerguntaVaga pergunta : perguntasDaVaga) {
-            perguntasPorId.put(pergunta.getId(), pergunta);
-        }
-        List<RespostaCandidatura> lote = new ArrayList<>();
-        Set<UUID> respondidas = new HashSet<>();
-        for (RespostaCandidaturaDTO resposta : respostas) {
-            PerguntaVaga pergunta = perguntasPorId.get(resposta.getPerguntaId());
-            if (pergunta == null || !respostaValida(pergunta, resposta.getValor())) {
-                return null;
-            }
-            respondidas.add(pergunta.getId());
-            lote.add(new RespostaCandidatura(candidatura.getId(), pergunta.getId(),
-                    resposta.getValor().trim()));
-        }
-        for (PerguntaVaga pergunta : perguntasDaVaga) {
-            if (pergunta.isObrigatoria() && !respondidas.contains(pergunta.getId())) return null;
-        }
-        return lote;
-    }
-
-    private boolean respostaValida(PerguntaVaga pergunta, String valor) {
-        if (valor == null || valor.trim().isEmpty()) return false;
-        String normalizado = valor.trim();
-        try {
-            switch (pergunta.getTipoResposta()) {
-                case NUMERO:
-                    new BigDecimal(normalizado);
-                    return true;
-                case BOOLEANO:
-                    return "true".equalsIgnoreCase(normalizado)
-                            || "false".equalsIgnoreCase(normalizado);
-                case DATA:
-                    LocalDate.parse(normalizado);
-                    return true;
-                case TEXTO:
-                case SELECAO_UNICA:
-                    return true;
-                default:
-                    return false;
-            }
-        } catch (NumberFormatException | DateTimeParseException exception) {
-            return false;
-        }
-    }
-
-    private List<RespostaRequisitoCandidatura> validarRequisitos(
-            Candidatura candidatura, List<RespostaRequisitoCandidaturaDTO> respostas,
-            List<RequisitoVaga> requisitosDaVaga) {
-        Map<UUID, RequisitoVaga> requisitosPorId = new HashMap<>();
-        for (RequisitoVaga requisito : requisitosDaVaga) requisitosPorId.put(requisito.getId(), requisito);
-        Set<UUID> respondidos = new HashSet<>();
-        List<RespostaRequisitoCandidatura> lote = new ArrayList<>();
-        for (RespostaRequisitoCandidaturaDTO resposta : respostas) {
-            if (resposta == null || resposta.getRequisitoId() == null || resposta.getNivel() == null
-                    || !respondidos.add(resposta.getRequisitoId())
-                    || !requisitosPorId.containsKey(resposta.getRequisitoId())) return null;
-            lote.add(new RespostaRequisitoCandidatura(candidatura.getId(),
-                    resposta.getRequisitoId(), resposta.getNivel()));
-        }
-        for (RequisitoVaga requisito : requisitosDaVaga) {
-            if (requisito.isObrigatorio() && !respondidos.contains(requisito.getId())) return null;
-        }
-        return lote;
-    }
-
-    private boolean estruturaDoLoteValida(List<RespostaCandidaturaDTO> respostas) {
-        Set<UUID> perguntasDoLote = new HashSet<>();
-        for (RespostaCandidaturaDTO resposta : respostas) {
-            if (resposta == null || resposta.getPerguntaId() == null || resposta.getValor() == null
-                    || !perguntasDoLote.add(resposta.getPerguntaId())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private void publicarCriacao(Candidatura candidatura) {
-        quadroCache.salvar(candidatura.getVagaId(), paraDto(candidatura));
-        try {
-            eventos.candidaturaCriada(candidatura);
-        } catch (RuntimeException ignored) {
-            // O evento e posterior a confirmacao da candidatura e nao a desfaz.
-        }
+        quadroCache.salvar(candidatura.getVagaId(), mapper.paraDto(candidatura));
+        publicadorEventos.publicarCriacao(candidatura);
     }
 
     private void publicarAlteracao(Candidatura candidatura, StatusCandidatura anterior) {
-        try {
-            eventos.statusAlterado(candidatura, anterior);
-        } catch (RuntimeException ignored) {
-            // O evento e posterior a confirmacao da alteracao e nao a desfaz.
-        }
+        publicadorEventos.publicarAlteracao(candidatura, anterior);
     }
 
     private TypedResponse<CandidaturaDTO> erro(int status, String mensagem) {
         return new TypedResponse<>(status, mensagem, null);
     }
 
-    private CandidaturaDTO paraDto(Candidatura candidatura) {
-        String tituloVaga = vagas.buscarPorId(candidatura.getVagaId())
-                .map(Vaga::getTitulo).orElse(null);
-        Usuario candidato = usuarios.buscarPorId(candidatura.getUsuarioId()).orElse(null);
-        return new CandidaturaDTO(candidatura.getId(), candidatura.getUsuarioId(),
-                candidato == null ? null : candidato.getNome(),
-                candidato == null ? null : candidato.getEmail(),
-                candidato == null ? null : candidato.getTelefone(), candidatura.getVagaId(),
-                tituloVaga, candidatura.getStatus(), candidatura.getCriadoEm(), candidatura.isPerguntasRespondidas(),
-                candidatura.isRequisitosRespondidos(), Collections.<CandidaturaDTO.RespostaDetalhe>emptyList(),
-                Collections.<CandidaturaDTO.RequisitoDetalhe>emptyList(),
-                Collections.<HistoricoCandidaturaDTO>emptyList(), null, candidatura.getVersao());
-    }
-
-    private CandidaturaDTO paraDtoDetalhado(Candidatura candidatura) {
-        Map<UUID, String> perguntasPorId = new HashMap<>();
-        for (PerguntaVaga pergunta : perguntas.listarAtivasPorVagaId(candidatura.getVagaId())) {
-            perguntasPorId.put(pergunta.getId(), pergunta.getEnunciado());
-        }
-        List<CandidaturaDTO.RespostaDetalhe> respostasDto = new ArrayList<>();
-        for (RespostaCandidatura resposta : candidaturas.listarRespostas(candidatura.getId())) {
-            respostasDto.add(new CandidaturaDTO.RespostaDetalhe(
-                    perguntasPorId.getOrDefault(resposta.getPerguntaId(), "Pergunta"), resposta.getValor()));
-        }
-        Map<UUID, String> requisitosPorId = new HashMap<>();
-        for (RequisitoVaga requisito : requisitos.listarAtivosPorVagaId(candidatura.getVagaId())) {
-            requisitosPorId.put(requisito.getId(), requisito.getDescricao());
-        }
-        List<CandidaturaDTO.RequisitoDetalhe> requisitosDto = new ArrayList<>();
-        for (RespostaRequisitoCandidatura resposta : candidaturas.listarRespostasRequisitos(candidatura.getId())) {
-            requisitosDto.add(new CandidaturaDTO.RequisitoDetalhe(
-                    requisitosPorId.getOrDefault(resposta.getRequisitoId(), "Requisito"), resposta.getNivel()));
-        }
-        List<HistoricoCandidaturaDTO> historico = new ArrayList<>();
-        String feedback = null;
-        for (HistoricoCandidatura item : candidaturas.listarHistorico(candidatura.getId())) {
-            historico.add(new HistoricoCandidaturaDTO(item.getId(), item.getStatusAnterior(),
-                    item.getNovoStatus(), item.getFeedback(), item.getCriadoEm()));
-            if (item.getFeedback() != null && !item.getFeedback().isEmpty()) feedback = item.getFeedback();
-        }
-        CandidaturaDTO basico = paraDto(candidatura);
-        return new CandidaturaDTO(basico.getId(), basico.getUsuarioId(), basico.getNomeCandidato(),
-                basico.getEmailCandidato(), basico.getTelefoneCandidato(), basico.getVagaId(),
-                basico.getTituloVaga(), basico.getStatus(), basico.getCriadaEm(),
-                basico.isPerguntasRespondidas(), basico.isRequisitosRespondidos(),
-                respostasDto, requisitosDto, historico, feedback, candidatura.getVersao());
-    }
 }
