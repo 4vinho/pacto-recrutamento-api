@@ -15,7 +15,8 @@ public interface CandidatoJpaRepository extends JpaRepository<br.com.pacto.recru
 
     Optional<br.com.pacto.recrutamento.core.entities.Candidato> findByUsuarioId(UUID usuarioId);
 
-    @Query(value = "SELECT c.id AS candidaturaId, v.id AS vagaId, "
+    @Query(value = "SELECT CAST(c.id AS VARCHAR) AS candidaturaId, "
+            + "CAST(v.id AS VARCHAR) AS vagaId, "
             + "v.titulo AS tituloVaga, c.status AS status, c.criado_em AS criadaEm, "
             + "CAST(NULL AS VARCHAR) AS feedback "
             + "FROM candidaturas c "

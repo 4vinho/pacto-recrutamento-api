@@ -52,8 +52,8 @@ public class CandidatoJpaAdapter implements CandidatoPort {
 
     private CandidaturaDoCandidato paraAplicacao(CandidaturaPainelProjection projection) {
         return new CandidaturaDoCandidato(
-                projection.getCandidaturaId(),
-                projection.getVagaId(),
+                UUID.fromString(projection.getCandidaturaId()),
+                UUID.fromString(projection.getVagaId()),
                 projection.getTituloVaga(),
                 StatusCandidatura.valueOf(projection.getStatus()),
                 projection.getCriadaEm(),

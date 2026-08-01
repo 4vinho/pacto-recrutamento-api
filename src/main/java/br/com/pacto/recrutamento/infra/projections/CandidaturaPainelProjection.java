@@ -1,12 +1,10 @@
 package br.com.pacto.recrutamento.infra.projections;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
-
 public interface CandidaturaPainelProjection {
-    UUID getCandidaturaId();
+    String getCandidaturaId();
 
-    UUID getVagaId();
+    String getVagaId();
 
     String getTituloVaga();
 
