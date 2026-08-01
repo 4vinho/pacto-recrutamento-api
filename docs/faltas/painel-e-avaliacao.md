@@ -1,24 +1,10 @@
 # Painel do candidato e avaliação
 
-## Painel do candidato — complementos do bônus
+## Situação atual
 
-Já existe a lista paginada de candidaturas e a consulta do detalhe. Ainda faltam:
+Os complementos anteriormente registrados neste arquivo foram implementados:
+resumos, período, filtros de avaliação, feedback, histórico e versão otimista.
 
-- totais agregados por status;
-- filtro por período;
-- histórico de mudanças de status;
-- feedback textual ao candidato.
-
-## Avaliação — complementos do bônus
-
-Já existem listagem por vaga, detalhe autorizado e alteração de status. Ainda
-faltam:
-
-- filtro servidor por atendimento de requisitos e por tempo de empresa;
-- campo de feedback/parecer na alteração de status;
-- histórico auditável das avaliações e transições;
-- proteção explícita contra atualização concorrente, como versionamento
-  otimista da candidatura.
-
-Os dois módulos são bônus no desafio original. As lacunas não invalidam o CRUD
-principal de candidatura já entregue.
+Como evolução futura, o histórico pode receber eventos de domínio adicionais
+além de transições de status, e a data de admissão pode ser administrada por um
+módulo corporativo de perfil quando esse módulo for criado.

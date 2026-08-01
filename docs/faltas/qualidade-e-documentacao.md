@@ -2,11 +2,10 @@
 
 ## Testes que faltam
 
-- Corrigir a suíte atual: `mvn test` executou 89 testes na auditoria, mas terminou
-  com uma falha e um erro em `MapeamentoJpaTest`. O metamodelo JPA encontrou
-  apenas `RequisitoTemplateVaga`, e o teste de persistência não conseguiu
-  carregar o contexto. Enquanto isso não for corrigido, o backend não possui
-  baseline verde de entrega.
+- Corrigir a suíte atual: `mvn test` executou 90 testes após esta entrega, mas o
+  contexto de integração não encontrou um bean `JavaMailSender` e o teste de
+  idempotência de notificação esperava 3 envios e observou 6. Essas falhas estão
+  no módulo de e-mail adicionado separadamente e impedem um baseline verde.
 - Testes da fronteira HTTP com MockMvc/WebMvcTest para rotas, validação,
   serialização, `401`, `403` e status de erro.
 - Teste integrado com PostgreSQL real/Testcontainers e Flyway habilitado.
@@ -23,7 +22,7 @@
 - Atualização de `docs/MELHORIAS_BACKEND.md`: o documento ainda recomenda
   configurar JaCoCo, embora o `pom.xml` já possua essa configuração.
 - Atualização da afirmação de “93 testes sem falhas” no mesmo documento, pois a
-  execução auditada encontrou 89 testes, uma falha e um erro.
+  execução atual encontrou 90 testes com falhas no módulo de e-mail.
 
 ## Robustez ainda pendente
 
