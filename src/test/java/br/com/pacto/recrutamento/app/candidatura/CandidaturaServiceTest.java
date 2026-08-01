@@ -360,7 +360,8 @@ class CandidaturaServiceTest {
         private final Map<UUID, Candidato> dados = new HashMap<>();
 
         private Candidatos(UUID usuarioId, UUID candidatoId) {
-            Candidato candidato = new Candidato(usuarioId, LocalDate.now());
+            Candidato candidato = new Candidato(usuarioId, "Desenvolvedor", "Resumo",
+                    "Experiencia", "Formacao", "Java");
             candidato.setId(candidatoId);
             dados.put(usuarioId, candidato);
         }

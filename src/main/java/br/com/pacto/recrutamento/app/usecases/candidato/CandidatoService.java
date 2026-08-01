@@ -40,7 +40,9 @@ public class CandidatoService implements CandidatoUseCase {
                         c.getTamanhoBytes(), c.getChecksumSha256()))
                 .orElse(null);
         return new TypedResponse<>(200, "Perfil de candidato encontrado", new CandidatoDTO(
-                candidato.getId(), candidato.getUsuarioId(), candidato.getDataAdmissao(), curriculo));
+                candidato.getId(), candidato.getUsuarioId(), candidato.getTituloProfissional(),
+                candidato.getResumoProfissional(), candidato.getExperiencia(), candidato.getFormacao(),
+                candidato.getHabilidades(), curriculo));
     }
 
     @Override
@@ -52,7 +54,9 @@ public class CandidatoService implements CandidatoUseCase {
             return erro(409, PERFIL_CANDIDATO_EXISTENTE);
         }
         Candidato candidato = candidatoRepository.salvar(
-                new Candidato(command.getUsuarioId(), command.getDataAdmissao()));
+                new Candidato(command.getUsuarioId(), command.getTituloProfissional(),
+                        command.getResumoProfissional(), command.getExperiencia(),
+                        command.getFormacao(), command.getHabilidades()));
         return new TypedResponse<>(201, "Candidato criado", paraDto(candidato));
     }
 
@@ -66,7 +70,8 @@ public class CandidatoService implements CandidatoUseCase {
         if (candidato == null) {
             return erro(404, PERFIL_CANDIDATO_NAO_ENCONTRADO);
         }
-        candidato.setDataAdmissao(command.getDataAdmissao());
+        candidato.atualizarPerfil(command.getTituloProfissional(), command.getResumoProfissional(),
+                command.getExperiencia(), command.getFormacao(), command.getHabilidades());
         Candidato atualizado = candidatoRepository.salvar(candidato);
         return new TypedResponse<>(200, "Candidato atualizado", paraDto(atualizado));
     }
@@ -107,7 +112,9 @@ public class CandidatoService implements CandidatoUseCase {
     }
 
     private CandidatoDTO paraDto(Candidato candidato) {
-        return new CandidatoDTO(candidato.getId(), candidato.getUsuarioId(), candidato.getDataAdmissao());
+        return new CandidatoDTO(candidato.getId(), candidato.getUsuarioId(),
+                candidato.getTituloProfissional(), candidato.getResumoProfissional(),
+                candidato.getExperiencia(), candidato.getFormacao(), candidato.getHabilidades(), null);
     }
 
     private CandidaturaResumoDTO paraResumo(CandidaturaDoCandidato candidatura) {

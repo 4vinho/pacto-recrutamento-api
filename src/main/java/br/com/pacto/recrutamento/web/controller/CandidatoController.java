@@ -13,8 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @RestController
 @RequestMapping("/candidatos")
@@ -36,14 +36,18 @@ public class CandidatoController {
     public ResponseEntity<TypedResponse<CandidatoDTO>> criar(
             Authentication authentication, @Valid @RequestBody CandidatoRequest request) {
         return HttpResponses.from(service.criarCandidato(
-                new CriarCandidatoDTO(AuthenticatedUser.id(authentication), request.dataAdmissao)));
+                new CriarCandidatoDTO(AuthenticatedUser.id(authentication), request.tituloProfissional,
+                        request.resumoProfissional, request.experiencia, request.formacao,
+                        request.habilidades)));
     }
 
     @PutMapping("/me")
     public ResponseEntity<TypedResponse<CandidatoDTO>> atualizar(
             Authentication authentication, @Valid @RequestBody CandidatoRequest request) {
         return HttpResponses.from(service.atualizarCandidato(
-                new AtualizarCandidatoDTO(AuthenticatedUser.id(authentication), request.dataAdmissao)));
+                new AtualizarCandidatoDTO(AuthenticatedUser.id(authentication), request.tituloProfissional,
+                        request.resumoProfissional, request.experiencia, request.formacao,
+                        request.habilidades)));
     }
 
     @GetMapping("/me/candidaturas")
@@ -57,7 +61,15 @@ public class CandidatoController {
     }
 
     public static class CandidatoRequest {
-        @NotNull
-        public LocalDate dataAdmissao;
+        @NotBlank @Size(max = 120)
+        public String tituloProfissional;
+        @NotBlank @Size(max = 1000)
+        public String resumoProfissional;
+        @NotBlank @Size(max = 2000)
+        public String experiencia;
+        @NotBlank @Size(max = 1000)
+        public String formacao;
+        @Size(max = 500)
+        public String habilidades;
     }
 }

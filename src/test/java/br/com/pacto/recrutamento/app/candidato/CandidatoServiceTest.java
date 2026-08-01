@@ -12,7 +12,6 @@ import br.com.pacto.recrutamento.app.ports.out.curriculo.CurriculoPort;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Optional;
@@ -29,7 +28,7 @@ class CandidatoServiceTest {
     @Test
     void consultaPerfilComResumoDoCurriculoAtual() {
         UUID usuarioId = UUID.randomUUID();
-        Candidato candidato = repository.salvar(new Candidato(usuarioId, LocalDate.of(2020, 1, 1)));
+        Candidato candidato = repository.salvar(candidato(usuarioId, "Desenvolvedor Java"));
         curriculos.atual = new Curriculo(candidato.getId(), "curriculos/cv.pdf", "cv.pdf",
                 "application/pdf", 100, "abc");
 
@@ -43,23 +42,23 @@ class CandidatoServiceTest {
     @Test
     void criaPerfilDoUsuarioQuandoAindaNaoExiste() {
         UUID usuarioId = UUID.randomUUID();
-        LocalDate dataAdmissao = LocalDate.of(2020, 2, 3);
-
         TypedResponse<CandidatoDTO> resposta = service.criarCandidato(
-                new CriarCandidatoDTO(usuarioId, dataAdmissao));
+                new CriarCandidatoDTO(usuarioId, "Desenvolvedor Full Stack", "Resumo",
+                        "Experiencia", "Sistemas de Informacao", "Java, Angular"));
 
         assertThat(resposta.getStatusCode()).isEqualTo(201);
         assertThat(resposta.getData().getUsuarioId()).isEqualTo(usuarioId);
-        assertThat(resposta.getData().getDataAdmissao()).isEqualTo(dataAdmissao);
+        assertThat(resposta.getData().getTituloProfissional()).isEqualTo("Desenvolvedor Full Stack");
     }
 
     @Test
     void naoCriaSegundoPerfilParaMesmoUsuario() {
         UUID usuarioId = UUID.randomUUID();
-        repository.salvar(new Candidato(usuarioId, LocalDate.of(2019, 1, 1)));
+        repository.salvar(candidato(usuarioId, "Desenvolvedor"));
 
         TypedResponse<CandidatoDTO> resposta = service.criarCandidato(
-                new CriarCandidatoDTO(usuarioId, LocalDate.of(2020, 2, 3)));
+                new CriarCandidatoDTO(usuarioId, "Desenvolvedor", "Resumo", "Experiencia",
+                        "Formacao", "Java"));
 
         assertThat(resposta.getStatusCode()).isEqualTo(409);
         assertThat(resposta.getData()).isNull();
@@ -70,27 +69,29 @@ class CandidatoServiceTest {
         UUID usuarioId = UUID.randomUUID();
         UUID outroUsuarioId = UUID.randomUUID();
         Candidato perfilDoUsuario = repository.salvar(
-                new Candidato(usuarioId, LocalDate.of(2019, 1, 1)));
+                candidato(usuarioId, "Perfil original"));
         Candidato perfilDeOutroUsuario = repository.salvar(
-                new Candidato(outroUsuarioId, LocalDate.of(2018, 1, 1)));
+                candidato(outroUsuarioId, "Outro perfil"));
 
         TypedResponse<CandidatoDTO> resposta = service.atualizarCandidato(
-                new AtualizarCandidatoDTO(usuarioId, LocalDate.of(2022, 4, 5)));
+                new AtualizarCandidatoDTO(usuarioId, "Perfil atualizado", "Resumo novo",
+                        "Experiencia nova", "Formacao nova", "Spring"));
 
         assertThat(resposta.getStatusCode()).isEqualTo(200);
         assertThat(resposta.getData().getId()).isEqualTo(perfilDoUsuario.getId());
-        assertThat(repository.buscarPorUsuarioId(usuarioId).get().getDataAdmissao())
-                .isEqualTo(LocalDate.of(2022, 4, 5));
+        assertThat(repository.buscarPorUsuarioId(usuarioId).get().getTituloProfissional())
+                .isEqualTo("Perfil atualizado");
         assertThat(repository.buscarPorUsuarioId(outroUsuarioId).get().getId())
                 .isEqualTo(perfilDeOutroUsuario.getId());
-        assertThat(repository.buscarPorUsuarioId(outroUsuarioId).get().getDataAdmissao())
-                .isEqualTo(LocalDate.of(2018, 1, 1));
+        assertThat(repository.buscarPorUsuarioId(outroUsuarioId).get().getTituloProfissional())
+                .isEqualTo("Outro perfil");
     }
 
     @Test
     void retornaNaoEncontradoAoAtualizarUsuarioSemPerfil() {
         TypedResponse<CandidatoDTO> resposta = service.atualizarCandidato(
-                new AtualizarCandidatoDTO(UUID.randomUUID(), LocalDate.now()));
+                new AtualizarCandidatoDTO(UUID.randomUUID(), "Titulo", "Resumo", "Experiencia",
+                        "Formacao", "Habilidades"));
 
         assertThat(resposta.getStatusCode()).isEqualTo(404);
         assertThat(resposta.getData()).isNull();
@@ -168,6 +169,10 @@ class CandidatoServiceTest {
             ultimoUsuarioConsultado = usuarioId;
             return pagina;
         }
+    }
+
+    private Candidato candidato(UUID usuarioId, String titulo) {
+        return new Candidato(usuarioId, titulo, "Resumo", "Experiencia", "Formacao", "Java");
     }
 
     private static class CurriculoRepositoryFalso implements CurriculoPort {

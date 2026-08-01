@@ -4,7 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -13,16 +12,25 @@ import java.util.UUID;
 public class Candidato extends EntidadeAuditavel {
     @Column(name = "usuario_id", nullable = false)
     private UUID usuarioId;
-    @Column(name = "data_admissao")
-    private LocalDate dataAdmissao;
+    @Column(name = "titulo_profissional", length = 120)
+    private String tituloProfissional;
+    @Column(name = "resumo_profissional", length = 1000)
+    private String resumoProfissional;
+    @Column(name = "experiencia", length = 2000)
+    private String experiencia;
+    @Column(name = "formacao", length = 1000)
+    private String formacao;
+    @Column(name = "habilidades", length = 500)
+    private String habilidades;
 
     public Candidato() {
     }
 
-    public Candidato(UUID usuarioId, LocalDate dataAdmissao) {
+    public Candidato(UUID usuarioId, String tituloProfissional, String resumoProfissional,
+                     String experiencia, String formacao, String habilidades) {
         super(UUID.randomUUID());
         this.usuarioId = usuarioId;
-        this.dataAdmissao = dataAdmissao;
+        atualizarPerfil(tituloProfissional, resumoProfissional, experiencia, formacao, habilidades);
     }
 
     public UUID getUsuarioId() {
@@ -33,11 +41,17 @@ public class Candidato extends EntidadeAuditavel {
         this.usuarioId = usuarioId;
     }
 
-    public LocalDate getDataAdmissao() {
-        return dataAdmissao;
+    public void atualizarPerfil(String tituloProfissional, String resumoProfissional,
+                                String experiencia, String formacao, String habilidades) {
+        this.tituloProfissional = tituloProfissional;
+        this.resumoProfissional = resumoProfissional;
+        this.experiencia = experiencia;
+        this.formacao = formacao;
+        this.habilidades = habilidades;
     }
-
-    public void setDataAdmissao(LocalDate dataAdmissao) {
-        this.dataAdmissao = dataAdmissao;
-    }
+    public String getTituloProfissional() { return tituloProfissional; }
+    public String getResumoProfissional() { return resumoProfissional; }
+    public String getExperiencia() { return experiencia; }
+    public String getFormacao() { return formacao; }
+    public String getHabilidades() { return habilidades; }
 }
