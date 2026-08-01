@@ -7,6 +7,8 @@ import br.com.pacto.recrutamento.app.dtos.vaga.VagaDTO;
 import br.com.pacto.recrutamento.app.ports.in.templatevaga.TemplateVagaUseCase;
 import br.com.pacto.recrutamento.app.ports.out.templatevaga.*;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
+import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.entities.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,9 @@ import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TemplateVagaService implements TemplateVagaUseCase {
@@ -43,6 +48,27 @@ public class TemplateVagaService implements TemplateVagaUseCase {
         this.requisitosVaga = requisitosVaga;
         this.autorizacao = autorizacao;
         this.clock = clock;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TypedPagedResponse<TemplateVagaDTO> listarTemplates(ListarTemplatesVagaDTO query) {
+        if (query == null || query.getUsuarioId() == null || query.getPage() < 0
+                || query.getPageSize() <= 0 || query.getPageSize() > 100) {
+            int page = query == null || query.getPage() < 0 ? 0 : query.getPage();
+            int size = query == null || query.getPageSize() <= 0 ? 20 : query.getPageSize();
+            return new TypedPagedResponse<>(400, "Consulta de templates invalida",
+                    Collections.<TemplateVagaDTO>emptyList(), page, size, 0);
+        }
+        if (!administrador(query.getUsuarioId())) return new TypedPagedResponse<>(403,
+                ACESSO_NAO_AUTORIZADO, Collections.<TemplateVagaDTO>emptyList(),
+                query.getPage(), query.getPageSize(), 0);
+        PaginaGenerico<TemplateVaga> pagina = templates.listar(query.getBusca(), query.getPage(),
+                query.getPageSize());
+        List<TemplateVagaDTO> dados = pagina.getItens().stream().map(this::paraDto)
+                .collect(Collectors.toList());
+        return new TypedPagedResponse<>(200, "Templates encontrados", dados, query.getPage(),
+                query.getPageSize(), pagina.getTotalItens());
     }
 
     @Override
@@ -252,7 +278,12 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     }
 
     private TypedResponse<TemplateVagaDTO> respostaTemplate(int status, String mensagem, TemplateVaga template) {
-        return new TypedResponse<TemplateVagaDTO>(status, mensagem, new TemplateVagaDTO(template.getId(), template.getResponsavelId(), template.getTitulo(), template.getDescricao()));
+        return new TypedResponse<TemplateVagaDTO>(status, mensagem, paraDto(template));
+    }
+
+    private TemplateVagaDTO paraDto(TemplateVaga template) {
+        return new TemplateVagaDTO(template.getId(), template.getResponsavelId(),
+                template.getTitulo(), template.getDescricao());
     }
 
     private TypedResponse<PerguntaTemplateVagaDTO> respostaPergunta(int status, String mensagem, PerguntaTemplateVaga pergunta) {

@@ -4,6 +4,8 @@ import br.com.pacto.recrutamento.app.dtos.templatevaga.CriarTemplateVagaDTO;
 import br.com.pacto.recrutamento.app.dtos.templatevaga.CriarVagaAPartirDoTemplateDTO;
 import br.com.pacto.recrutamento.app.dtos.templatevaga.ExcluirItemTemplateVagaDTO;
 import br.com.pacto.recrutamento.app.dtos.templatevaga.SalvarPerguntaTemplateVagaDTO;
+import br.com.pacto.recrutamento.app.dtos.templatevaga.ListarTemplatesVagaDTO;
+import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.app.usecases.templatevaga.TemplateVagaService;
 import br.com.pacto.recrutamento.core.entities.*;
 import br.com.pacto.recrutamento.core.enums.TipoResposta;
@@ -15,6 +17,13 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TemplateVagaServiceTest {
+    @Test
+    void listaTemplatesParaAdministrador() {
+        Memoria memoria = new Memoria();
+        memoria.template();
+        assertEquals(1, memoria.service(true).listarTemplates(new ListarTemplatesVagaDTO(
+                UUID.randomUUID(), "Titulo", 0, 20)).getTotalItems());
+    }
     @Test
     void recusa_criacao_para_nao_administrador() {
         Memoria memoria = new Memoria();
@@ -83,6 +92,14 @@ class TemplateVagaServiceTest {
 
     static class Templates implements TemplateVagaPort {
         Map<UUID, TemplateVaga> valores = new HashMap<>();
+
+        public PaginaGenerico<TemplateVaga> listar(String busca, int page, int pageSize) {
+            List<TemplateVaga> itens = new ArrayList<>();
+            for (TemplateVaga template : valores.values())
+                if (template.getExcluidoEm() == null && (busca == null
+                        || template.getTitulo().contains(busca))) itens.add(template);
+            return new PaginaGenerico<>(itens, itens.size());
+        }
 
         public Optional<TemplateVaga> buscarAtivoPorId(UUID id) {
             return Optional.ofNullable(valores.get(id)).filter(x -> x.getExcluidoEm() == null);

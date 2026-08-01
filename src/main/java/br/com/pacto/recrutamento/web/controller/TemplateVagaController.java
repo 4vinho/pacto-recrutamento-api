@@ -8,6 +8,7 @@ import br.com.pacto.recrutamento.app.dtos.templatevaga.*;
 import br.com.pacto.recrutamento.app.dtos.vaga.VagaDTO;
 import br.com.pacto.recrutamento.app.ports.in.templatevaga.TemplateVagaUseCase;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.enums.TipoResposta;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,6 +28,16 @@ public class TemplateVagaController {
 
     public TemplateVagaController(TemplateVagaUseCase service) {
         this.service = service;
+    }
+
+    @GetMapping
+    public ResponseEntity<TypedPagedResponse<TemplateVagaDTO>> listar(
+            Authentication auth, @RequestParam(required = false) String busca,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int pageSize) {
+        TypedPagedResponse<TemplateVagaDTO> resposta = service.listarTemplates(
+                new ListarTemplatesVagaDTO(AuthenticatedUser.id(auth), busca, page, pageSize));
+        return ResponseEntity.status(resposta.getStatusCode()).body(resposta);
     }
 
     @PostMapping

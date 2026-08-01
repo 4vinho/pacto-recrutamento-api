@@ -3,8 +3,11 @@ package br.com.pacto.recrutamento.app.ports.in.templatevaga;
 import br.com.pacto.recrutamento.app.dtos.templatevaga.*;
 import br.com.pacto.recrutamento.app.dtos.vaga.VagaDTO;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
+import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 
 public interface TemplateVagaUseCase {
+    TypedPagedResponse<TemplateVagaDTO> listarTemplates(ListarTemplatesVagaDTO query);
+
     TypedResponse<TemplateVagaDTO> criarTemplate(CriarTemplateVagaDTO command);
 
     TypedResponse<TemplateVagaDTO> atualizarTemplate(AtualizarTemplateVagaDTO command);
