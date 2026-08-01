@@ -66,6 +66,7 @@ public class UsuarioService implements UsuarioUseCase {
     }
 
     @Override
+    @Transactional
     public TypedResponse<SessaoDTO> autenticarUsuario(AutenticarUsuarioDTO command) {
         if (command == null) return resposta(401, CREDENCIAIS_INVALIDAS, null);
         String email = normalizarEmail(command.getEmail());
