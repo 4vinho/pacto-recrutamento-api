@@ -2,6 +2,7 @@ package br.com.pacto.recrutamento.core.entities;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -25,6 +26,8 @@ public class Usuario extends EntidadeAuditavel {
     private Set<Papel> papeis = new HashSet<>();
     @Column(name = "excluido_em")
     private OffsetDateTime excluidoEm;
+    @Column(name = "data_admissao", nullable = false)
+    private LocalDate dataAdmissao = LocalDate.now();
 
     public Usuario() {
     }
@@ -86,4 +89,6 @@ public class Usuario extends EntidadeAuditavel {
     public void setExcluidoEm(OffsetDateTime excluidoEm) {
         this.excluidoEm = excluidoEm;
     }
+    public LocalDate getDataAdmissao() { return dataAdmissao; }
+    public void setDataAdmissao(LocalDate dataAdmissao) { this.dataAdmissao = dataAdmissao; }
 }

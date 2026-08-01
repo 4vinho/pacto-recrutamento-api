@@ -52,11 +52,26 @@ public class CandidaturaService implements CandidaturaUseCase {
                     Collections.<CandidaturaDTO>emptyList(), 0, 20, 0);
         }
         PaginaGenerico<Candidatura> pagina = candidaturas.listarPorUsuario(
-                query.getUsuarioId(), query.getPage(), query.getPageSize());
+                query.getUsuarioId(), query.getStatus(), query.getInicio(), query.getFim(),
+                query.getPage(), query.getPageSize());
         List<CandidaturaDTO> dados = pagina.getItens().stream().map(this::paraDto)
                 .collect(java.util.stream.Collectors.toList());
         return new TypedPagedResponse<>(200, "Candidaturas encontradas", dados,
                 query.getPage(), query.getPageSize(), pagina.getTotalItens());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TypedResponse<ResumoCandidaturasDTO> resumirMinhasCandidaturas(
+            ListarMinhasCandidaturasDTO query) {
+        if (query == null || query.getUsuarioId() == null
+                || (query.getInicio() != null && query.getFim() != null
+                && query.getInicio().isAfter(query.getFim()))) {
+            return new TypedResponse<>(400, "Periodo de candidaturas invalido", null);
+        }
+        return new TypedResponse<>(200, "Resumo de candidaturas encontrado",
+                new ResumoCandidaturasDTO(candidaturas.contarPorStatusDoUsuario(
+                        query.getUsuarioId(), query.getInicio(), query.getFim())));
     }
 
     @Override
@@ -78,7 +93,8 @@ public class CandidaturaService implements CandidaturaUseCase {
                     Collections.<CandidaturaDTO>emptyList(), query.getPage(), query.getPageSize(), 0);
         }
         PaginaGenerico<Candidatura> pagina = candidaturas.listarPorVaga(query.getVagaId(),
-                query.getStatus(), query.getPage(), query.getPageSize());
+                query.getStatus(), query.getNivelMinimo(), query.getTempoEmpresaMeses(),
+                query.getPage(), query.getPageSize());
         List<CandidaturaDTO> dados = pagina.getItens().stream().map(this::paraDto)
                 .collect(java.util.stream.Collectors.toList());
         return new TypedPagedResponse<>(200, "Candidaturas encontradas", dados,
@@ -210,6 +226,9 @@ public class CandidaturaService implements CandidaturaUseCase {
             return erro(403, USUARIO_NAO_AUTORIZADO_ALTERAR_CANDIDATURA);
         }
         StatusCandidatura anterior = candidatura.getStatus();
+        if (command.getVersao() != null && command.getVersao() != candidatura.getVersao()) {
+            return erro(409, "A candidatura foi atualizada por outro usuario. Recarregue os dados.");
+        }
         try {
             candidatura.setStatus(command.getStatus());
         } catch (IllegalArgumentException ex) {
@@ -218,6 +237,9 @@ public class CandidaturaService implements CandidaturaUseCase {
             return erro(422, TRANSICAO_CANDIDATURA_INVALIDA);
         }
         candidaturas.salvar(candidatura);
+        candidaturas.salvarHistorico(new HistoricoCandidatura(candidatura.getId(),
+                command.getUsuarioSolicitanteId(), anterior, candidatura.getStatus(),
+                command.getFeedback()));
         publicarAlteracao(candidatura, anterior);
         return new TypedResponse<>(200, "Status da candidatura atualizado", paraDto(candidatura));
     }
@@ -250,6 +272,8 @@ public class CandidaturaService implements CandidaturaUseCase {
             return erro(422, CANCELAMENTO_NAO_PERMITIDO);
         }
         candidaturas.salvar(candidatura);
+        candidaturas.salvarHistorico(new HistoricoCandidatura(candidatura.getId(),
+                command.getUsuarioId(), anterior, candidatura.getStatus(), null));
         publicarAlteracao(candidatura, anterior);
         return new TypedResponse<>(200, "Candidatura cancelada", paraDto(candidatura));
     }
@@ -405,10 +429,17 @@ public class CandidaturaService implements CandidaturaUseCase {
             requisitosDto.add(new CandidaturaDTO.RequisitoDetalhe(
                     requisitosPorId.getOrDefault(resposta.getRequisitoId(), "Requisito"), resposta.getNivel()));
         }
+        List<HistoricoCandidaturaDTO> historico = new ArrayList<>();
+        String feedback = null;
+        for (HistoricoCandidatura item : candidaturas.listarHistorico(candidatura.getId())) {
+            historico.add(new HistoricoCandidaturaDTO(item.getId(), item.getStatusAnterior(),
+                    item.getNovoStatus(), item.getFeedback(), item.getCriadoEm()));
+            if (item.getFeedback() != null && !item.getFeedback().isEmpty()) feedback = item.getFeedback();
+        }
         CandidaturaDTO basico = paraDto(candidatura);
         return new CandidaturaDTO(basico.getId(), basico.getUsuarioId(), basico.getVagaId(),
                 basico.getTituloVaga(), basico.getStatus(), basico.getCriadaEm(),
                 basico.isPerguntasRespondidas(), basico.isRequisitosRespondidos(),
-                respostasDto, requisitosDto);
+                respostasDto, requisitosDto, historico, feedback, candidatura.getVersao());
     }
 }

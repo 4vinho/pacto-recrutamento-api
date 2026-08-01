@@ -32,6 +32,7 @@ class MapeamentoJpaTest {
                 Candidatura.class.getSimpleName(),
                 RespostaCandidatura.class.getSimpleName(),
                 RespostaRequisitoCandidatura.class.getSimpleName(),
+                HistoricoCandidatura.class.getSimpleName(),
                 Notificacao.class.getSimpleName(), "TemplateVaga",
                 "PerguntaTemplateVaga", "RequisitoTemplateVaga");
     }

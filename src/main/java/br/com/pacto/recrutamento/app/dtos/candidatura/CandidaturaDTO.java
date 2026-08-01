@@ -19,11 +19,15 @@ public class CandidaturaDTO {
     private final boolean requisitosRespondidos;
     private final List<RespostaDetalhe> respostas;
     private final List<RequisitoDetalhe> requisitos;
+    private final List<HistoricoCandidaturaDTO> historico;
+    private final String feedback;
+    private final long versao;
 
     public CandidaturaDTO(UUID id, UUID usuarioId, UUID vagaId,
                           StatusCandidatura status, OffsetDateTime criadaEm) {
         this(id, usuarioId, vagaId, null, status, criadaEm, false, false,
-                Collections.<RespostaDetalhe>emptyList(), Collections.<RequisitoDetalhe>emptyList());
+                Collections.<RespostaDetalhe>emptyList(), Collections.<RequisitoDetalhe>emptyList(),
+                Collections.<HistoricoCandidaturaDTO>emptyList(), null, 0);
     }
 
     public CandidaturaDTO(UUID id, UUID usuarioId, UUID vagaId, String tituloVaga,
@@ -31,13 +35,24 @@ public class CandidaturaDTO {
                           boolean perguntasRespondidas, boolean requisitosRespondidos) {
         this(id, usuarioId, vagaId, tituloVaga, status, criadaEm, perguntasRespondidas,
                 requisitosRespondidos, Collections.<RespostaDetalhe>emptyList(),
-                Collections.<RequisitoDetalhe>emptyList());
+                Collections.<RequisitoDetalhe>emptyList(),
+                Collections.<HistoricoCandidaturaDTO>emptyList(), null, 0);
     }
 
     public CandidaturaDTO(UUID id, UUID usuarioId, UUID vagaId, String tituloVaga,
                           StatusCandidatura status, OffsetDateTime criadaEm,
                           boolean perguntasRespondidas, boolean requisitosRespondidos,
                           List<RespostaDetalhe> respostas, List<RequisitoDetalhe> requisitos) {
+        this(id, usuarioId, vagaId, tituloVaga, status, criadaEm, perguntasRespondidas,
+                requisitosRespondidos, respostas, requisitos,
+                Collections.<HistoricoCandidaturaDTO>emptyList(), null, 0);
+    }
+
+    public CandidaturaDTO(UUID id, UUID usuarioId, UUID vagaId, String tituloVaga,
+                          StatusCandidatura status, OffsetDateTime criadaEm,
+                          boolean perguntasRespondidas, boolean requisitosRespondidos,
+                          List<RespostaDetalhe> respostas, List<RequisitoDetalhe> requisitos,
+                          List<HistoricoCandidaturaDTO> historico, String feedback, long versao) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.vagaId = vagaId;
@@ -48,6 +63,9 @@ public class CandidaturaDTO {
         this.requisitosRespondidos = requisitosRespondidos;
         this.respostas = respostas;
         this.requisitos = requisitos;
+        this.historico = historico;
+        this.feedback = feedback;
+        this.versao = versao;
     }
 
     public UUID getId() {
@@ -76,6 +94,9 @@ public class CandidaturaDTO {
     public boolean isRequisitosRespondidos() { return requisitosRespondidos; }
     public List<RespostaDetalhe> getRespostas() { return respostas; }
     public List<RequisitoDetalhe> getRequisitos() { return requisitos; }
+    public List<HistoricoCandidaturaDTO> getHistorico() { return historico; }
+    public String getFeedback() { return feedback; }
+    public long getVersao() { return versao; }
 
     public static class RespostaDetalhe {
         private final String pergunta;

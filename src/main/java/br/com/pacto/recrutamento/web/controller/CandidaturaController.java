@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.time.OffsetDateTime;
 
 @RestController
 @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTH)
@@ -34,23 +35,38 @@ public class CandidaturaController {
     @GetMapping("/candidaturas/me")
     public ResponseEntity<TypedPagedResponse<CandidaturaDTO>> listarMinhas(
             Authentication authentication,
+            @RequestParam(required = false) StatusCandidatura status,
+            @RequestParam(required = false) OffsetDateTime inicio,
+            @RequestParam(required = false) OffsetDateTime fim,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int pageSize) {
         TypedPagedResponse<CandidaturaDTO> resposta = service.listarMinhasCandidaturas(
                 new ListarMinhasCandidaturasDTO(
-                        AuthenticatedUser.id(authentication), page, pageSize));
+                        AuthenticatedUser.id(authentication), page, pageSize, status, inicio, fim));
         return ResponseEntity.status(resposta.getStatusCode()).body(resposta);
+    }
+
+    @GetMapping("/candidaturas/me/resumo")
+    public ResponseEntity<TypedResponse<ResumoCandidaturasDTO>> resumirMinhas(
+            Authentication authentication,
+            @RequestParam(required = false) OffsetDateTime inicio,
+            @RequestParam(required = false) OffsetDateTime fim) {
+        return HttpResponses.from(service.resumirMinhasCandidaturas(
+                new ListarMinhasCandidaturasDTO(
+                        AuthenticatedUser.id(authentication), 0, 1, null, inicio, fim)));
     }
 
     @GetMapping("/vagas/{vagaId}/candidaturas")
     public ResponseEntity<TypedPagedResponse<CandidaturaDTO>> listarPorVaga(
             Authentication authentication, @PathVariable UUID vagaId,
             @RequestParam(required = false) StatusCandidatura status,
+            @RequestParam(required = false) NivelAtendimentoRequisito nivelMinimo,
+            @RequestParam(required = false) Integer tempoEmpresaMeses,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int pageSize) {
         TypedPagedResponse<CandidaturaDTO> resposta = service.listarCandidaturasDaVaga(
                 new ListarCandidaturasDaVagaDTO(AuthenticatedUser.id(authentication), vagaId,
-                        status, page, pageSize));
+                        status, nivelMinimo, tempoEmpresaMeses, page, pageSize));
         return ResponseEntity.status(resposta.getStatusCode()).body(resposta);
     }
 
@@ -92,7 +108,8 @@ public class CandidaturaController {
             @Valid @RequestBody StatusRequest request) {
         return HttpResponses.from(service.atualizarStatusCandidatura(
                 new AtualizarStatusCandidaturaDTO(
-                        AuthenticatedUser.id(authentication), candidaturaId, request.status)));
+                        AuthenticatedUser.id(authentication), candidaturaId, request.status,
+                        request.feedback, request.versao)));
     }
 
     @PostMapping("/candidaturas/{candidaturaId}/cancelamento")
@@ -138,5 +155,9 @@ public class CandidaturaController {
     public static class StatusRequest {
         @NotNull
         public StatusCandidatura status;
+        @NotNull
+        public Long versao;
+        @javax.validation.constraints.Size(max = 2000)
+        public String feedback;
     }
 }

@@ -7,6 +7,8 @@ import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 public interface CandidaturaUseCase {
     TypedPagedResponse<CandidaturaDTO> listarMinhasCandidaturas(
             ListarMinhasCandidaturasDTO query);
+    TypedResponse<ResumoCandidaturasDTO> resumirMinhasCandidaturas(
+            ListarMinhasCandidaturasDTO query);
     TypedPagedResponse<CandidaturaDTO> listarCandidaturasDaVaga(
             ListarCandidaturasDaVagaDTO query);
 

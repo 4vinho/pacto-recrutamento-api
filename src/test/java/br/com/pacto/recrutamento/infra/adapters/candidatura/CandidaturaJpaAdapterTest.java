@@ -6,6 +6,7 @@ import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.CandidaturaJpaRepository;
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.RespostaCandidaturaJpaRepository;
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.RespostaRequisitoCandidaturaJpaRepository;
+import br.com.pacto.recrutamento.infra.repositorys.candidatura.HistoricoCandidaturaJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.Lock;
@@ -24,7 +25,7 @@ class CandidaturaJpaAdapterTest {
     private final RespostaRequisitoCandidaturaJpaRepository respostasRequisitos =
             mock(RespostaRequisitoCandidaturaJpaRepository.class);
     private final CandidaturaJpaAdapter adapter = new CandidaturaJpaAdapter(
-            candidaturas, respostas, respostasRequisitos);
+            candidaturas, respostas, respostasRequisitos, mock(HistoricoCandidaturaJpaRepository.class));
 
     @Test
     void traduzUnicidadeConcorrenteDaCandidatura() {

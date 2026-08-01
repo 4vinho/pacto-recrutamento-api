@@ -31,6 +31,9 @@ public class Candidatura {
     private boolean requisitosRespondidos;
     @Column(name = "curriculo_enviado", nullable = false)
     private boolean curriculoEnviado;
+    @Version
+    @Column(nullable = false)
+    private long versao;
 
     public Candidatura() {
         id = UUID.randomUUID();
@@ -198,4 +201,8 @@ public class Candidatura {
     public void setCurriculoEnviado(boolean curriculoEnviado) {
         this.curriculoEnviado = curriculoEnviado;
     }
+
+    public long getVersao() { return versao; }
+
+    public void setVersao(long versao) { this.versao = versao; }
 }
