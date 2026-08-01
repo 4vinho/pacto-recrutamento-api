@@ -14,6 +14,7 @@ import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -44,6 +45,7 @@ public class CurriculoService implements CurriculoUseCase {
     }
 
     @Override
+    @Transactional
     public TypedResponse<CurriculoDTO> enviarCurriculo(EnviarCurriculoDTO command) {
         if (command == null || command.getUsuarioId() == null || command.getCandidaturaId() == null) {
             return erro(400, DADOS_INVALIDOS);
