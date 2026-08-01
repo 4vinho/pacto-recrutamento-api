@@ -84,7 +84,7 @@ services:
       MAIL_HOST: mailpit
       MAIL_PORT: 1025
       MAIL_FROM: ${MAIL_FROM:-nao-responda@pacto.local}
-      PASSWORD_RESET_URL: ${PASSWORD_RESET_URL:-http://localhost:3000/redefinir-senha}
+      PASSWORD_RESET_URL: ${PASSWORD_RESET_URL:-http://localhost:4200/auth/redefinir-senha}
       NOTIFICATION_RETRY_DELAY_MS: ${NOTIFICATION_RETRY_DELAY_MS:-60000}
       NOTIFICATION_MAX_ATTEMPTS: ${NOTIFICATION_MAX_ATTEMPTS:-5}
     ports:
@@ -105,7 +105,14 @@ services:
         - path: ./pom.xml
           action: rebuild
     restart: unless-stopped
+    networks:
+      - default
+      - recrutamento
 
 volumes:
   postgres_data:
   minio_data:
+
+networks:
+  recrutamento:
+    name: recrutamento

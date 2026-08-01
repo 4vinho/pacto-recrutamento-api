@@ -91,7 +91,7 @@ Para testar localmente:
 | `MAIL_SMTP_AUTH` | `false` | Habilita autenticação SMTP. |
 | `MAIL_STARTTLS` | `false` | Habilita STARTTLS. |
 | `MAIL_FROM` | `nao-responda@pacto.local` | Remetente das mensagens. |
-| `PASSWORD_RESET_URL` | `http://localhost:3000/redefinir-senha` | Página do frontend usada no link de recuperação. |
+| `PASSWORD_RESET_URL` | `http://localhost:4200/auth/redefinir-senha` | Página do frontend usada no link de recuperação. |
 | `NOTIFICATION_RETRY_DELAY_MS` | `60000` | Intervalo entre ciclos de retentativa. |
 | `NOTIFICATION_MAX_ATTEMPTS` | `5` | Máximo de tentativas por notificação. |
 

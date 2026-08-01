@@ -31,7 +31,7 @@ security:
 notification:
   mail:
     from: nao-responda@pacto.local
-    password-reset-url: http://localhost:3000/redefinir-senha
+    password-reset-url: http://localhost:4200/auth/redefinir-senha
   retry:
     delay-ms: 60000
     max-attempts: 5
