@@ -14,7 +14,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SecurityConfigurationTest.ContractController.class)
-@Import({SecurityConfiguration.class, JwtAuthenticationFilter.class})
+@Import({
+        SecurityConfiguration.class,
+        JwtAuthenticationFilter.class,
+        SecurityConfigurationTest.ContractController.class
+})
 class SecurityConfigurationTest {
     @Autowired
     private MockMvc mvc;
@@ -51,13 +55,13 @@ class SecurityConfigurationTest {
     }
 
     @RestController
-    static class ContractController {
+    public static class ContractController {
         @RequestMapping({
                 "/templates-vaga", "/vagas/{id}", "/vagas/{id}/candidaturas",
                 "/candidaturas/{id}/cancelamento", "/candidaturas/{id}/status",
                 "/operacao-futura"
         })
-        void endpoint() {
+        public void endpoint() {
         }
     }
 }
