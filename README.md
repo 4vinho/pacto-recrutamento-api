@@ -1,126 +1,142 @@
 # Pacto Recrutamento — API
 
-API REST do portal interno de recrutamento. Implementada em Java 8 e Spring Boot
-2.7, com PostgreSQL, Flyway, MinIO, JWT e envio de e-mail por SMTP.
+Backend de uma plataforma de recrutamento que cobre o processo completo: publicação de vagas, candidatura, avaliação, histórico e notificações. O projeto foi construído para demonstrar uma API de negócio além do CRUD, com regras de autorização, consistência transacional, concorrência e integrações reais.
 
-## Funcionalidades
+> **Quer avaliar o projeto rapidamente?** Com Docker, a solução completa sobe com um comando e já inclui dados de demonstração para três perfis. Veja [Teste em 5 minutos](#teste-em-5-minutos).
 
-- cadastro, autenticação, renovação e encerramento de sessão;
-- recuperação de senha;
-- vagas com perguntas, requisitos e múltiplos responsáveis;
-- templates reutilizáveis para criação de vagas;
-- candidatura em etapas, currículo e acompanhamento do processo seletivo;
-- avaliação com filtros, histórico, feedback e controle de concorrência;
-- notificações persistidas, envio por e-mail e retentativa automática.
+## O que este projeto demonstra
 
-O detalhamento de arquitetura, regras, endpoints, fluxos e banco está em
-[DOCUMENTACAO.md](DOCUMENTACAO.md). O contrato completo e executável fica no
-Swagger.
+- **Arquitetura de portas e adaptadores:** domínio e casos de uso isolados de HTTP, JPA, storage e SMTP.
+- **Segurança de sessão:** JWT de curta duração, refresh token rotativo em cookie `HttpOnly`, proteção CSRF, revogação por família e recuperação de senha com token armazenado como hash.
+- **Regras de negócio reais:** estados de vaga e candidatura, autorização por perfil e por responsável, exclusão lógica e candidatura única por vaga.
+- **Consistência sob concorrência:** optimistic locking impede que avaliações simultâneas sobrescrevam dados silenciosamente.
+- **Processamento resiliente:** notificações persistidas, disparadas por eventos e reprocessadas automaticamente em caso de falha.
+- **Infraestrutura reproduzível:** PostgreSQL, MinIO, Mailpit, API e frontend orquestrados por Docker Compose.
+- **Qualidade verificável:** 106 testes Java, testes de arquitetura e transações, JaCoCo, SonarQube e contrato OpenAPI executável.
 
-## Requisitos
+## Stack
 
-Para executar toda a solução: Docker e Docker Compose. Para executar somente a
-API localmente: Java 8, Maven 3.8+, PostgreSQL, MinIO e um servidor SMTP.
+| Área | Tecnologias |
+| --- | --- |
+| Aplicação | Java 8, Spring Boot 2.7, Spring MVC, Validation |
+| Persistência | Spring Data JPA, PostgreSQL, Flyway |
+| Segurança | Spring Security, JWT, BCrypt, CSRF |
+| Integrações | MinIO, SMTP/Mailpit |
+| Qualidade | JUnit 5, Mockito, H2, JaCoCo, SonarQube |
+| Entrega local | Docker, Docker Compose, health check e Swagger/OpenAPI |
 
-Os repositórios `pacto-recrutamento-api` e `pacto-recrutamento-web` devem estar
-lado a lado para o Compose iniciar a solução completa.
+## Teste em 5 minutos
 
-## Executar com Docker
+### 1. Suba a solução completa
 
-Clone os dois repositórios dentro da mesma pasta, mantendo `pacto-recrutamento-api`
-e `pacto-recrutamento-web` lado a lado:
+Pré-requisito: Docker com Docker Compose. Os repositórios da API e do frontend devem ficar lado a lado.
 
 ```powershell
 git clone https://github.com/4vinho/pacto-recrutamento-api.git
 git clone https://github.com/4vinho/pacto-recrutamento-web.git
 cd pacto-recrutamento-api
-```
-
-Crie o arquivo `.env` da API usando o modelo versionado:
-
-```powershell
 Copy-Item .env.example .env
-```
-
-Em Linux ou macOS, use `cp .env.example .env`. Antes de iniciar, revise os valores
-do `.env`, principalmente credenciais, portas e `JWT_SECRET`. O arquivo contém toda
-a configuração necessária para o ambiente Docker local e não deve ser versionado.
-
-Por fim, suba frontend, API e serviços de infraestrutura com um único comando:
-
-```powershell
 docker compose up --watch
 ```
 
-O Compose constrói as imagens quando necessário. O modo `--watch` acompanha as
-alterações da API; o frontend usa o Angular Dev Server com recarga automática.
+No Linux ou macOS, substitua `Copy-Item` por `cp`. Aguarde os health checks e abra [http://localhost:4200](http://localhost:4200).
 
-Serviços disponíveis:
+### 2. Explore os três pontos de vista
+
+| Perfil | E-mail | Senha | O que avaliar |
+| --- | --- | --- | --- |
+| Administrador | `socrates@pacto.com` | `socrates` | templates, criação de vaga e visão de gestão |
+| Responsável | `platao@pacto.com` | `platao` | candidatos, filtros, feedback e mudança de etapa |
+| Candidato | `aristoteles@pacto.com` | `aristoteles` | vagas, candidatura em etapas e acompanhamento |
+
+Sugestão de roteiro:
+
+1. Entre como **candidato**, consulte uma vaga e acompanhe as candidaturas existentes.
+2. Entre como **responsável**, abra uma vaga e altere a etapa de um candidato com feedback.
+3. Confira o histórico da candidatura e o e-mail capturado no [Mailpit](http://localhost:8025).
+4. Entre como **administrador** e crie uma vaga a partir de um template.
+5. Explore e execute os endpoints pelo [Swagger UI](http://localhost:8080/swagger-ui.html).
+
+As contas e a massa de demonstração existem apenas no perfil de desenvolvimento e são carregadas pelo Flyway em um banco novo.
+
+## Arquitetura
+
+```text
+Navegador -> Angular -> controllers HTTP
+                           |
+                    portas de entrada
+                           |
+                     casos de uso
+                           |
+                    portas de saída
+                 /         |          \
+          PostgreSQL     MinIO       SMTP
+```
+
+O código preserva a direção das dependências:
+
+- `core`: entidades, estados, erros e objetos independentes de framework;
+- `app`: casos de uso, DTOs e contratos de entrada e saída;
+- `infra`: adapters JPA, JWT, MinIO, SMTP, eventos e configurações;
+- `web`: controllers, requests, segurança HTTP e tratamento uniforme de erros.
+
+Os testes de arquitetura validam essas fronteiras automaticamente. O fluxo de uma chamada é `controller -> porta de entrada -> caso de uso -> porta de saída -> adapter`.
+
+## Decisões técnicas que valem uma conversa
+
+### Sessão segura
+
+O access token autentica as requisições sem ser persistido no navegador. O refresh token é rotacionado a cada renovação e transportado em cookie protegido. A reutilização indevida revoga toda a família de tokens; logout e refresh também exigem token CSRF.
+
+### Concorrência e auditoria
+
+A candidatura possui uma versão para optimistic locking. Se dois avaliadores tentarem atualizar o mesmo registro, a API rejeita o estado obsoleto em vez de perder uma alteração. Toda mudança de etapa gera histórico com autor, estado anterior, novo estado e feedback.
+
+### Notificações confiáveis
+
+Eventos de candidatura desacoplam o fluxo principal do envio de e-mail. Cada notificação é persistida antes do SMTP; falhas registram motivo e quantidade de tentativas, e um agendador executa as retentativas. A chave de evento e destinatário evita duplicidade.
+
+### Arquivos fora do banco
+
+Currículos de até 5 MiB ficam em bucket privado no MinIO. O PostgreSQL armazena apenas metadados e checksum, e o acesso ocorre por URL temporária.
+
+## Serviços locais
 
 | Serviço | Endereço |
 | --- | --- |
-| Frontend | `http://localhost:4200` |
-| API | `http://localhost:8080` |
-| Swagger UI | `http://localhost:8080/swagger-ui.html` |
-| Health check | `http://localhost:8080/actuator/health` |
+| Frontend | [localhost:4200](http://localhost:4200) |
+| API | [localhost:8080](http://localhost:8080) |
+| Swagger UI | [localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) |
+| Health check | [localhost:8080/actuator/health](http://localhost:8080/actuator/health) |
+| Mailpit | [localhost:8025](http://localhost:8025) |
+| MinIO console | [localhost:9001](http://localhost:9001) |
 | PostgreSQL | `localhost:5432` |
-| MinIO API / console | `http://localhost:9000` / `http://localhost:9001` |
-| Mailpit | `http://localhost:8025` |
 
-O PostgreSQL e o MinIO usam volumes persistentes. Para parar sem apagar os dados,
-execute `docker compose down`. `docker compose down --volumes` também remove os
-dados locais.
+Para encerrar preservando os dados, use `docker compose down`. A opção `--volumes` também apaga os dados locais.
 
-## Executar somente a API
+## Executar e validar somente a API
 
-O perfil padrão exige estas variáveis:
-
-- `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`;
-- `MINIO_ENDPOINT`, `MINIO_PUBLIC_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET`;
-- `SERVER_PORT` e `JWT_SECRET`;
-- `MAIL_HOST` e `MAIL_PORT`.
-
-As demais opções de e-mail e retentativa têm padrões em `application.yml`. Para
-desenvolvimento, o perfil `dev` fornece padrões locais para banco, MinIO, porta e
-JWT:
+Para desenvolvimento local são necessários Java 8, Maven 3.8+, PostgreSQL, MinIO e SMTP. Com os serviços disponíveis nas portas padrão:
 
 ```powershell
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-Na primeira inicialização com esse perfil, o Flyway também carrega uma massa de
-demonstração com vagas, templates e candidaturas em diferentes etapas. O script
-fica em `src/main/resources/db/dev` e não é executado nos demais ambientes.
-
-## Contas de demonstração
-
-Criadas pelo Flyway em um banco novo:
-
-| Papel | E-mail | Senha |
-| --- | --- | --- |
-| Administrador | `socrates@pacto.com` | `socrates` |
-| Responsável por vaga | `platao@pacto.com` | `platao` |
-| Candidato | `aristoteles@pacto.com` | `aristoteles` |
-
-Use essas credenciais somente em desenvolvimento.
-
-## Verificação
+Para executar a suíte e gerar o relatório de cobertura:
 
 ```powershell
-mvn test
 mvn verify
 ```
 
-`verify` também gera a cobertura JaCoCo em `target/site/jacoco/`. As instruções de
-análise estática estão em [SONARQUBE.md](SONARQUBE.md).
+O relatório fica em `target/site/jacoco/`. Veja também [SONARQUBE.md](SONARQUBE.md) para análise estática.
 
-## Convenções operacionais
+## Documentação técnica
 
-- respostas usam o envelope `TypedResponse`; listas paginadas usam
-  `TypedPagedResponse`;
-- endpoints protegidos recebem `Authorization: Bearer <access-token>`;
-- migrations ficam em `src/main/resources/db/migration` e migrations aplicadas
-  nunca devem ser alteradas;
-- currículos aceitam até 5 MiB e os arquivos ficam no MinIO; o banco mantém apenas
-  seus metadados;
-- segredos e o arquivo `.env` não devem ser versionados.
+- [DOCUMENTACAO.md](DOCUMENTACAO.md): regras, fluxos, estados, endpoints e modelo de dados;
+- [Swagger UI](http://localhost:8080/swagger-ui.html): contrato executável, schemas e validações;
+- `src/main/resources/db/migration`: evolução versionada do banco;
+- `.env.example`: configuração completa do ambiente Docker, sem segredos reais.
+
+## Escopo e próximos passos
+
+O projeto prioriza a profundidade do fluxo de recrutamento e a qualidade do backend. Em uma evolução para produção, os próximos passos naturais seriam observabilidade distribuída, testes de integração com Testcontainers, paginação por cursor em consultas de alto volume e entrega contínua em ambiente de nuvem.
