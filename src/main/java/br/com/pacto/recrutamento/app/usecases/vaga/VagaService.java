@@ -179,8 +179,8 @@ public class VagaService implements VagaUseCase {
     @Transactional
     public TypedResponse<Void> excluirVaga(ExcluirVagaDTO command) {
         if (command == null) return vazioErro(400, DADOS_VAGA_INVALIDOS);
-        TypedResponse<Void> acesso = validarAcessoVazio(command.getUsuarioSolicitanteId());
-        if (acesso != null) return acesso;
+        if (!autorizacao.podeExcluirVagas(command.getUsuarioSolicitanteId()))
+            return vazioErro(403, ACESSO_NAO_AUTORIZADO);
         Optional<Vaga> vaga = vagas.buscarAtivaPorId(command.getVagaId());
         if (!vaga.isPresent()) return vazioErro(404, VAGA_NAO_ENCONTRADA);
         vaga.get().setExcluidoEm(agora());

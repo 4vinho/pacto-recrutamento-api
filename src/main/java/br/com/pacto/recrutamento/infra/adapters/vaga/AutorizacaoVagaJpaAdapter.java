@@ -23,4 +23,10 @@ public class AutorizacaoVagaJpaAdapter implements AutorizacaoVagaPort {
     public boolean podeManterVagas(UUID usuarioId) {
         return usuarioId != null && repository.possuiPapelAtivo(usuarioId, papeisPermitidos);
     }
+
+    @Override
+    public boolean podeExcluirVagas(UUID usuarioId) {
+        return usuarioId != null && repository.possuiPapelAtivo(usuarioId,
+                Collections.singleton(NomePapel.ADMINISTRADOR));
+    }
 }

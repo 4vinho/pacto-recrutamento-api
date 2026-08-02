@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.UUID;
 
 @Configuration
@@ -19,9 +18,8 @@ class CandidaturaConfiguration {
         return new AutorizacaoResponsavelCandidaturaPort() {
             @Override
             public boolean podeGerenciar(UUID usuarioId, Vaga vaga) {
-                return vaga != null && (vaga.possuiResponsavel(usuarioId)
-                        || repository.possuiPapelAtivo(
-                                usuarioId, Collections.singleton(NomePapel.ADMINISTRADOR)));
+                return vaga != null && repository.possuiPapelAtivo(usuarioId, Arrays.asList(
+                        NomePapel.ADMINISTRADOR, NomePapel.RESPONSAVEL_VAGA));
             }
 
             @Override

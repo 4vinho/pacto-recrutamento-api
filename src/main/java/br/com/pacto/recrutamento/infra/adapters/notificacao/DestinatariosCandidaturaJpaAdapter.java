@@ -4,6 +4,7 @@ import br.com.pacto.recrutamento.app.ports.out.notificacao.DestinatariosCandidat
 import br.com.pacto.recrutamento.app.ports.out.notificacao.model.DestinatariosCandidatura;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.Vaga;
+import br.com.pacto.recrutamento.core.enums.NomePapel;
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.CandidaturaJpaRepository;
 import br.com.pacto.recrutamento.infra.repositorys.vaga.VagaJpaRepository;
 import br.com.pacto.recrutamento.infra.repositorys.usuario.UsuarioJpaRepository;
@@ -35,7 +36,7 @@ public class DestinatariosCandidaturaJpaAdapter implements DestinatariosCandidat
                 .map(usuario -> usuario.getNome() == null ? usuario.getEmail() : usuario.getNome())
                 .orElse("Candidato");
         return Optional.of(new DestinatariosCandidatura(
-                vaga.get().getResponsaveisIds(), candidatura.get().getUsuarioId(),
+                usuarios.findIdsByPapelAtivo(NomePapel.RESPONSAVEL_VAGA), candidatura.get().getUsuarioId(),
                 vaga.get().getTitulo(), nomeCandidato));
     }
 }

@@ -4,4 +4,5 @@ import java.util.UUID;
 
 public interface AutorizacaoTemplateVagaPort {
     boolean podeManterTemplates(UUID usuarioId);
+    boolean podeExcluirTemplates(UUID usuarioId);
 }

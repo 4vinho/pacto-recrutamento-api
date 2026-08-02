@@ -97,7 +97,7 @@ public class TemplateVagaService implements TemplateVagaUseCase {
                 || camposTemplateInvalidos(command.getTitulo(), command.getDescricao())) {
             return erro(400, DADOS_TEMPLATE_INVALIDOS);
         }
-        if (!administrador(command.getResponsavelId())) return erro(403, ACESSO_NAO_AUTORIZADO);
+        if (!podeManter(command.getResponsavelId())) return erro(403, ACESSO_NAO_AUTORIZADO);
         TemplateVaga template = new TemplateVaga(command.getResponsavelId(), command.getTitulo(), command.getDescricao());
         return respostaTemplate(201, "Template criado", templates.salvar(template));
     }
@@ -108,7 +108,7 @@ public class TemplateVagaService implements TemplateVagaUseCase {
                 || camposTemplateInvalidos(command.getTitulo(), command.getDescricao())) {
             return erro(400, DADOS_TEMPLATE_INVALIDOS);
         }
-        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
+        if (!podeManter(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
         Optional<TemplateVaga> template = templates.buscarAtivoPorId(command.getTemplateId());
         if (!template.isPresent()) return erro(404, TEMPLATE_NAO_ENCONTRADO);
         template.get().setTitulo(command.getTitulo());
@@ -119,7 +119,7 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     @Override
     public TypedResponse<Void> excluirTemplate(ExcluirItemTemplateVagaDTO command) {
         if (command == null || command.getTemplateId() == null) return vazio(400, "Dados do template invalidos");
-        if (!administrador(command.getUsuarioSolicitanteId())) return vazio(403, "Acesso nao autorizado");
+        if (!podeExcluir(command.getUsuarioSolicitanteId())) return vazio(403, "Acesso nao autorizado");
         Optional<TemplateVaga> template = templates.buscarAtivoPorId(command.getTemplateId());
         if (!template.isPresent()) return vazio(404, "Template nao encontrado");
         template.get().setExcluidoEm(agora());
@@ -130,7 +130,7 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     @Override
     public TypedResponse<PerguntaTemplateVagaDTO> criarPerguntaDoTemplate(SalvarPerguntaTemplateVagaDTO command) {
         if (command == null || perguntaInvalida(command)) return erro(400, DADOS_PERGUNTA_INVALIDOS);
-        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
+        if (!podeManter(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
         if (!templateExiste(command.getTemplateId())) return erro(404, TEMPLATE_NAO_ENCONTRADO);
         PerguntaTemplateVaga pergunta = new PerguntaTemplateVaga();
         preencher(pergunta, command);
@@ -141,7 +141,7 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     public TypedResponse<PerguntaTemplateVagaDTO> atualizarPerguntaDoTemplate(SalvarPerguntaTemplateVagaDTO command) {
         if (command == null || command.getPerguntaId() == null || perguntaInvalida(command))
             return erro(400, DADOS_PERGUNTA_INVALIDOS);
-        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
+        if (!podeManter(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
         if (!templateExiste(command.getTemplateId())) return erro(404, TEMPLATE_NAO_ENCONTRADO);
         Optional<PerguntaTemplateVaga> pergunta = perguntas.buscarAtivaPorId(command.getPerguntaId());
         if (!perguntaPertenceAoTemplate(pergunta, command.getTemplateId())) return erro(404, PERGUNTA_NAO_ENCONTRADA);
@@ -152,7 +152,7 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     @Override
     public TypedResponse<Void> excluirPerguntaDoTemplate(ExcluirItemTemplateVagaDTO command) {
         if (itemInvalido(command)) return vazio(400, "Dados da pergunta invalidos");
-        if (!administrador(command.getUsuarioSolicitanteId())) return vazio(403, "Acesso nao autorizado");
+        if (!podeExcluir(command.getUsuarioSolicitanteId())) return vazio(403, "Acesso nao autorizado");
         if (!templateExiste(command.getTemplateId())) return vazio(404, "Template nao encontrado");
         Optional<PerguntaTemplateVaga> pergunta = perguntas.buscarAtivaPorId(command.getItemId());
         if (!perguntaPertenceAoTemplate(pergunta, command.getTemplateId()))
@@ -165,7 +165,7 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     @Override
     public TypedResponse<RequisitoTemplateVagaDTO> criarRequisitoDoTemplate(SalvarRequisitoTemplateVagaDTO command) {
         if (command == null || requisitoInvalido(command)) return erro(400, DADOS_REQUISITO_INVALIDOS);
-        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
+        if (!podeManter(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
         if (!templateExiste(command.getTemplateId())) return erro(404, TEMPLATE_NAO_ENCONTRADO);
         RequisitoTemplateVaga requisito = new RequisitoTemplateVaga();
         preencher(requisito, command);
@@ -176,7 +176,7 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     public TypedResponse<RequisitoTemplateVagaDTO> atualizarRequisitoDoTemplate(SalvarRequisitoTemplateVagaDTO command) {
         if (command == null || command.getRequisitoId() == null || requisitoInvalido(command))
             return erro(400, DADOS_REQUISITO_INVALIDOS);
-        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
+        if (!podeManter(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
         if (!templateExiste(command.getTemplateId())) return erro(404, TEMPLATE_NAO_ENCONTRADO);
         Optional<RequisitoTemplateVaga> requisito = requisitos.buscarAtivoPorId(command.getRequisitoId());
         if (!requisitoPertenceAoTemplate(requisito, command.getTemplateId()))
@@ -188,7 +188,7 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     @Override
     public TypedResponse<Void> excluirRequisitoDoTemplate(ExcluirItemTemplateVagaDTO command) {
         if (itemInvalido(command)) return vazio(400, "Dados do requisito invalidos");
-        if (!administrador(command.getUsuarioSolicitanteId())) return vazio(403, "Acesso nao autorizado");
+        if (!podeExcluir(command.getUsuarioSolicitanteId())) return vazio(403, "Acesso nao autorizado");
         if (!templateExiste(command.getTemplateId())) return vazio(404, "Template nao encontrado");
         Optional<RequisitoTemplateVaga> requisito = requisitos.buscarAtivoPorId(command.getItemId());
         if (!requisitoPertenceAoTemplate(requisito, command.getTemplateId()))
@@ -202,7 +202,7 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     @Transactional
     public TypedResponse<VagaDTO> criarVagaAPartirDoTemplate(CriarVagaAPartirDoTemplateDTO command) {
         if (command == null || command.getTemplateId() == null) return erro(400, DADOS_TEMPLATE_INVALIDOS);
-        if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
+        if (!podeManter(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
         Optional<TemplateVaga> template = templates.buscarAtivoPorId(command.getTemplateId());
         if (!template.isPresent()) return erro(404, TEMPLATE_NAO_ENCONTRADO);
         return respostaVaga(copiador.copiar(template.get()));
@@ -212,8 +212,12 @@ public class TemplateVagaService implements TemplateVagaUseCase {
         return templates.buscarAtivoPorId(id).isPresent();
     }
 
-    private boolean administrador(UUID id) {
+    private boolean podeManter(UUID id) {
         return id != null && autorizacao.podeManterTemplates(id);
+    }
+
+    private boolean podeExcluir(UUID id) {
+        return id != null && autorizacao.podeExcluirTemplates(id);
     }
 
     private boolean camposTemplateInvalidos(String titulo, String descricao) {
