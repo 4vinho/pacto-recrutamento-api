@@ -12,7 +12,7 @@ Backend de uma plataforma de recrutamento que cobre o processo completo: publica
 - **Consistência sob concorrência:** optimistic locking impede que avaliações simultâneas sobrescrevam dados silenciosamente.
 - **Processamento resiliente:** notificações persistidas, disparadas por eventos e reprocessadas automaticamente em caso de falha.
 - **Infraestrutura reproduzível:** PostgreSQL, MinIO, Mailpit, API e frontend orquestrados por Docker Compose.
-- **Qualidade verificável:** 108 testes Java, testes de arquitetura e transações, JaCoCo, SonarQube e contrato OpenAPI executável.
+- **Qualidade verificável:** 112 testes Java, testes de arquitetura e transações, JaCoCo, SonarQube e contrato OpenAPI executável.
 
 ## Stack
 

@@ -1,6 +1,7 @@
 package br.com.pacto.recrutamento.app.curriculo;
 
 import br.com.pacto.recrutamento.app.dtos.curriculo.EnviarCurriculoDTO;
+import br.com.pacto.recrutamento.app.dtos.curriculo.GerarUrlTemporariaCurriculoDTO;
 import br.com.pacto.recrutamento.app.ports.out.candidatura.AutorizacaoResponsavelCandidaturaPort;
 import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
 import br.com.pacto.recrutamento.app.ports.out.candidatura.EventosCandidaturaPort;
@@ -9,6 +10,7 @@ import br.com.pacto.recrutamento.app.ports.out.curriculo.CurriculoPort;
 import br.com.pacto.recrutamento.app.usecases.curriculo.CurriculoService;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
+import br.com.pacto.recrutamento.core.entities.Curriculo;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +21,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class CurriculoServiceTest {
@@ -52,5 +55,48 @@ class CurriculoServiceTest {
         assertThat(candidatura.getStatus()).isEqualTo(StatusCandidatura.ENVIADA);
         verify(candidaturas).salvar(candidatura);
         verify(eventos).candidaturaCriada(candidatura);
+    }
+
+    @Test
+    void gerarUrlPermiteCandidatoDonoDaCandidatura() {
+        UUID usuarioId = UUID.randomUUID();
+        Candidatura candidatura = new Candidatura(usuarioId, UUID.randomUUID());
+        Curriculo curriculo = curriculo(candidatura.getId());
+
+        when(curriculos.buscarAtivoPorCandidatura(candidatura.getId()))
+                .thenReturn(Optional.of(curriculo));
+        when(candidaturas.buscarPorId(candidatura.getId()))
+                .thenReturn(Optional.of(candidatura));
+        when(storage.gerarUrlTemporaria(curriculo.getStorageKey(), java.time.Duration.ofMinutes(5)))
+                .thenReturn("https://storage/curriculo.pdf");
+
+        TypedResponse<?> response = service.gerarUrlTemporariaCurriculo(
+                new GerarUrlTemporariaCurriculoDTO(usuarioId, candidatura.getId()));
+
+        assertThat(response.getStatusCode()).isEqualTo(200);
+    }
+
+    @Test
+    void gerarUrlNegaCandidatoQueNaoEDonoDaCandidatura() {
+        UUID donoId = UUID.randomUUID();
+        UUID outroUsuarioId = UUID.randomUUID();
+        Candidatura candidatura = new Candidatura(donoId, UUID.randomUUID());
+
+        when(curriculos.buscarAtivoPorCandidatura(candidatura.getId()))
+                .thenReturn(Optional.of(curriculo(candidatura.getId())));
+        when(candidaturas.buscarPorId(candidatura.getId()))
+                .thenReturn(Optional.of(candidatura));
+        when(autorizacao.podeConsultarCurriculos(outroUsuarioId)).thenReturn(false);
+
+        TypedResponse<?> response = service.gerarUrlTemporariaCurriculo(
+                new GerarUrlTemporariaCurriculoDTO(outroUsuarioId, candidatura.getId()));
+
+        assertThat(response.getStatusCode()).isEqualTo(403);
+        verifyNoInteractions(storage);
+    }
+
+    private Curriculo curriculo(UUID candidaturaId) {
+        return new Curriculo(candidaturaId, "candidaturas/" + candidaturaId + "/curriculo/arquivo.pdf",
+                "curriculo.pdf", "application/pdf", 8, "checksum");
     }
 }

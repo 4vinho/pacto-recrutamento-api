@@ -24,7 +24,6 @@ import static br.com.pacto.recrutamento.core.common.ErrorMessages.ARQUIVO_OBRIGA
 
 @RestController
 @RequestMapping("/candidaturas/{candidaturaId}/curriculo")
-@PreAuthorize("hasRole('CANDIDATO')")
 @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTH)
 public class CurriculoController {
     private static final long TAMANHO_MAXIMO = 5L * 1024L * 1024L;
@@ -35,6 +34,7 @@ public class CurriculoController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('CANDIDATO')")
     public ResponseEntity<TypedResponse<CurriculoDTO>> enviar(
             Authentication authentication, @PathVariable UUID candidaturaId,
             @RequestPart("arquivo") MultipartFile arquivo,
