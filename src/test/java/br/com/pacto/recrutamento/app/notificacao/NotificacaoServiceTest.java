@@ -74,18 +74,18 @@ class NotificacaoServiceTest {
     }
 
     @Test
-    void emailDeStatusTraduzStatusEIncluiFeedback() {
+    void emailDeStatusTraduzStatusSemExporAnotacaoInterna() {
         Memoria memoria = new Memoria();
         NotificacaoService service = new NotificacaoService(memoria, memoria, memoria);
 
         service.processarStatusCandidaturaAlterado(new StatusCandidaturaAlteradoDTO(
                 UUID.randomUUID(), memoria.candidaturaId, StatusCandidatura.ENVIADA,
-                StatusCandidatura.EM_ANALISE, OffsetDateTime.now(), "Bom desempenho tecnico."));
+                StatusCandidatura.TRIAGEM, OffsetDateTime.now(), "Bom desempenho tecnico."));
 
         assertThat(memoria.persistidas).extracting(Notificacao::getMensagem)
                 .anyMatch(mensagem -> mensagem.contains("Desenvolvedor Java")
-                        && mensagem.contains("Em analise")
-                        && mensagem.contains("Bom desempenho tecnico.")
+                        && mensagem.contains("Em triagem")
+                        && !mensagem.contains("Bom desempenho tecnico.")
                         && !mensagem.contains(memoria.candidaturaId.toString()));
     }
 

@@ -3,7 +3,9 @@ package br.com.pacto.recrutamento.core.enums;
 public enum StatusCandidatura {
     RASCUNHO,
     ENVIADA,
-    EM_ANALISE,
+    TRIAGEM,
+    ENTREVISTA_COMPORTAMENTAL,
+    ENTREVISTA_TECNICA,
     APROVADA,
     REJEITADA,
     CANCELADA

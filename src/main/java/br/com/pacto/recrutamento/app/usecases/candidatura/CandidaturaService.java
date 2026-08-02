@@ -304,7 +304,9 @@ public class CandidaturaService implements CandidaturaUseCase {
         }
         if (candidatura.getStatus() != StatusCandidatura.RASCUNHO
                 && candidatura.getStatus() != StatusCandidatura.ENVIADA
-                && candidatura.getStatus() != StatusCandidatura.EM_ANALISE) {
+                && candidatura.getStatus() != StatusCandidatura.TRIAGEM
+                && candidatura.getStatus() != StatusCandidatura.ENTREVISTA_COMPORTAMENTAL
+                && candidatura.getStatus() != StatusCandidatura.ENTREVISTA_TECNICA) {
             return erro(422, CANCELAMENTO_NAO_PERMITIDO);
         }
         StatusCandidatura anterior = candidatura.getStatus();

@@ -74,9 +74,6 @@ public class NotificacaoService implements NotificacaoUseCase {
         String candidato = valorOuPadrao(encontrados.get().getNomeCandidato(), "Candidato");
         String mensagem = "Ola, " + candidato + "!\n\nO status da sua candidatura para a vaga \""
                 + vaga + "\" foi atualizado para \"" + descricaoStatus(evento.getNovoStatus()) + "\".";
-        if (evento.getFeedback() != null && !evento.getFeedback().trim().isEmpty()) {
-            mensagem += "\n\nFeedback da equipe:\n" + evento.getFeedback().trim();
-        }
         mensagem += "\n\nConsulte o painel de candidaturas para acompanhar o processo.";
         processar(evento.getEventoId(), encontrados.get().getUsuarioId(),
                 TipoNotificacao.STATUS_CANDIDATURA_ALTERADO,
@@ -126,7 +123,9 @@ public class NotificacaoService implements NotificacaoUseCase {
         switch (status) {
             case RASCUNHO: return "Rascunho";
             case ENVIADA: return "Enviada";
-            case EM_ANALISE: return "Em analise";
+            case TRIAGEM: return "Em triagem";
+            case ENTREVISTA_COMPORTAMENTAL: return "Entrevista comportamental";
+            case ENTREVISTA_TECNICA: return "Entrevista tecnica";
             case APROVADA: return "Aprovada";
             case REJEITADA: return "Nao selecionada";
             case CANCELADA: return "Cancelada";

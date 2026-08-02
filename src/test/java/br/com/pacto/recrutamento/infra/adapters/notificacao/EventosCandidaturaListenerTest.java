@@ -21,7 +21,7 @@ class EventosCandidaturaListenerTest {
                 UUID.randomUUID(), UUID.randomUUID(), OffsetDateTime.now());
         StatusCandidaturaAlteradoDTO alterada = new StatusCandidaturaAlteradoDTO(
                 UUID.randomUUID(), UUID.randomUUID(), StatusCandidatura.ENVIADA,
-                StatusCandidatura.EM_ANALISE, OffsetDateTime.now());
+                StatusCandidatura.TRIAGEM, OffsetDateTime.now());
 
         listener.candidaturaCriada(criada);
         listener.statusAlterado(alterada);

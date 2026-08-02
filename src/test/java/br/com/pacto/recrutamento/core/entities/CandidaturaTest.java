@@ -35,16 +35,18 @@ class CandidaturaTest {
     }
 
     @Test
-    void permiteReabrirUmaDecisaoFinalParaAnalise() {
+    void permitePercorrerEtapasEReabrirUmaDecisao() {
         Candidatura candidatura = new Candidatura(UUID.randomUUID(), UUID.randomUUID());
         candidatura.setStatus(StatusCandidatura.ENVIADA);
-        candidatura.setStatus(StatusCandidatura.EM_ANALISE);
+        candidatura.setStatus(StatusCandidatura.TRIAGEM);
+        candidatura.setStatus(StatusCandidatura.ENTREVISTA_COMPORTAMENTAL);
+        candidatura.setStatus(StatusCandidatura.ENTREVISTA_TECNICA);
         candidatura.setStatus(StatusCandidatura.APROVADA);
 
-        candidatura.setStatus(StatusCandidatura.EM_ANALISE);
+        candidatura.setStatus(StatusCandidatura.TRIAGEM);
         candidatura.setStatus(StatusCandidatura.REJEITADA);
-        candidatura.setStatus(StatusCandidatura.EM_ANALISE);
+        candidatura.setStatus(StatusCandidatura.TRIAGEM);
 
-        assertThat(candidatura.getStatus()).isEqualTo(StatusCandidatura.EM_ANALISE);
+        assertThat(candidatura.getStatus()).isEqualTo(StatusCandidatura.TRIAGEM);
     }
 }

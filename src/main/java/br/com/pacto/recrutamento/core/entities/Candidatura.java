@@ -149,19 +149,13 @@ public class Candidatura {
             return novoStatus == StatusCandidatura.ENVIADA
                     || novoStatus == StatusCandidatura.CANCELADA;
         }
-        if (status == StatusCandidatura.ENVIADA) {
-            return novoStatus == StatusCandidatura.EM_ANALISE
-                    || novoStatus == StatusCandidatura.CANCELADA;
+        if (novoStatus == StatusCandidatura.CANCELADA) {
+            return status == StatusCandidatura.ENVIADA
+                    || status == StatusCandidatura.TRIAGEM
+                    || status == StatusCandidatura.ENTREVISTA_COMPORTAMENTAL
+                    || status == StatusCandidatura.ENTREVISTA_TECNICA;
         }
-        if (status == StatusCandidatura.EM_ANALISE) {
-            return novoStatus == StatusCandidatura.APROVADA
-                    || novoStatus == StatusCandidatura.REJEITADA
-                    || novoStatus == StatusCandidatura.CANCELADA;
-        }
-        if (status == StatusCandidatura.APROVADA || status == StatusCandidatura.REJEITADA) {
-            return novoStatus == StatusCandidatura.EM_ANALISE;
-        }
-        return false;
+        return status != StatusCandidatura.CANCELADA && novoStatus != StatusCandidatura.RASCUNHO;
     }
 
     public OffsetDateTime getCanceladoEm() {

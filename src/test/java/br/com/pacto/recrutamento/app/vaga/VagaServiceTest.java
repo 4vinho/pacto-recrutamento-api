@@ -158,34 +158,38 @@ class VagaServiceTest {
     }
 
     @Test
-    void naoEditaVagaPublicadaNemSeusItens() {
-        Vaga vaga = vaga();
-        vaga.setStatus(StatusVaga.PUBLICADA);
-        vagas.salvar(vaga);
-        PerguntaVaga pergunta = pergunta(vaga.getId());
-        RequisitoVaga requisito = requisito(vaga.getId());
-        perguntas.salvar(pergunta);
-        requisitos.salvar(requisito);
+    void editaSomenteVagasEmRascunho() {
+        for (StatusVaga status : new StatusVaga[] {
+                StatusVaga.PUBLICADA, StatusVaga.ENCERRADA, StatusVaga.CANCELADA }) {
+            Vaga vaga = vaga();
+            vaga.setStatus(StatusVaga.PUBLICADA);
+            if (status != StatusVaga.PUBLICADA) vaga.setStatus(status);
+            vagas.salvar(vaga);
+            PerguntaVaga pergunta = pergunta(vaga.getId());
+            RequisitoVaga requisito = requisito(vaga.getId());
+            perguntas.salvar(pergunta);
+            requisitos.salvar(requisito);
 
-        assertEquals(422, service.atualizarVaga(new AtualizarVagaDTO(administrador, vaga.getId(),
-                Collections.singleton(administrador), "Novo", "Nova descricao")).getStatusCode());
-        assertEquals(422, service.criarPerguntaDaVaga(new SalvarPerguntaVagaDTO(administrador,
-                vaga.getId(), null, "Nova pergunta", TipoResposta.TEXTO, true, 2)).getStatusCode());
-        assertEquals(422, service.atualizarPerguntaDaVaga(new SalvarPerguntaVagaDTO(administrador,
-                vaga.getId(), pergunta.getId(), "Alterada", TipoResposta.TEXTO, true, 1)).getStatusCode());
-        assertEquals(422, service.excluirPerguntaDaVaga(new ExcluirItemVagaDTO(administrador,
-                vaga.getId(), pergunta.getId())).getStatusCode());
-        assertEquals(422, service.criarRequisitoDaVaga(new SalvarRequisitoVagaDTO(administrador,
-                vaga.getId(), null, "Novo requisito", true)).getStatusCode());
-        assertEquals(422, service.atualizarRequisitoDaVaga(new SalvarRequisitoVagaDTO(administrador,
-                vaga.getId(), requisito.getId(), "Alterado", true)).getStatusCode());
-        assertEquals(422, service.excluirRequisitoDaVaga(new ExcluirItemVagaDTO(administrador,
-                vaga.getId(), requisito.getId())).getStatusCode());
-        assertEquals("Titulo", vaga.getTitulo());
-        assertEquals("Pergunta", pergunta.getEnunciado());
-        assertEquals("Java", requisito.getDescricao());
-        assertNull(pergunta.getExcluidoEm());
-        assertNull(requisito.getExcluidoEm());
+            assertEquals(422, service.atualizarVaga(new AtualizarVagaDTO(administrador, vaga.getId(),
+                    Collections.singleton(administrador), "Novo", "Nova descricao")).getStatusCode());
+            assertEquals(422, service.criarPerguntaDaVaga(new SalvarPerguntaVagaDTO(administrador,
+                    vaga.getId(), null, "Nova pergunta", TipoResposta.TEXTO, true, 2)).getStatusCode());
+            assertEquals(422, service.atualizarPerguntaDaVaga(new SalvarPerguntaVagaDTO(administrador,
+                    vaga.getId(), pergunta.getId(), "Alterada", TipoResposta.TEXTO, true, 1)).getStatusCode());
+            assertEquals(422, service.excluirPerguntaDaVaga(new ExcluirItemVagaDTO(administrador,
+                    vaga.getId(), pergunta.getId())).getStatusCode());
+            assertEquals(422, service.criarRequisitoDaVaga(new SalvarRequisitoVagaDTO(administrador,
+                    vaga.getId(), null, "Novo requisito", true)).getStatusCode());
+            assertEquals(422, service.atualizarRequisitoDaVaga(new SalvarRequisitoVagaDTO(administrador,
+                    vaga.getId(), requisito.getId(), "Alterado", true)).getStatusCode());
+            assertEquals(422, service.excluirRequisitoDaVaga(new ExcluirItemVagaDTO(administrador,
+                    vaga.getId(), requisito.getId())).getStatusCode());
+            assertEquals("Titulo", vaga.getTitulo());
+            assertEquals("Pergunta", pergunta.getEnunciado());
+            assertEquals("Java", requisito.getDescricao());
+            assertNull(pergunta.getExcluidoEm());
+            assertNull(requisito.getExcluidoEm());
+        }
     }
 
     @Test

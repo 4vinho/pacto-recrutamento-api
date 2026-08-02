@@ -54,12 +54,12 @@ class EntidadesTest {
     void candidaturaAprovadaPodeVoltarParaAnalise() {
         Candidatura candidatura = new Candidatura(UUID.randomUUID(), UUID.randomUUID());
         candidatura.setStatus(StatusCandidatura.ENVIADA);
-        candidatura.setStatus(StatusCandidatura.EM_ANALISE);
+        candidatura.setStatus(StatusCandidatura.TRIAGEM);
         candidatura.setStatus(StatusCandidatura.APROVADA);
 
-        candidatura.setStatus(StatusCandidatura.EM_ANALISE);
+        candidatura.setStatus(StatusCandidatura.TRIAGEM);
 
-        assertThat(candidatura.getStatus()).isEqualTo(StatusCandidatura.EM_ANALISE);
+        assertThat(candidatura.getStatus()).isEqualTo(StatusCandidatura.TRIAGEM);
     }
 
     @Test

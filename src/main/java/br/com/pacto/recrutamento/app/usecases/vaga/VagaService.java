@@ -145,7 +145,7 @@ public class VagaService implements VagaUseCase {
         if (!responsaveisAutorizados(command.getResponsaveisIds())) return vagaErro(422, RESPONSAVEL_VAGA_INVALIDO);
         Optional<Vaga> vaga = vagas.buscarAtivaPorId(command.getVagaId());
         if (!vaga.isPresent()) return vagaErro(404, VAGA_NAO_ENCONTRADA);
-        if (publicada(vaga.get())) return vagaErro(422, VAGA_PUBLICADA_NAO_PODE_SER_EDITADA);
+        if (naoEstaEmRascunho(vaga.get())) return vagaErro(422, VAGA_NAO_PODE_SER_EDITADA);
         vaga.get().setTitulo(command.getTitulo());
         vaga.get().setDescricao(command.getDescricao());
         vaga.get().setResponsaveisIds(command.getResponsaveisIds());
@@ -186,7 +186,7 @@ public class VagaService implements VagaUseCase {
         if (acesso != null) return acesso;
         Optional<Vaga> vaga = vagas.buscarAtivaPorId(command.getVagaId());
         if (!vaga.isPresent()) return perguntaErro(404, VAGA_NAO_ENCONTRADA);
-        if (publicada(vaga.get())) return perguntaErro(422, VAGA_PUBLICADA_NAO_PODE_SER_EDITADA);
+        if (naoEstaEmRascunho(vaga.get())) return perguntaErro(422, VAGA_NAO_PODE_SER_EDITADA);
         PerguntaVaga pergunta = new PerguntaVaga();
         preencher(pergunta, command);
         return perguntaResposta(201, "Pergunta criada", perguntas.salvar(pergunta));
@@ -200,7 +200,7 @@ public class VagaService implements VagaUseCase {
         if (acesso != null) return acesso;
         Optional<Vaga> vaga = vagas.buscarAtivaPorId(command.getVagaId());
         if (!vaga.isPresent()) return perguntaErro(404, VAGA_NAO_ENCONTRADA);
-        if (publicada(vaga.get())) return perguntaErro(422, VAGA_PUBLICADA_NAO_PODE_SER_EDITADA);
+        if (naoEstaEmRascunho(vaga.get())) return perguntaErro(422, VAGA_NAO_PODE_SER_EDITADA);
         Optional<PerguntaVaga> pergunta = perguntas.buscarAtivaPorId(command.getPerguntaId());
         if (!pergunta.isPresent() || !command.getVagaId().equals(pergunta.get().getVagaId()))
             return perguntaErro(404, PERGUNTA_NAO_ENCONTRADA);
@@ -215,7 +215,7 @@ public class VagaService implements VagaUseCase {
         if (acesso != null) return acesso;
         Optional<Vaga> vaga = vagas.buscarAtivaPorId(command.getVagaId());
         if (!vaga.isPresent()) return vazioErro(404, VAGA_NAO_ENCONTRADA);
-        if (publicada(vaga.get())) return vazioErro(422, VAGA_PUBLICADA_NAO_PODE_SER_EDITADA);
+        if (naoEstaEmRascunho(vaga.get())) return vazioErro(422, VAGA_NAO_PODE_SER_EDITADA);
         Optional<PerguntaVaga> pergunta = perguntas.buscarAtivaPorId(command.getItemId());
         if (!pergunta.isPresent() || !command.getVagaId().equals(pergunta.get().getVagaId()))
             return vazioErro(404, PERGUNTA_NAO_ENCONTRADA);
@@ -231,7 +231,7 @@ public class VagaService implements VagaUseCase {
         if (acesso != null) return acesso;
         Optional<Vaga> vaga = vagas.buscarAtivaPorId(command.getVagaId());
         if (!vaga.isPresent()) return requisitoErro(404, VAGA_NAO_ENCONTRADA);
-        if (publicada(vaga.get())) return requisitoErro(422, VAGA_PUBLICADA_NAO_PODE_SER_EDITADA);
+        if (naoEstaEmRascunho(vaga.get())) return requisitoErro(422, VAGA_NAO_PODE_SER_EDITADA);
         RequisitoVaga requisito = new RequisitoVaga();
         preencher(requisito, command);
         return requisitoResposta(201, "Requisito criado", requisitos.salvar(requisito));
@@ -245,7 +245,7 @@ public class VagaService implements VagaUseCase {
         if (acesso != null) return acesso;
         Optional<Vaga> vaga = vagas.buscarAtivaPorId(command.getVagaId());
         if (!vaga.isPresent()) return requisitoErro(404, VAGA_NAO_ENCONTRADA);
-        if (publicada(vaga.get())) return requisitoErro(422, VAGA_PUBLICADA_NAO_PODE_SER_EDITADA);
+        if (naoEstaEmRascunho(vaga.get())) return requisitoErro(422, VAGA_NAO_PODE_SER_EDITADA);
         Optional<RequisitoVaga> requisito = requisitos.buscarAtivoPorId(command.getRequisitoId());
         if (!requisito.isPresent() || !command.getVagaId().equals(requisito.get().getVagaId()))
             return requisitoErro(404, REQUISITO_NAO_ENCONTRADO);
@@ -260,7 +260,7 @@ public class VagaService implements VagaUseCase {
         if (acesso != null) return acesso;
         Optional<Vaga> vaga = vagas.buscarAtivaPorId(command.getVagaId());
         if (!vaga.isPresent()) return vazioErro(404, VAGA_NAO_ENCONTRADA);
-        if (publicada(vaga.get())) return vazioErro(422, VAGA_PUBLICADA_NAO_PODE_SER_EDITADA);
+        if (naoEstaEmRascunho(vaga.get())) return vazioErro(422, VAGA_NAO_PODE_SER_EDITADA);
         Optional<RequisitoVaga> requisito = requisitos.buscarAtivoPorId(command.getItemId());
         if (!requisito.isPresent() || !command.getVagaId().equals(requisito.get().getVagaId()))
             return vazioErro(404, REQUISITO_NAO_ENCONTRADO);
@@ -273,8 +273,8 @@ public class VagaService implements VagaUseCase {
         return emBranco(titulo) || emBranco(descricao);
     }
 
-    private boolean publicada(Vaga vaga) {
-        return vaga.getStatus() == StatusVaga.PUBLICADA;
+    private boolean naoEstaEmRascunho(Vaga vaga) {
+        return vaga.getStatus() != StatusVaga.RASCUNHO;
     }
 
     private boolean comandoCompletoInvalido(CriarVagaCompletaDTO command) {
