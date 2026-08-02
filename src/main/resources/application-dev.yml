@@ -3,9 +3,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:recrutamento}
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:postgres}
-  flyway:
-    locations: classpath:db/migration,classpath:db/dev
-
 server:
   port: ${SERVER_PORT:8080}
 

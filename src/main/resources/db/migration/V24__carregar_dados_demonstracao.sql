@@ -1,4 +1,4 @@
--- Dados idempotentes carregados exclusivamente pelo perfil Spring "dev".
+-- Dados idempotentes de demonstracao carregados pelo Flyway.
 
 UPDATE usuarios
 SET nome = CASE id

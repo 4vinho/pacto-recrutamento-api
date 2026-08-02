@@ -57,7 +57,8 @@ Sugestão de roteiro:
 4. Entre como **administrador** e crie uma vaga a partir de um template.
 5. Explore e execute os endpoints pelo [Swagger UI](http://localhost:8080/swagger-ui.html).
 
-As contas e a massa de demonstração existem apenas no perfil de desenvolvimento e são carregadas pelo Flyway em um banco novo.
+As contas e a massa de demonstração são carregadas pelo Flyway. A migration é
+idempotente e também pode completar um banco que já tenha sido inicializado.
 
 ## Arquitetura
 
