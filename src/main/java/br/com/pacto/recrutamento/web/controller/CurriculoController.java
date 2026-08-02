@@ -12,7 +12,6 @@ import br.com.pacto.recrutamento.core.common.ErrorCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +33,6 @@ public class CurriculoController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('CANDIDATO')")
     public ResponseEntity<TypedResponse<CurriculoDTO>> enviar(
             Authentication authentication, @PathVariable UUID candidaturaId,
             @RequestPart("arquivo") MultipartFile arquivo,
@@ -50,7 +48,6 @@ public class CurriculoController {
     }
 
     @GetMapping("/url")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA', 'CANDIDATO')")
     public ResponseEntity<TypedResponse<UrlTemporariaCurriculoDTO>> gerarUrl(
             Authentication authentication, @PathVariable UUID candidaturaId) {
         return HttpResponses.from(service.gerarUrlTemporariaCurriculo(

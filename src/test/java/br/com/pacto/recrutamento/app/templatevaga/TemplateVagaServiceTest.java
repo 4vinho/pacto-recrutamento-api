@@ -50,7 +50,7 @@ class TemplateVagaServiceTest {
     void listaTemplatesParaResponsavelDeVaga() {
         Memoria memoria = new Memoria();
         memoria.template();
-        assertEquals(200, memoria.service(false, true).listarTemplates(new ListarTemplatesVagaDTO(
+        assertEquals(200, memoria.service(false).listarTemplates(new ListarTemplatesVagaDTO(
                 UUID.randomUUID(), null, 0, 12)).getStatusCode());
     }
     @Test
@@ -110,20 +110,8 @@ class TemplateVagaServiceTest {
         final RequisitosVaga requisitosVaga = new RequisitosVaga();
 
         TemplateVagaService service(boolean admin) {
-            return service(admin, false);
-        }
-
-        TemplateVagaService service(boolean admin, boolean responsavel) {
-            return new TemplateVagaService(templates, perguntas, requisitos, vagas, perguntasVaga,
-                    requisitosVaga, new AutorizacaoTemplateVagaPort() {
-                        public boolean podeManterTemplates(UUID id) {
-                            return admin;
-                        }
-
-                        public boolean podeConsultarTemplates(UUID id) {
-                            return admin || responsavel;
-                        }
-                    }, Clock.systemUTC());
+            return new TemplateVagaService(templates, perguntas, requisitos, vagas, perguntasVaga, requisitosVaga,
+                    id -> admin, Clock.systemUTC());
         }
 
         TemplateVaga template() {

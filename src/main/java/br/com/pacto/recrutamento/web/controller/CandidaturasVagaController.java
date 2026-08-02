@@ -13,7 +13,6 @@ import br.com.pacto.recrutamento.web.security.AuthenticatedUser;
 import br.com.pacto.recrutamento.web.support.HttpResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +38,6 @@ public class CandidaturasVagaController {
     }
 
     @GetMapping("/vagas/{vagaId}/candidaturas")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedPagedResponse<CandidaturaDTO>> listar(
             Authentication authentication, @PathVariable UUID vagaId,
             @RequestParam(required = false) StatusCandidatura status,
@@ -74,7 +72,6 @@ public class CandidaturasVagaController {
     }
 
     @PostMapping("/vagas/{vagaId}/candidaturas")
-    @PreAuthorize("hasRole('CANDIDATO')")
     public ResponseEntity<TypedResponse<CandidaturaDTO>> criar(
             Authentication authentication, @PathVariable UUID vagaId) {
         return HttpResponses.from(service.criarCandidatura(
@@ -82,7 +79,6 @@ public class CandidaturasVagaController {
     }
 
     @PostMapping("/vagas/{vagaId}/candidaturas/envio")
-    @PreAuthorize("hasRole('CANDIDATO')")
     public ResponseEntity<TypedResponse<CandidaturaDTO>> enviar(
             Authentication authentication, @PathVariable UUID vagaId,
             @Valid @RequestBody br.com.pacto.recrutamento.web.request.candidatura.EnviarCandidaturaRequest request) {

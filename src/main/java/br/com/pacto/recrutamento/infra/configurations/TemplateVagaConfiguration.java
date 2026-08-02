@@ -11,15 +11,7 @@ class TemplateVagaConfiguration {
     @Bean
     AutorizacaoTemplateVagaPort autorizacaoTemplateVaga(
             AutorizacaoTemplateVagaJpaRepository repository) {
-        return new AutorizacaoTemplateVagaPort() {
-            public boolean podeManterTemplates(java.util.UUID usuarioId) {
-                return usuarioId != null
-                        && repository.administradorAtivo(usuarioId, NomePapel.ADMINISTRADOR);
-            }
-
-            public boolean podeConsultarTemplates(java.util.UUID usuarioId) {
-                return usuarioId != null && repository.consultorAtivo(usuarioId);
-            }
-        };
+        return usuarioId -> usuarioId != null
+                && repository.administradorAtivo(usuarioId, NomePapel.ADMINISTRADOR);
     }
 }

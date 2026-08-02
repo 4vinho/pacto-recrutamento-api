@@ -15,10 +15,4 @@ public interface AutorizacaoTemplateVagaJpaRepository extends Repository<Usuario
             + "and p.nome = :papel")
     boolean administradorAtivo(@Param("id") UUID id, @Param("papel") NomePapel papel);
 
-    @Query("select case when count(u) > 0 then true else false end "
-            + "from Usuario u join u.papeis p "
-            + "where u.id = :id and u.ativo = true and u.excluidoEm is null "
-            + "and p.nome in (br.com.pacto.recrutamento.core.enums.NomePapel.ADMINISTRADOR, "
-            + "br.com.pacto.recrutamento.core.enums.NomePapel.RESPONSAVEL_VAGA)")
-    boolean consultorAtivo(@Param("id") UUID id);
 }

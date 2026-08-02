@@ -63,9 +63,6 @@ public class TemplateVagaService implements TemplateVagaUseCase {
             return new TypedPagedResponse<>(400, "Consulta de templates invalida",
                     Collections.<TemplateVagaDTO>emptyList(), page, size, 0);
         }
-        if (!consultorTemplates(query.getUsuarioId())) return new TypedPagedResponse<>(403,
-                ACESSO_NAO_AUTORIZADO, Collections.<TemplateVagaDTO>emptyList(),
-                query.getPage(), query.getPageSize(), 0);
         PaginaGenerico<TemplateVaga> pagina = templates.listar(query.getBusca(), query.getPage(),
                 query.getPageSize());
         List<TemplateVagaDTO> dados = pagina.getItens().stream().map(this::paraDto)
@@ -80,7 +77,6 @@ public class TemplateVagaService implements TemplateVagaUseCase {
         if (query == null || query.getUsuarioId() == null || query.getTemplateId() == null) {
             return erro(400, DADOS_TEMPLATE_INVALIDOS);
         }
-        if (!consultorTemplates(query.getUsuarioId())) return erro(403, ACESSO_NAO_AUTORIZADO);
         TemplateVaga template = templates.buscarAtivoPorId(query.getTemplateId()).orElse(null);
         if (template == null) return erro(404, TEMPLATE_NAO_ENCONTRADO);
         List<PerguntaTemplateVagaDTO> perguntasDto = perguntas.listarAtivasDoTemplate(template.getId())
@@ -218,10 +214,6 @@ public class TemplateVagaService implements TemplateVagaUseCase {
 
     private boolean administrador(UUID id) {
         return id != null && autorizacao.podeManterTemplates(id);
-    }
-
-    private boolean consultorTemplates(UUID id) {
-        return id != null && autorizacao.podeConsultarTemplates(id);
     }
 
     private boolean camposTemplateInvalidos(String titulo, String descricao) {

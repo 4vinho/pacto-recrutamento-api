@@ -15,7 +15,6 @@ import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.enums.TipoResposta;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,7 +22,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/templates-vaga")
-@PreAuthorize("hasRole('ADMINISTRADOR')")
 @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTH)
 public class TemplateVagaController {
     private final TemplateVagaUseCase service;
@@ -33,7 +31,6 @@ public class TemplateVagaController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedPagedResponse<TemplateVagaDTO>> listar(
             Authentication auth, @RequestParam(required = false) String busca,
             @RequestParam(defaultValue = "0") int page,
@@ -44,7 +41,6 @@ public class TemplateVagaController {
     }
 
     @GetMapping("/{templateId}")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedResponse<TemplateVagaDetalheDTO>> consultar(
             Authentication auth, @PathVariable UUID templateId) {
         return HttpResponses.from(service.consultarTemplate(new ConsultarTemplateVagaDTO(
