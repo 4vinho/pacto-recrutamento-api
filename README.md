@@ -60,6 +60,11 @@ Sugestão de roteiro:
 As contas e a massa de demonstração são carregadas pelo Flyway. A migration é
 idempotente e também pode completar um banco que já tenha sido inicializado.
 
+> **Observação:** as candidaturas das vagas carregadas na massa de demonstração
+> não possuem arquivos de currículo no MinIO. Para testar a visualização do
+> currículo como administrador ou responsável, envie primeiro um PDF em uma
+> candidatura usando uma conta de candidato.
+
 ## Arquitetura
 
 ```text
