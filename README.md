@@ -46,7 +46,7 @@ No Linux ou macOS, substitua `Copy-Item` por `cp`. Aguarde os health checks e ab
 | Perfil        | E-mail                  | Senha         | Jornada sugerida                                       |
 | ------------- | ----------------------- | ------------- | ------------------------------------------------------ |
 | Candidato     | `aristoteles@pacto.com` | `aristoteles` | consultar vagas e acompanhar uma candidatura           |
-| Responsável   | `platao@pacto.com`      | `platao`      | filtrar candidatos, registrar feedback e alterar etapa |
+| Responsável   | `platao@pacto.com`      | `platao123`   | filtrar candidatos, registrar feedback e alterar etapa |
 | Administrador | `socrates@pacto.com`    | `socrates`    | criar template e gerenciar uma vaga                    |
 
 Um roteiro curto que conecta frontend e backend:
