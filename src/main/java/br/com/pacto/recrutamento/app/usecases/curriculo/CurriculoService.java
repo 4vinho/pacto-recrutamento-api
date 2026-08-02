@@ -7,6 +7,7 @@ import br.com.pacto.recrutamento.app.ports.in.curriculo.CurriculoUseCase;
 import br.com.pacto.recrutamento.app.ports.out.curriculo.ArquivoStoragePort;
 import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
 import br.com.pacto.recrutamento.app.ports.out.candidatura.AutorizacaoResponsavelCandidaturaPort;
+import br.com.pacto.recrutamento.app.ports.out.candidatura.EventosCandidaturaPort;
 import br.com.pacto.recrutamento.app.ports.out.curriculo.CurriculoPort;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Curriculo;
@@ -36,15 +37,18 @@ public class CurriculoService implements CurriculoUseCase {
     private final ArquivoStoragePort storage;
     private final CandidaturaPort candidaturas;
     private final AutorizacaoResponsavelCandidaturaPort autorizacao;
+    private final EventosCandidaturaPort eventos;
     private final Clock clock;
 
     public CurriculoService(CurriculoPort repositorio, ArquivoStoragePort storage,
                             CandidaturaPort candidaturas,
-                            AutorizacaoResponsavelCandidaturaPort autorizacao, Clock clock) {
+                            AutorizacaoResponsavelCandidaturaPort autorizacao,
+                            EventosCandidaturaPort eventos, Clock clock) {
         this.repositorio = repositorio;
         this.storage = storage;
         this.candidaturas = candidaturas;
         this.autorizacao = autorizacao;
+        this.eventos = eventos;
         this.clock = clock;
     }
 
@@ -68,8 +72,13 @@ public class CurriculoService implements CurriculoUseCase {
         }
         TypedResponse<CurriculoDTO> resposta = salvarNovo(command.getCandidaturaId(), recebido);
         if (resposta.getStatusCode() < 300) {
+            StatusCandidatura statusAnterior = candidatura.get().getStatus();
             candidatura.get().registrarCurriculoEnviado();
             candidaturas.salvar(candidatura.get());
+            if (statusAnterior != StatusCandidatura.ENVIADA
+                    && candidatura.get().getStatus() == StatusCandidatura.ENVIADA) {
+                publicarCriacao(candidatura.get());
+            }
         }
         return resposta;
     }
@@ -168,6 +177,14 @@ public class CurriculoService implements CurriculoUseCase {
 
     private OffsetDateTime agora() {
         return OffsetDateTime.now(clock);
+    }
+
+    private void publicarCriacao(Candidatura candidatura) {
+        try {
+            eventos.candidaturaCriada(candidatura);
+        } catch (RuntimeException ignored) {
+            // O evento e posterior a confirmacao da candidatura e nao a desfaz.
+        }
     }
 
     private TypedResponse<CurriculoDTO> sucesso(int status, Curriculo curriculo) {
