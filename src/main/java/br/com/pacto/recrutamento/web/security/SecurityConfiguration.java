@@ -76,6 +76,8 @@ public class SecurityConfiguration {
                     .hasAnyRole(ADMINISTRADOR, RESPONSAVEL_VAGA)
                 .antMatchers(HttpMethod.GET, "/candidaturas/*")
                     .hasAnyRole(ADMINISTRADOR, RESPONSAVEL_VAGA, CANDIDATO)
+                .antMatchers(HttpMethod.GET, "/candidaturas/*/curriculo/url")
+                    .hasAnyRole(ADMINISTRADOR, RESPONSAVEL_VAGA, CANDIDATO)
                 .antMatchers("/candidaturas/*/curriculo/**").hasRole(CANDIDATO)
                 .anyRequest().denyAll()
                 .and()

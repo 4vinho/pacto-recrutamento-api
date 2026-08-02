@@ -37,6 +37,10 @@ class SecurityConfigurationTest {
         deveNegar(HttpMethod.POST, "/candidaturas/1/cancelamento", "ADMINISTRADOR");
         devePermitir(HttpMethod.PATCH, "/candidaturas/1/status", "ADMINISTRADOR");
         deveNegar(HttpMethod.PATCH, "/candidaturas/1/status", "CANDIDATO");
+        devePermitir(HttpMethod.GET, "/candidaturas/1/curriculo/url", "RESPONSAVEL_VAGA");
+        devePermitir(HttpMethod.GET, "/candidaturas/1/curriculo/url", "ADMINISTRADOR");
+        devePermitir(HttpMethod.GET, "/candidaturas/1/curriculo/url", "CANDIDATO");
+        deveNegar(HttpMethod.POST, "/candidaturas/1/curriculo", "RESPONSAVEL_VAGA");
     }
 
     @Test
@@ -59,6 +63,7 @@ class SecurityConfigurationTest {
         @RequestMapping({
                 "/templates-vaga", "/vagas/{id}", "/vagas/{id}/candidaturas",
                 "/candidaturas/{id}/cancelamento", "/candidaturas/{id}/status",
+                "/candidaturas/{id}/curriculo", "/candidaturas/{id}/curriculo/url",
                 "/operacao-futura"
         })
         public void endpoint() {
