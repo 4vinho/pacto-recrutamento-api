@@ -30,7 +30,7 @@ public class RefreshTokenCookie {
                 .httpOnly(true)
                 .secure(secure)
                 .sameSite("Strict")
-                .path("/auth")
+                .path("/")
                 .maxAge(maxAge)
                 .build();
     }
