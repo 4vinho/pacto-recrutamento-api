@@ -139,6 +139,7 @@ O relatório fica em `target/site/jacoco/`. Veja também [SONARQUBE.md](SONARQUB
 ## Documentação técnica
 
 - [DOCUMENTACAO.md](DOCUMENTACAO.md): regras, fluxos, estados, endpoints e modelo de dados;
+- [DER - modelo logico](docs/der-modelo-logico.jpg): diagrama entidade-relacionamento do banco;
 - [Swagger UI](http://localhost:8080/swagger-ui.html): contrato executável, schemas e validações;
 - `src/main/resources/db/migration`: evolução versionada do banco;
 - `.env.example`: configuração completa do ambiente Docker, sem segredos reais.
