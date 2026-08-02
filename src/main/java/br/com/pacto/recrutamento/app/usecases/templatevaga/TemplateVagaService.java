@@ -31,6 +31,7 @@ public class TemplateVagaService implements TemplateVagaUseCase {
     private final RequisitoVagaTemplatePort requisitosVaga;
     private final AutorizacaoTemplateVagaPort autorizacao;
     private final Clock clock;
+    private final CopiadorTemplateVaga copiador;
 
     public TemplateVagaService(TemplateVagaPort templates,
                                PerguntaTemplateVagaPort perguntas,
@@ -48,6 +49,8 @@ public class TemplateVagaService implements TemplateVagaUseCase {
         this.requisitosVaga = requisitosVaga;
         this.autorizacao = autorizacao;
         this.clock = clock;
+        this.copiador = new CopiadorTemplateVaga(vagas, perguntas, requisitos,
+                perguntasVaga, requisitosVaga);
     }
 
     @Override
@@ -206,42 +209,7 @@ public class TemplateVagaService implements TemplateVagaUseCase {
         if (!administrador(command.getUsuarioSolicitanteId())) return erro(403, ACESSO_NAO_AUTORIZADO);
         Optional<TemplateVaga> template = templates.buscarAtivoPorId(command.getTemplateId());
         if (!template.isPresent()) return erro(404, TEMPLATE_NAO_ENCONTRADO);
-        Vaga vaga = vagas.salvar(criarVaga(template.get()));
-        copiarPerguntas(template.get().getId(), vaga.getId());
-        copiarRequisitos(template.get().getId(), vaga.getId());
-        return respostaVaga(vaga);
-    }
-
-    private Vaga criarVaga(TemplateVaga template) {
-        return new Vaga(template.getResponsavelId(), template.getTitulo(), template.getDescricao());
-    }
-
-    private void copiarPerguntas(UUID templateId, UUID vagaId) {
-        for (PerguntaTemplateVaga origem : perguntas.listarAtivasDoTemplate(templateId))
-            perguntasVaga.salvar(copiar(origem, vagaId));
-    }
-
-    private void copiarRequisitos(UUID templateId, UUID vagaId) {
-        for (RequisitoTemplateVaga origem : requisitos.listarAtivosDoTemplate(templateId))
-            requisitosVaga.salvar(copiar(origem, vagaId));
-    }
-
-    private PerguntaVaga copiar(PerguntaTemplateVaga origem, UUID vagaId) {
-        PerguntaVaga destino = new PerguntaVaga();
-        destino.setVagaId(vagaId);
-        destino.setEnunciado(origem.getEnunciado());
-        destino.setTipoResposta(origem.getTipoResposta());
-        destino.setObrigatoria(origem.isObrigatoria());
-        destino.setOrdem(origem.getOrdem());
-        return destino;
-    }
-
-    private RequisitoVaga copiar(RequisitoTemplateVaga origem, UUID vagaId) {
-        RequisitoVaga destino = new RequisitoVaga();
-        destino.setVagaId(vagaId);
-        destino.setDescricao(origem.getDescricao());
-        destino.setObrigatorio(origem.isObrigatorio());
-        return destino;
+        return respostaVaga(copiador.copiar(template.get()));
     }
 
     private boolean templateExiste(UUID id) {

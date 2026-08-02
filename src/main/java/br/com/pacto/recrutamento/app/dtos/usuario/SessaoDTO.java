@@ -1,5 +1,6 @@
 package br.com.pacto.recrutamento.app.dtos.usuario;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.OffsetDateTime;
 
 public class SessaoDTO {
@@ -17,6 +18,7 @@ public class SessaoDTO {
         return accessToken;
     }
 
+    @JsonIgnore
     public String getRefreshToken() {
         return refreshToken;
     }

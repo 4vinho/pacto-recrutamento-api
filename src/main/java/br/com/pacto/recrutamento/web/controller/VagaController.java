@@ -13,6 +13,7 @@ import br.com.pacto.recrutamento.core.enums.StatusVaga;
 import br.com.pacto.recrutamento.core.enums.TipoResposta;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,6 +33,7 @@ public class VagaController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA', 'CANDIDATO')")
     public ResponseEntity<TypedPagedResponse<VagaDTO>> listar(
             Authentication auth,
             @RequestParam(required = false) String busca,
@@ -47,6 +49,7 @@ public class VagaController {
     }
 
     @GetMapping("/{vagaId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA', 'CANDIDATO')")
     public ResponseEntity<TypedResponse<VagaDetalheDTO>> consultar(
             Authentication auth, @PathVariable UUID vagaId) {
         return HttpResponses.from(service.consultarVaga(
@@ -54,6 +57,7 @@ public class VagaController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedResponse<VagaDTO>> criar(
             Authentication auth, @Valid @RequestBody SalvarVagaRequest request) {
         return HttpResponses.from(service.criarVaga(
@@ -62,6 +66,7 @@ public class VagaController {
     }
 
     @PostMapping("/completa")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedResponse<VagaDetalheDTO>> criarCompleta(
             Authentication auth, @Valid @RequestBody CriarVagaCompletaRequest request) {
         UUID usuarioId = AuthenticatedUser.id(auth);
@@ -78,6 +83,7 @@ public class VagaController {
     }
 
     @PutMapping("/{vagaId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedResponse<VagaDTO>> atualizar(
             Authentication auth, @PathVariable UUID vagaId,
             @Valid @RequestBody SalvarVagaRequest request) {
@@ -87,6 +93,7 @@ public class VagaController {
     }
 
     @PatchMapping("/{vagaId}/status")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedResponse<VagaDTO>> alterarStatus(
             Authentication auth, @PathVariable UUID vagaId,
             @Valid @RequestBody AlterarStatusVagaRequest request) {
@@ -95,12 +102,14 @@ public class VagaController {
     }
 
     @DeleteMapping("/{vagaId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedResponse<Void>> excluir(Authentication auth, @PathVariable UUID vagaId) {
         return HttpResponses.from(service.excluirVaga(
                 new ExcluirVagaDTO(AuthenticatedUser.id(auth), vagaId)));
     }
 
     @PostMapping("/{vagaId}/perguntas")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedResponse<PerguntaVagaDTO>> criarPergunta(
             Authentication auth, @PathVariable UUID vagaId,
             @Valid @RequestBody SalvarPerguntaRequest request) {
@@ -109,6 +118,7 @@ public class VagaController {
     }
 
     @PutMapping("/{vagaId}/perguntas/{perguntaId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedResponse<PerguntaVagaDTO>> atualizarPergunta(
             Authentication auth, @PathVariable UUID vagaId, @PathVariable UUID perguntaId,
             @Valid @RequestBody SalvarPerguntaRequest request) {
@@ -117,6 +127,7 @@ public class VagaController {
     }
 
     @DeleteMapping("/{vagaId}/perguntas/{perguntaId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedResponse<Void>> excluirPergunta(
             Authentication auth, @PathVariable UUID vagaId, @PathVariable UUID perguntaId) {
         return HttpResponses.from(service.excluirPerguntaDaVaga(
@@ -124,6 +135,7 @@ public class VagaController {
     }
 
     @PostMapping("/{vagaId}/requisitos")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedResponse<RequisitoVagaDTO>> criarRequisito(
             Authentication auth, @PathVariable UUID vagaId,
             @Valid @RequestBody SalvarRequisitoRequest request) {
@@ -132,6 +144,7 @@ public class VagaController {
     }
 
     @PutMapping("/{vagaId}/requisitos/{requisitoId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedResponse<RequisitoVagaDTO>> atualizarRequisito(
             Authentication auth, @PathVariable UUID vagaId, @PathVariable UUID requisitoId,
             @Valid @RequestBody SalvarRequisitoRequest request) {
@@ -140,6 +153,7 @@ public class VagaController {
     }
 
     @DeleteMapping("/{vagaId}/requisitos/{requisitoId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedResponse<Void>> excluirRequisito(
             Authentication auth, @PathVariable UUID vagaId, @PathVariable UUID requisitoId) {
         return HttpResponses.from(service.excluirRequisitoDaVaga(

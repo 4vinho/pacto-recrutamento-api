@@ -11,11 +11,16 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
     private static final String ADMINISTRADOR = "ADMINISTRADOR";
     private static final String RESPONSAVEL_VAGA = "RESPONSAVEL_VAGA";
@@ -25,13 +30,21 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(
             HttpSecurity http, JwtAuthenticationFilter jwtFilter, ObjectMapper objectMapper)
             throws Exception {
-        http.csrf().disable()
+        CookieCsrfTokenRepository csrfRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        csrfRepository.setCookiePath("/");
+        http.csrf()
+                .csrfTokenRepository(csrfRepository)
+                .requireCsrfProtectionMatcher(new OrRequestMatcher(
+                        new AntPathRequestMatcher("/auth/refresh", "POST"),
+                        new AntPathRequestMatcher("/auth/logout", "POST")))
+                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .antMatchers(
                         "/auth/cadastro",
                         "/auth/login",
+                        "/auth/csrf",
                         "/auth/refresh",
                         "/auth/recuperacao-senha/solicitacoes",
                         "/auth/recuperacao-senha/confirmacoes",

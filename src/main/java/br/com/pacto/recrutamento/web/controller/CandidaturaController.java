@@ -12,6 +12,7 @@ import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,6 +31,7 @@ public class CandidaturaController {
     }
 
     @GetMapping("/candidaturas/me")
+    @PreAuthorize("hasRole('CANDIDATO')")
     public ResponseEntity<TypedPagedResponse<CandidaturaDTO>> listarMinhas(
             Authentication authentication,
             @RequestParam(required = false) StatusCandidatura status,
@@ -44,6 +46,7 @@ public class CandidaturaController {
     }
 
     @GetMapping("/candidaturas/me/resumo")
+    @PreAuthorize("hasRole('CANDIDATO')")
     public ResponseEntity<TypedResponse<ResumoCandidaturasDTO>> resumirMinhas(
             Authentication authentication,
             @RequestParam(required = false) OffsetDateTime inicio,
@@ -54,6 +57,7 @@ public class CandidaturaController {
     }
 
     @PostMapping("/candidaturas/{candidaturaId}/respostas")
+    @PreAuthorize("hasRole('CANDIDATO')")
     public ResponseEntity<TypedResponse<CandidaturaDTO>> responder(
             Authentication authentication, @PathVariable UUID candidaturaId,
             @Valid @RequestBody RespostasRequest request) {
@@ -66,6 +70,7 @@ public class CandidaturaController {
     }
 
     @PostMapping("/candidaturas/{candidaturaId}/requisitos")
+    @PreAuthorize("hasRole('CANDIDATO')")
     public ResponseEntity<TypedResponse<CandidaturaDTO>> responderRequisitos(
             Authentication authentication, @PathVariable UUID candidaturaId,
             @Valid @RequestBody RequisitosRequest request) {
@@ -79,6 +84,7 @@ public class CandidaturaController {
     }
 
     @PatchMapping("/candidaturas/{candidaturaId}/status")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedResponse<CandidaturaDTO>> atualizarStatus(
             Authentication authentication, @PathVariable UUID candidaturaId,
             @Valid @RequestBody AtualizarStatusCandidaturaRequest request) {
@@ -89,6 +95,7 @@ public class CandidaturaController {
     }
 
     @PostMapping("/candidaturas/{candidaturaId}/cancelamento")
+    @PreAuthorize("hasRole('CANDIDATO')")
     public ResponseEntity<TypedResponse<CandidaturaDTO>> cancelar(
             Authentication authentication, @PathVariable UUID candidaturaId) {
         return HttpResponses.from(service.cancelarCandidatura(
@@ -96,6 +103,7 @@ public class CandidaturaController {
     }
 
     @GetMapping("/candidaturas/{candidaturaId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA', 'CANDIDATO')")
     public ResponseEntity<TypedResponse<CandidaturaDTO>> consultar(
             Authentication authentication, @PathVariable UUID candidaturaId) {
         return HttpResponses.from(service.consultarCandidatura(

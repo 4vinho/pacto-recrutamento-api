@@ -28,6 +28,8 @@ storage:
 security:
   jwt:
     secret: uma-chave-de-teste-com-pelo-menos-trinta-e-dois-bytes
+  cookie:
+    secure: false
 
 notification:
   mail:

@@ -52,6 +52,8 @@ storage:
 security:
   jwt:
     secret: ${JWT_SECRET}
+  cookie:
+    secure: ${SECURITY_COOKIE_SECURE:true}
 
 notification:
   mail:

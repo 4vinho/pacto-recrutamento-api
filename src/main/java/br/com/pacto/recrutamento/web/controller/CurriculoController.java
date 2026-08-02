@@ -12,6 +12,7 @@ import br.com.pacto.recrutamento.core.common.ErrorCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,7 @@ import static br.com.pacto.recrutamento.core.common.ErrorMessages.ARQUIVO_OBRIGA
 
 @RestController
 @RequestMapping("/candidaturas/{candidaturaId}/curriculo")
+@PreAuthorize("hasRole('CANDIDATO')")
 @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTH)
 public class CurriculoController {
     private static final long TAMANHO_MAXIMO = 5L * 1024L * 1024L;

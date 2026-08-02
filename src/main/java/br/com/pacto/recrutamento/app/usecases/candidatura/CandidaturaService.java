@@ -294,22 +294,7 @@ public class CandidaturaService implements CandidaturaUseCase {
     @Override
     @Transactional(readOnly = true)
     public TypedResponse<CandidaturaDTO> consultarCandidatura(ConsultarCandidaturaDTO query) {
-        if (query == null || query.getUsuarioSolicitanteId() == null || query.getCandidaturaId() == null) {
-            return erro(400, CONSULTA_CANDIDATURA_INVALIDA);
-        }
-        Candidatura candidatura = candidaturas.buscarPorId(query.getCandidaturaId()).orElse(null);
-        if (candidatura == null) {
-            return erro(404, CANDIDATURA_NAO_ENCONTRADA);
-        }
-        if (pertenceAoUsuario(candidatura, query.getUsuarioSolicitanteId())) {
-            return new TypedResponse<>(200, "Candidatura encontrada",
-                    mapper.paraDtoDetalhadoCandidato(candidatura));
-        }
-        Vaga vaga = vagas.buscarPorId(candidatura.getVagaId()).orElse(null);
-        if (vaga != null && autorizacao.podeGerenciar(query.getUsuarioSolicitanteId(), vaga)) {
-            return new TypedResponse<>(200, "Candidatura encontrada", mapper.paraDtoDetalhado(candidatura));
-        }
-        return erro(403, USUARIO_NAO_AUTORIZADO_CONSULTAR_CANDIDATURA);
+        return consultas.consultarCandidatura(query);
     }
 
     private boolean pertenceAoUsuario(Candidatura candidatura, UUID usuarioId) {

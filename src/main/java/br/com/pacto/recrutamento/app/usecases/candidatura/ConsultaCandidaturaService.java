@@ -4,6 +4,7 @@ import static br.com.pacto.recrutamento.core.common.ErrorMessages.USUARIO_NAO_AU
 import static br.com.pacto.recrutamento.core.common.ErrorMessages.VAGA_NAO_ENCONTRADA;
 
 import br.com.pacto.recrutamento.app.dtos.candidatura.CandidaturaDTO;
+import br.com.pacto.recrutamento.app.dtos.candidatura.ConsultarCandidaturaDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.ListarCandidaturasDaVagaDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.ListarMinhasCandidaturasDTO;
 import br.com.pacto.recrutamento.app.dtos.candidatura.ResumoCandidaturasDTO;
@@ -17,6 +18,7 @@ import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
+import br.com.pacto.recrutamento.core.entities.Vaga;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -100,6 +102,26 @@ class ConsultaCandidaturaService {
                 .map(mapper::paraDtoComRequisitos).collect(Collectors.toList());
         return new TypedPagedResponse<>(200, "Candidaturas encontradas", dados,
                 query.getPage(), query.getPageSize(), pagina.getTotalItens());
+    }
+
+    TypedResponse<CandidaturaDTO> consultarCandidatura(ConsultarCandidaturaDTO query) {
+        if (query == null || query.getUsuarioSolicitanteId() == null
+                || query.getCandidaturaId() == null) {
+            return new TypedResponse<>(400, "Consulta de candidatura invalida", null);
+        }
+        Candidatura candidatura = candidaturas.buscarPorId(query.getCandidaturaId()).orElse(null);
+        if (candidatura == null) {
+            return new TypedResponse<>(404, "Candidatura nao encontrada", null);
+        }
+        if (candidatura.getUsuarioId().equals(query.getUsuarioSolicitanteId())) {
+            return new TypedResponse<>(200, "Candidatura encontrada",
+                    mapper.paraDtoDetalhadoCandidato(candidatura));
+        }
+        Vaga vaga = vagas.buscarPorId(candidatura.getVagaId()).orElse(null);
+        if (vaga != null && autorizacao.podeGerenciar(query.getUsuarioSolicitanteId(), vaga)) {
+            return new TypedResponse<>(200, "Candidatura encontrada", mapper.paraDtoDetalhado(candidatura));
+        }
+        return new TypedResponse<>(403, USUARIO_NAO_AUTORIZADO_CONSULTAR_CANDIDATURA, null);
     }
 
     private boolean consultaDaVagaInvalida(ListarCandidaturasDaVagaDTO query) {
