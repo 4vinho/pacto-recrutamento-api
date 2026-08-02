@@ -33,6 +33,7 @@ public class TemplateVagaController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedPagedResponse<TemplateVagaDTO>> listar(
             Authentication auth, @RequestParam(required = false) String busca,
             @RequestParam(defaultValue = "0") int page,
@@ -43,6 +44,7 @@ public class TemplateVagaController {
     }
 
     @GetMapping("/{templateId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA')")
     public ResponseEntity<TypedResponse<TemplateVagaDetalheDTO>> consultar(
             Authentication auth, @PathVariable UUID templateId) {
         return HttpResponses.from(service.consultarTemplate(new ConsultarTemplateVagaDTO(

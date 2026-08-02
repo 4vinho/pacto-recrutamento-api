@@ -26,7 +26,8 @@ class SecurityConfigurationTest {
     @Test
     void deveRestringirContratosPorPapel() throws Exception {
         devePermitir(HttpMethod.GET, "/templates-vaga", "ADMINISTRADOR");
-        deveNegar(HttpMethod.GET, "/templates-vaga", "RESPONSAVEL_VAGA");
+        devePermitir(HttpMethod.GET, "/templates-vaga", "RESPONSAVEL_VAGA");
+        deveNegar(HttpMethod.POST, "/templates-vaga", "RESPONSAVEL_VAGA");
         devePermitir(HttpMethod.POST, "/vagas/1", "RESPONSAVEL_VAGA");
         deveNegar(HttpMethod.POST, "/vagas/1", "CANDIDATO");
         devePermitir(HttpMethod.POST, "/vagas/1/candidaturas", "CANDIDATO");

@@ -55,6 +55,8 @@ public class SecurityConfiguration {
                         "/swagger-ui/**",
                         "/actuator/health").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/logout").authenticated()
+                .antMatchers(HttpMethod.GET, "/templates-vaga", "/templates-vaga/**")
+                    .hasAnyRole(ADMINISTRADOR, RESPONSAVEL_VAGA)
                 .antMatchers("/templates-vaga/**").hasRole(ADMINISTRADOR)
                 .antMatchers(HttpMethod.GET, "/vagas/*/candidaturas")
                     .hasAnyRole(ADMINISTRADOR, RESPONSAVEL_VAGA)
