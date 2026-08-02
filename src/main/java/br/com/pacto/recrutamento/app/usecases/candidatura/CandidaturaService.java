@@ -25,6 +25,7 @@ public class CandidaturaService implements CandidaturaUseCase {
     private final AutorizacaoResponsavelCandidaturaPort autorizacao;
     private final CandidaturaDtoMapper mapper;
     private final PublicadorEventosCandidatura publicadorEventos;
+    private final ConsultaCandidaturaService consultas;
 
     public CandidaturaService(CandidaturaPort candidaturas,
                               VagaCandidaturaPort vagas,
@@ -32,7 +33,8 @@ public class CandidaturaService implements CandidaturaUseCase {
                               RequisitoCandidaturaPort requisitos,
                               AutorizacaoResponsavelCandidaturaPort autorizacao,
                               CandidaturaDtoMapper mapper,
-                              PublicadorEventosCandidatura publicadorEventos) {
+                              PublicadorEventosCandidatura publicadorEventos,
+                              ConsultaCandidaturaService consultas) {
         this.candidaturas = candidaturas;
         this.vagas = vagas;
         this.perguntas = perguntas;
@@ -40,111 +42,28 @@ public class CandidaturaService implements CandidaturaUseCase {
         this.autorizacao = autorizacao;
         this.mapper = mapper;
         this.publicadorEventos = publicadorEventos;
+        this.consultas = consultas;
     }
 
     @Override
     @Transactional(readOnly = true)
     public TypedPagedResponse<CandidaturaDTO> listarMinhasCandidaturas(
             ListarMinhasCandidaturasDTO query) {
-        if (query == null || query.getUsuarioId() == null || query.getPage() < 0
-                || query.getPageSize() <= 0 || query.getPageSize() > 100) {
-            return new TypedPagedResponse<>(400, "Consulta de candidaturas invalida",
-                    Collections.<CandidaturaDTO>emptyList(), 0, 20, 0);
-        }
-        PaginaGenerico<Candidatura> pagina = candidaturas.listarPorUsuario(
-                query.getUsuarioId(), query.getStatus(), query.getInicio(), query.getFim(),
-                query.getPage(), query.getPageSize());
-        List<CandidaturaDTO> dados = pagina.getItens().stream().map(mapper::paraDto)
-                .collect(java.util.stream.Collectors.toList());
-        return new TypedPagedResponse<>(200, "Candidaturas encontradas", dados,
-                query.getPage(), query.getPageSize(), pagina.getTotalItens());
+        return consultas.listarMinhasCandidaturas(query);
     }
 
     @Override
     @Transactional(readOnly = true)
     public TypedResponse<ResumoCandidaturasDTO> resumirMinhasCandidaturas(
             ListarMinhasCandidaturasDTO query) {
-        if (query == null || query.getUsuarioId() == null
-                || (query.getInicio() != null && query.getFim() != null
-                && query.getInicio().isAfter(query.getFim()))) {
-            return new TypedResponse<>(400, "Periodo de candidaturas invalido", null);
-        }
-        return new TypedResponse<>(200, "Resumo de candidaturas encontrado",
-                new ResumoCandidaturasDTO(candidaturas.contarPorStatusDoUsuario(
-                        query.getUsuarioId(), query.getInicio(), query.getFim())));
+        return consultas.resumirMinhasCandidaturas(query);
     }
 
     @Override
     @Transactional(readOnly = true)
     public TypedPagedResponse<CandidaturaDTO> listarCandidaturasDaVaga(
             ListarCandidaturasDaVagaDTO query) {
-        if (query == null || query.getUsuarioId() == null || query.getVagaId() == null
-                || query.getPage() < 0 || query.getPageSize() <= 0 || query.getPageSize() > 100) {
-            int page = query == null || query.getPage() < 0 ? 0 : query.getPage();
-            int size = query == null || query.getPageSize() <= 0 ? 20 : query.getPageSize();
-            return new TypedPagedResponse<>(400, "Consulta de candidaturas invalida",
-                    Collections.<CandidaturaDTO>emptyList(), page, size, 0);
-        }
-        Vaga vaga = vagas.buscarPorId(query.getVagaId()).orElse(null);
-        if (vaga == null) return new TypedPagedResponse<>(404, VAGA_NAO_ENCONTRADA,
-                Collections.<CandidaturaDTO>emptyList(), query.getPage(), query.getPageSize(), 0);
-        if (!autorizacao.podeGerenciar(query.getUsuarioId(), vaga)) {
-            return new TypedPagedResponse<>(403, USUARIO_NAO_AUTORIZADO_CONSULTAR_CANDIDATURA,
-                    Collections.<CandidaturaDTO>emptyList(), query.getPage(), query.getPageSize(), 0);
-        }
-        if (!filtrosRespostasValidos(query)) {
-            return new TypedPagedResponse<>(400, "Filtros de respostas invalidos",
-                    Collections.<CandidaturaDTO>emptyList(), query.getPage(), query.getPageSize(), 0);
-        }
-        PaginaGenerico<Candidatura> pagina = candidaturas.listarPorVaga(query.getVagaId(),
-                query.getStatus(), query.getBusca(), query.getFiltrosRespostas(),
-                query.getRequisitoId(), query.getNivelMinimo(), query.getAtendeTodosRequisitos(),
-                query.getPage(), query.getPageSize());
-        List<CandidaturaDTO> dados = pagina.getItens().stream().map(mapper::paraDtoComRequisitos)
-                .collect(java.util.stream.Collectors.toList());
-        return new TypedPagedResponse<>(200, "Candidaturas encontradas", dados,
-                query.getPage(), query.getPageSize(), pagina.getTotalItens());
-    }
-
-    private boolean filtrosRespostasValidos(ListarCandidaturasDaVagaDTO query) {
-        for (br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura filtro
-                : query.getFiltrosRespostas()) {
-            if (filtro == null || filtro.getPerguntaId() == null || filtro.getOperador() == null
-                    || filtro.getValor() == null || filtro.getValor().trim().isEmpty()) return false;
-            PerguntaVaga pergunta = perguntas.buscarAtivaPorId(filtro.getPerguntaId()).orElse(null);
-            if (pergunta == null || !query.getVagaId().equals(pergunta.getVagaId())) return false;
-            switch (pergunta.getTipoResposta()) {
-                case NUMERO:
-                    try { Double.parseDouble(filtro.getValor()); } catch (NumberFormatException error) { return false; }
-                    if (!(filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.IGUAL
-                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.DIFERENTE
-                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MAIOR_QUE
-                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MAIOR_OU_IGUAL
-                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MENOR_QUE
-                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MENOR_OU_IGUAL)) return false;
-                    break;
-                case DATA:
-                    try { java.time.LocalDate.parse(filtro.getValor()); } catch (java.time.format.DateTimeParseException error) { return false; }
-                    if (!(filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.IGUAL
-                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.DIFERENTE
-                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.ANTES_DE
-                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.DEPOIS_DE)) return false;
-                    break;
-                case BOOLEANO:
-                    if (!("true".equalsIgnoreCase(filtro.getValor()) || "false".equalsIgnoreCase(filtro.getValor()))) return false;
-                    if (!(filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.IGUAL
-                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.DIFERENTE)) return false;
-                    break;
-                default:
-                    if (filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MAIOR_QUE
-                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MAIOR_OU_IGUAL
-                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MENOR_QUE
-                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MENOR_OU_IGUAL
-                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.ANTES_DE
-                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.DEPOIS_DE) return false;
-            }
-        }
-        return true;
+        return consultas.listarCandidaturasDaVaga(query);
     }
 
     @Override
