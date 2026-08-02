@@ -32,6 +32,7 @@ public class ApiExceptionHandler {
         for (FieldError error : exception.getBindingResult().getFieldErrors()) {
             errors.put(error.getField(), error.getDefaultMessage());
         }
+        LOGGER.warn("Requisicao rejeitada por validacao: campos={}", errors.keySet());
         return error(HttpStatus.UNPROCESSABLE_ENTITY, ErrorCode.VALIDATION_ERROR, DADOS_INVALIDOS, errors);
     }
 
@@ -39,28 +40,36 @@ public class ApiExceptionHandler {
             MethodArgumentTypeMismatchException.class,
             MissingServletRequestParameterException.class})
     ResponseEntity<TypedResponse<Void>> malformed(Exception exception) {
+        LOGGER.warn("Requisicao malformada: tipo={}, causa={}",
+                exception.getClass().getSimpleName(), exception.getMessage());
         return error(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_REQUEST, REQUISICAO_INVALIDA, null);
     }
 
     @ExceptionHandler(BusinessException.class)
     ResponseEntity<TypedResponse<Void>> business(BusinessException exception) {
+        LOGGER.warn("Regra de negocio rejeitou a requisicao: codigo={}, status={}",
+                exception.getErrorCode(), exception.getStatusCode());
         return error(HttpStatus.valueOf(exception.getStatusCode()), exception.getErrorCode(),
                 exception.getMessage(), null);
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     ResponseEntity<TypedResponse<Void>> uploadTooLarge(MaxUploadSizeExceededException exception) {
+        LOGGER.warn("Upload rejeitado por exceder o tamanho permitido");
         return error(HttpStatus.UNPROCESSABLE_ENTITY, ErrorCode.VALIDATION_ERROR, ARQUIVO_MUITO_GRANDE, null);
     }
 
     @ExceptionHandler(AuthenticatedUser.UnauthenticatedException.class)
     ResponseEntity<TypedResponse<Void>> unauthenticated(AuthenticatedUser.UnauthenticatedException exception) {
+        LOGGER.warn("Acesso rejeitado por ausencia de autenticacao");
         return error(HttpStatus.UNAUTHORIZED, ErrorCode.AUTHENTICATION_REQUIRED, NAO_AUTENTICADO, null);
     }
 
     @ExceptionHandler(Exception.class)
     ResponseEntity<TypedResponse<Void>> unexpected(Exception exception) {
-        LOGGER.error("Erro inesperado ao processar a requisição", exception);
+        LOGGER.error("Erro inesperado ao processar a requisicao: causa={}",
+                exception.getClass().getSimpleName());
+        LOGGER.debug("Detalhes do erro inesperado", exception);
         return error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_ERROR, ERRO_INTERNO, null);
     }
 

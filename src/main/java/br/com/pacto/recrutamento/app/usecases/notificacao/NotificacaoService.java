@@ -13,6 +13,8 @@ import br.com.pacto.recrutamento.core.enums.TipoNotificacao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
@@ -21,6 +23,7 @@ import java.util.UUID;
 
 @Service
 public class NotificacaoService implements NotificacaoUseCase {
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificacaoService.class);
     private final DestinatariosCandidaturaPort destinatarios;
     private final NotificacaoPort notificacoes;
     private final CanalNotificacaoPort canal;
@@ -42,6 +45,8 @@ public class NotificacaoService implements NotificacaoUseCase {
         }
         Optional<DestinatariosCandidatura> encontrados = destinatarios.buscarPorCandidatura(evento.getCandidaturaId());
         if (!encontrados.isPresent()) {
+            LOGGER.warn("Destinatarios nao encontrados para candidatura: candidaturaId={}, eventoId={}",
+                    evento.getCandidaturaId(), evento.getEventoId());
             return resposta(202);
         }
         LinkedHashSet<UUID> usuarios = new LinkedHashSet<>(encontrados.get().getResponsaveisIds());
@@ -57,6 +62,8 @@ public class NotificacaoService implements NotificacaoUseCase {
                 "Candidatura recebida: " + vaga,
                 "Ola, " + candidato + "!\n\nRecebemos sua candidatura para a vaga \"" + vaga + "\".\n\n"
                         + "Voce pode acompanhar as proximas etapas no painel de candidaturas.");
+        LOGGER.info("Evento de candidatura criada processado: candidaturaId={}, eventoId={}, destinatarios={}",
+                evento.getCandidaturaId(), evento.getEventoId(), usuarios.size() + 1);
         return resposta(202);
     }
 
@@ -68,6 +75,8 @@ public class NotificacaoService implements NotificacaoUseCase {
         }
         Optional<DestinatariosCandidatura> encontrados = destinatarios.buscarPorCandidatura(evento.getCandidaturaId());
         if (!encontrados.isPresent()) {
+            LOGGER.warn("Destinatarios nao encontrados para candidatura: candidaturaId={}, eventoId={}",
+                    evento.getCandidaturaId(), evento.getEventoId());
             return resposta(202);
         }
         String vaga = valorOuPadrao(encontrados.get().getTituloVaga(), "vaga interna");
@@ -78,6 +87,8 @@ public class NotificacaoService implements NotificacaoUseCase {
         processar(evento.getEventoId(), encontrados.get().getUsuarioId(),
                 TipoNotificacao.STATUS_CANDIDATURA_ALTERADO,
                 "Atualizacao da candidatura: " + vaga, mensagem);
+        LOGGER.info("Evento de status processado: candidaturaId={}, eventoId={}, novoStatus={}",
+                evento.getCandidaturaId(), evento.getEventoId(), evento.getNovoStatus());
         return resposta(202);
     }
 
@@ -87,6 +98,8 @@ public class NotificacaoService implements NotificacaoUseCase {
                 () -> notificacoes.salvar(new Notificacao(eventoId, usuarioId, tipo, titulo, mensagem))
         );
         if (notificacao.getStatus() == br.com.pacto.recrutamento.core.enums.StatusNotificacao.ENVIADA) {
+            LOGGER.debug("Notificacao ja enviada; processamento ignorado: notificacaoId={}, eventoId={}",
+                    notificacao.getId(), eventoId);
             return;
         }
         enviar(notificacao);
@@ -96,7 +109,11 @@ public class NotificacaoService implements NotificacaoUseCase {
     @Transactional
     public void reprocessarFalhas() {
         OffsetDateTime limite = OffsetDateTime.now().minusNanos(atrasoRetentativaMs * 1_000_000);
-        for (Notificacao notificacao : notificacoes.buscarParaReprocessamento(limite, maximoTentativas)) {
+        java.util.List<Notificacao> pendentes = notificacoes.buscarParaReprocessamento(limite, maximoTentativas);
+        if (!pendentes.isEmpty()) {
+            LOGGER.info("Reprocessando notificacoes pendentes: quantidade={}", pendentes.size());
+        }
+        for (Notificacao notificacao : pendentes) {
             enviar(notificacao);
         }
     }
@@ -105,8 +122,14 @@ public class NotificacaoService implements NotificacaoUseCase {
         try {
             canal.enviar(notificacao);
             notificacao.registrarEnvio();
+            LOGGER.info("Notificacao enviada: notificacaoId={}, tipo={}, tentativa={}",
+                    notificacao.getId(), notificacao.getTipo(), notificacao.getTentativas());
         } catch (RuntimeException exception) {
             notificacao.registrarFalha("Falha ao enviar notificacao.");
+            LOGGER.warn("Falha ao enviar notificacao: notificacaoId={}, tipo={}, tentativa={}, causa={}",
+                    notificacao.getId(), notificacao.getTipo(), notificacao.getTentativas(),
+                    exception.getClass().getSimpleName());
+            LOGGER.debug("Detalhes da falha de envio da notificacao {}", notificacao.getId(), exception);
         }
         notificacoes.salvar(notificacao);
     }

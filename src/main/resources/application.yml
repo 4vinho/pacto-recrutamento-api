@@ -24,6 +24,13 @@ spring:
 server:
   port: ${SERVER_PORT}
 
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}
+    br.com.pacto.recrutamento: ${LOG_LEVEL_APP:INFO}
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] requestId=%X{requestId:-none} %logger{36} - %msg%n"
+
 management:
   endpoints:
     web:
