@@ -14,6 +14,8 @@ public interface CandidaturaUseCase {
 
     TypedResponse<CandidaturaDTO> criarCandidatura(CriarCandidaturaDTO command);
 
+    TypedResponse<CandidaturaDTO> enviarCandidatura(EnviarCandidaturaDTO command);
+
     TypedResponse<CandidaturaDTO> registrarRespostas(RegistrarRespostasDTO command);
 
     TypedResponse<CandidaturaDTO> registrarRequisitos(RegistrarRequisitosDTO command);

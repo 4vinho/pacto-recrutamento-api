@@ -81,6 +81,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: development
     env_file:
       - .env
     environment:
@@ -114,7 +115,8 @@ services:
     develop:
       watch:
         - path: ./src
-          action: rebuild
+          target: /workspace/src
+          action: sync+restart
         - path: ./pom.xml
           action: rebuild
     restart: unless-stopped

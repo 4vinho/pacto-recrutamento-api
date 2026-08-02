@@ -424,6 +424,14 @@ class VagaServiceTest {
             return buscarPorId(candidaturaId);
         }
 
+        public Optional<Candidatura> buscarPorUsuarioIdEVagaIdParaAtualizacao(
+                UUID usuarioId, UUID vagaId) {
+            return dados.values().stream()
+                    .filter(c -> usuarioId.equals(c.getUsuarioId()))
+                    .filter(c -> vagaId.equals(c.getVagaId()))
+                    .findFirst();
+        }
+
         public boolean existePorUsuarioIdEVagaId(UUID usuarioId, UUID vagaId) {
             return false;
         }

@@ -3,7 +3,11 @@ package br.com.pacto.recrutamento.infra.repositorys.candidatura;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import javax.persistence.LockModeType;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +20,9 @@ import java.util.UUID;
 
 public interface CandidaturaJpaRepository extends JpaRepository<Candidatura, UUID>, JpaSpecificationExecutor<Candidatura> {
     boolean existsByUsuarioIdAndVagaId(UUID usuarioId, UUID vagaId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Candidatura> findByUsuarioIdAndVagaId(UUID usuarioId, UUID vagaId);
 
     List<Candidatura> findAllByVagaIdAndStatusIn(
             UUID vagaId, Collection<StatusCandidatura> statuses);

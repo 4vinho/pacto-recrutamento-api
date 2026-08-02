@@ -51,6 +51,12 @@ public class CandidaturaJpaAdapter implements CandidaturaPort {
     }
 
     @Override
+    public Optional<Candidatura> buscarPorUsuarioIdEVagaIdParaAtualizacao(
+            UUID usuarioId, UUID vagaId) {
+        return candidaturas.findByUsuarioIdAndVagaId(usuarioId, vagaId);
+    }
+
+    @Override
     public PaginaGenerico<Candidatura> listarPorVaga(UUID vagaId, StatusCandidatura status,
                                                       int page, int pageSize) {
         Specification<Candidatura> filtro = (root, query, builder) -> status == null

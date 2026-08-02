@@ -26,6 +26,7 @@ public class MinioConfiguration {
         return MinioClient.builder()
                 .endpoint(properties.getPublicEndpoint())
                 .credentials(properties.getAccessKey(), properties.getSecretKey())
+                .region(properties.getRegion())
                 .build();
     }
 

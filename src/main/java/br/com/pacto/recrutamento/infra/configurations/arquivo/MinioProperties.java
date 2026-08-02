@@ -4,8 +4,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "storage.minio")
 public class MinioProperties {
+    private static final String REGIAO_PADRAO = "us-east-1";
+
     private String endpoint;
     private String publicEndpoint;
+    private String region = REGIAO_PADRAO;
     private String accessKey;
     private String secretKey;
     private String bucket;
@@ -31,6 +34,14 @@ public class MinioProperties {
 
     public void setPublicEndpoint(String publicEndpoint) {
         this.publicEndpoint = publicEndpoint;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     public String getAccessKey() {

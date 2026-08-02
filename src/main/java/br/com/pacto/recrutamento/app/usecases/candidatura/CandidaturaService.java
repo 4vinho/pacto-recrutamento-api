@@ -182,6 +182,54 @@ public class CandidaturaService implements CandidaturaUseCase {
 
     @Override
     @Transactional
+    public TypedResponse<CandidaturaDTO> enviarCandidatura(EnviarCandidaturaDTO command) {
+        if (command == null || command.getUsuarioId() == null || command.getVagaId() == null
+                || command.getRespostas() == null || command.getRequisitos() == null) {
+            return erro(400, DADOS_CANDIDATURA_INVALIDOS);
+        }
+        Vaga vaga = vagas.buscarPorId(command.getVagaId()).orElse(null);
+        if (vaga == null) return erro(404, VAGA_NAO_ENCONTRADA);
+        if (!vaga.aceitaCandidatura()) return erro(422, VAGA_NAO_ACEITA_CANDIDATURAS);
+
+        Candidatura candidatura = candidaturas.buscarPorUsuarioIdEVagaIdParaAtualizacao(
+                command.getUsuarioId(), command.getVagaId()).orElse(null);
+        if (candidatura != null && candidatura.getStatus() != StatusCandidatura.RASCUNHO) {
+            return erro(409, CANDIDATURA_DUPLICADA);
+        }
+
+        List<PerguntaVaga> perguntasDaVaga = perguntas.listarAtivasPorVagaId(vaga.getId());
+        List<RequisitoVaga> requisitosDaVaga = requisitos.listarAtivosPorVagaId(vaga.getId());
+        boolean nova = candidatura == null;
+        if (nova) {
+            candidatura = new Candidatura(command.getUsuarioId(), vaga.getId());
+            candidatura.configurarEtapas(!perguntasDaVaga.isEmpty(), !requisitosDaVaga.isEmpty());
+        }
+
+        Optional<List<RespostaCandidatura>> respostasValidadas =
+                ValidadorRespostasCandidatura.validarPerguntas(
+                        candidatura, command.getRespostas(), perguntasDaVaga);
+        if (!respostasValidadas.isPresent()) return erro(422, LOTE_RESPOSTAS_INCOMPATIVEL);
+        Optional<List<RespostaRequisitoCandidatura>> requisitosValidados =
+                ValidadorRespostasCandidatura.validarRequisitos(
+                        candidatura, command.getRequisitos(), requisitosDaVaga);
+        if (!requisitosValidados.isPresent()) return erro(422, LOTE_REQUISITOS_INCOMPATIVEL);
+
+        if (nova) candidatura = candidaturas.salvar(candidatura);
+        if (!candidatura.isPerguntasRespondidas()) {
+            candidaturas.registrarRespostasPerguntasAtomicamente(
+                    candidatura, respostasValidadas.get());
+        }
+        if (!candidatura.isRequisitosRespondidos()) {
+            candidaturas.registrarRespostasRequisitosAtomicamente(
+                    candidatura, requisitosValidados.get());
+        }
+        if (candidatura.getStatus() == StatusCandidatura.ENVIADA) publicarCriacao(candidatura);
+        return new TypedResponse<>(nova ? 201 : 200, "Candidatura registrada",
+                mapper.paraDto(candidatura));
+    }
+
+    @Override
+    @Transactional
     public TypedResponse<CandidaturaDTO> registrarRespostas(RegistrarRespostasDTO command) {
         if (command == null || command.getUsuarioId() == null || command.getCandidaturaId() == null
                 || command.getRespostas() == null || command.getRespostas().isEmpty()) {

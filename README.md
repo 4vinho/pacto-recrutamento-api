@@ -88,6 +88,10 @@ JWT:
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
+Na primeira inicialização com esse perfil, o Flyway também carrega uma massa de
+demonstração com vagas, templates e candidaturas em diferentes etapas. O script
+fica em `src/main/resources/db/dev` e não é executado nos demais ambientes.
+
 ## Contas de demonstração
 
 Criadas pelo Flyway em um banco novo:

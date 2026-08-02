@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import javax.validation.Valid;
 
 import java.util.UUID;
 import java.util.ArrayList;
@@ -73,5 +76,28 @@ public class CandidaturasVagaController {
             Authentication authentication, @PathVariable UUID vagaId) {
         return HttpResponses.from(service.criarCandidatura(
                 new CriarCandidaturaDTO(AuthenticatedUser.id(authentication), vagaId)));
+    }
+
+    @PostMapping("/vagas/{vagaId}/candidaturas/envio")
+    public ResponseEntity<TypedResponse<CandidaturaDTO>> enviar(
+            Authentication authentication, @PathVariable UUID vagaId,
+            @Valid @RequestBody br.com.pacto.recrutamento.web.request.candidatura.EnviarCandidaturaRequest request) {
+        List<br.com.pacto.recrutamento.app.dtos.candidatura.RespostaCandidaturaDTO> respostas =
+                new ArrayList<>();
+        for (br.com.pacto.recrutamento.web.request.candidatura.RespostaRequest resposta
+                : request.respostas) {
+            respostas.add(new br.com.pacto.recrutamento.app.dtos.candidatura.RespostaCandidaturaDTO(
+                    resposta.perguntaId, resposta.valor));
+        }
+        List<br.com.pacto.recrutamento.app.dtos.candidatura.RespostaRequisitoCandidaturaDTO>
+                requisitos = new ArrayList<>();
+        for (br.com.pacto.recrutamento.web.request.candidatura.RespostaRequisitoRequest requisito
+                : request.requisitos) {
+            requisitos.add(new br.com.pacto.recrutamento.app.dtos.candidatura.RespostaRequisitoCandidaturaDTO(
+                    requisito.requisitoId, requisito.nivel));
+        }
+        return HttpResponses.from(service.enviarCandidatura(
+                new br.com.pacto.recrutamento.app.dtos.candidatura.EnviarCandidaturaDTO(
+                        AuthenticatedUser.id(authentication), vagaId, respostas, requisitos)));
     }
 }

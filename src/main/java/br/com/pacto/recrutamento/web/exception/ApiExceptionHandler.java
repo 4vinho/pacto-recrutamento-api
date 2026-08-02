@@ -68,8 +68,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(Exception.class)
     ResponseEntity<TypedResponse<Void>> unexpected(Exception exception) {
         LOGGER.error("Erro inesperado ao processar a requisicao: causa={}",
-                exception.getClass().getSimpleName());
-        LOGGER.debug("Detalhes do erro inesperado", exception);
+                exception.getClass().getSimpleName(), exception);
         return error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_ERROR, ERRO_INTERNO, null);
     }
 

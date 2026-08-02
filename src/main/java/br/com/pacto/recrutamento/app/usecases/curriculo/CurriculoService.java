@@ -130,6 +130,8 @@ public class CurriculoService implements CurriculoUseCase {
             return new TypedResponse<UrlTemporariaCurriculoDTO>(200, "URL temporária gerada",
                     new UrlTemporariaCurriculoDTO(url, expiraEm));
         } catch (RuntimeException e) {
+            LOGGER.error("Não foi possível gerar a URL temporária do currículo {}",
+                    curriculo.get().getStorageKey(), e);
             return new TypedResponse<UrlTemporariaCurriculoDTO>(500, GERACAO_URL_TEMPORARIA_FALHOU, null);
         }
     }

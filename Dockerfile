@@ -1,9 +1,19 @@
-FROM maven:3.8.8-eclipse-temurin-8 AS build
+FROM maven:3.8.8-eclipse-temurin-8 AS dependencies
 
 WORKDIR /workspace
 
 COPY pom.xml .
 RUN mvn dependency:go-offline -B
+
+FROM dependencies AS development
+
+COPY src ./src
+
+EXPOSE 8080
+
+CMD ["mvn", "spring-boot:run", "-DskipTests"]
+
+FROM dependencies AS build
 
 COPY src ./src
 RUN mvn clean package -B
