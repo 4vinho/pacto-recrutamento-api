@@ -20,6 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura;
 
 @RestController
 @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTH)
@@ -35,17 +39,33 @@ public class CandidaturasVagaController {
             Authentication authentication, @PathVariable UUID vagaId,
             @RequestParam(required = false) StatusCandidatura status,
             @RequestParam(required = false) String busca,
+            @RequestParam(required = false) List<UUID> perguntaId,
+            @RequestParam(required = false) List<FiltroRespostaCandidatura.Operador> operador,
+            @RequestParam(required = false) List<String> valor,
             @RequestParam(required = false) UUID requisitoId,
             @RequestParam(required = false) NivelAtendimentoRequisito nivelMinimo,
-            @RequestParam(required = false) Integer tempoEmpresaMeses,
             @RequestParam(required = false) Boolean atendeTodosRequisitos,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int pageSize) {
+        List<FiltroRespostaCandidatura> filtrosRespostas = criarFiltros(perguntaId, operador, valor);
         TypedPagedResponse<CandidaturaDTO> resposta = service.listarCandidaturasDaVaga(
                 new ListarCandidaturasDaVagaDTO(AuthenticatedUser.id(authentication), vagaId,
-                        status, busca, requisitoId, nivelMinimo, tempoEmpresaMeses,
+                        status, busca, filtrosRespostas, requisitoId, nivelMinimo,
                         atendeTodosRequisitos, page, pageSize));
         return ResponseEntity.status(resposta.getStatusCode()).body(resposta);
+    }
+
+    private List<FiltroRespostaCandidatura> criarFiltros(List<UUID> perguntas,
+            List<FiltroRespostaCandidatura.Operador> operadores, List<String> valores) {
+        if (perguntas == null && operadores == null && valores == null) return Collections.emptyList();
+        if (perguntas == null || operadores == null || valores == null
+                || perguntas.size() != operadores.size() || perguntas.size() != valores.size()) {
+            throw new IllegalArgumentException("Filtros de respostas invalidos");
+        }
+        List<FiltroRespostaCandidatura> filtros = new ArrayList<>();
+        for (int i = 0; i < perguntas.size(); i++)
+            filtros.add(new FiltroRespostaCandidatura(perguntas.get(i), operadores.get(i), valores.get(i)));
+        return filtros;
     }
 
     @PostMapping("/vagas/{vagaId}/candidaturas")

@@ -2,31 +2,40 @@ package br.com.pacto.recrutamento.infra.adapters.notificacao;
 
 import br.com.pacto.recrutamento.app.ports.out.notificacao.DestinatariosCandidaturaPort;
 import br.com.pacto.recrutamento.app.ports.out.notificacao.model.DestinatariosCandidatura;
-import br.com.pacto.recrutamento.infra.repositorys.notificacao.DestinatariosCandidaturaRepository;
+import br.com.pacto.recrutamento.core.entities.Candidatura;
+import br.com.pacto.recrutamento.core.entities.Vaga;
+import br.com.pacto.recrutamento.infra.repositorys.candidatura.CandidaturaJpaRepository;
+import br.com.pacto.recrutamento.infra.repositorys.vaga.VagaJpaRepository;
+import br.com.pacto.recrutamento.infra.repositorys.usuario.UsuarioJpaRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Component
 public class DestinatariosCandidaturaJpaAdapter implements DestinatariosCandidaturaPort {
-    private final DestinatariosCandidaturaRepository repository;
+    private final CandidaturaJpaRepository candidaturas;
+    private final VagaJpaRepository vagas;
+    private final UsuarioJpaRepository usuarios;
 
-    public DestinatariosCandidaturaJpaAdapter(DestinatariosCandidaturaRepository repository) {
-        this.repository = repository;
+    public DestinatariosCandidaturaJpaAdapter(CandidaturaJpaRepository candidaturas,
+                                              VagaJpaRepository vagas,
+                                              UsuarioJpaRepository usuarios) {
+        this.candidaturas = candidaturas;
+        this.vagas = vagas;
+        this.usuarios = usuarios;
     }
 
     public Optional<DestinatariosCandidatura> buscarPorCandidatura(UUID candidaturaId) {
-        List<br.com.pacto.recrutamento.infra.projections.DestinatariosCandidaturaProjection> projecoes =
-                repository.buscarPorCandidatura(candidaturaId);
-        if (projecoes.isEmpty()) return Optional.empty();
-        LinkedHashSet<UUID> responsaveis = new LinkedHashSet<>();
-        for (br.com.pacto.recrutamento.infra.projections.DestinatariosCandidaturaProjection projecao : projecoes) {
-            responsaveis.add(projecao.getResponsavelId());
-        }
+        Optional<Candidatura> candidatura = candidaturas.findById(candidaturaId);
+        if (!candidatura.isPresent()) return Optional.empty();
+        Optional<Vaga> vaga = vagas.findById(candidatura.get().getVagaId());
+        if (!vaga.isPresent()) return Optional.empty();
+        String nomeCandidato = usuarios.findById(candidatura.get().getUsuarioId())
+                .map(usuario -> usuario.getNome() == null ? usuario.getEmail() : usuario.getNome())
+                .orElse("Candidato");
         return Optional.of(new DestinatariosCandidatura(
-                responsaveis, projecoes.get(0).getUsuarioId()));
+                vaga.get().getResponsaveisIds(), candidatura.get().getUsuarioId(),
+                vaga.get().getTitulo(), nomeCandidato));
     }
 }

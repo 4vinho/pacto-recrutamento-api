@@ -7,6 +7,7 @@ import br.com.pacto.recrutamento.core.entities.HistoricoCandidatura;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import br.com.pacto.recrutamento.core.enums.NivelAtendimentoRequisito;
+import br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura;
 import java.time.OffsetDateTime;
 import java.util.Map;
 
@@ -28,8 +29,8 @@ public interface CandidaturaPort {
     }
 
     default PaginaGenerico<Candidatura> listarPorVaga(UUID vagaId, StatusCandidatura status,
-            String busca, UUID requisitoId, NivelAtendimentoRequisito nivelMinimo,
-            Integer tempoEmpresaMeses, Boolean atendeTodosRequisitos,
+            String busca, List<FiltroRespostaCandidatura> filtrosRespostas, UUID requisitoId,
+            NivelAtendimentoRequisito nivelMinimo, Boolean atendeTodosRequisitos,
             int page, int pageSize) {
         return listarPorVaga(vagaId, status, page, pageSize);
     }

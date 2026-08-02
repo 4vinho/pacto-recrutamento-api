@@ -45,11 +45,18 @@ public class NotificacaoService implements NotificacaoUseCase {
             return resposta(202);
         }
         LinkedHashSet<UUID> usuarios = new LinkedHashSet<>(encontrados.get().getResponsaveisIds());
-        usuarios.add(encontrados.get().getUsuarioId());
+        String vaga = valorOuPadrao(encontrados.get().getTituloVaga(), "vaga interna");
+        String candidato = valorOuPadrao(encontrados.get().getNomeCandidato(), "Um candidato");
         for (UUID usuarioId : usuarios) {
             processar(evento.getEventoId(), usuarioId, TipoNotificacao.CANDIDATURA_CRIADA,
-                    "Nova candidatura", "A candidatura " + evento.getCandidaturaId() + " foi criada.");
+                    "Nova candidatura: " + vaga,
+                    "Ola!\n\n" + candidato + " se candidatou a vaga \"" + vaga + "\".\n\n"
+                            + "Acesse o painel de avaliacao para consultar o curriculo e as respostas.");
         }
+        processar(evento.getEventoId(), encontrados.get().getUsuarioId(), TipoNotificacao.CANDIDATURA_CRIADA,
+                "Candidatura recebida: " + vaga,
+                "Ola, " + candidato + "!\n\nRecebemos sua candidatura para a vaga \"" + vaga + "\".\n\n"
+                        + "Voce pode acompanhar as proximas etapas no painel de candidaturas.");
         return resposta(202);
     }
 
@@ -63,9 +70,17 @@ public class NotificacaoService implements NotificacaoUseCase {
         if (!encontrados.isPresent()) {
             return resposta(202);
         }
-        processar(evento.getEventoId(), encontrados.get().getUsuarioId(), TipoNotificacao.STATUS_CANDIDATURA_ALTERADO,
-                "Status da candidatura atualizado", "A candidatura " + evento.getCandidaturaId()
-                        + " foi atualizada para " + evento.getNovoStatus() + ".");
+        String vaga = valorOuPadrao(encontrados.get().getTituloVaga(), "vaga interna");
+        String candidato = valorOuPadrao(encontrados.get().getNomeCandidato(), "Candidato");
+        String mensagem = "Ola, " + candidato + "!\n\nO status da sua candidatura para a vaga \""
+                + vaga + "\" foi atualizado para \"" + descricaoStatus(evento.getNovoStatus()) + "\".";
+        if (evento.getFeedback() != null && !evento.getFeedback().trim().isEmpty()) {
+            mensagem += "\n\nFeedback da equipe:\n" + evento.getFeedback().trim();
+        }
+        mensagem += "\n\nConsulte o painel de candidaturas para acompanhar o processo.";
+        processar(evento.getEventoId(), encontrados.get().getUsuarioId(),
+                TipoNotificacao.STATUS_CANDIDATURA_ALTERADO,
+                "Atualizacao da candidatura: " + vaga, mensagem);
         return resposta(202);
     }
 
@@ -101,5 +116,21 @@ public class NotificacaoService implements NotificacaoUseCase {
 
     private TypedResponse<Void> resposta(int status) {
         return new TypedResponse<>(status, "Notificacao processada.", null);
+    }
+
+    private String valorOuPadrao(String valor, String padrao) {
+        return valor == null || valor.trim().isEmpty() ? padrao : valor.trim();
+    }
+
+    private String descricaoStatus(br.com.pacto.recrutamento.core.enums.StatusCandidatura status) {
+        switch (status) {
+            case RASCUNHO: return "Rascunho";
+            case ENVIADA: return "Enviada";
+            case EM_ANALISE: return "Em analise";
+            case APROVADA: return "Aprovada";
+            case REJEITADA: return "Nao selecionada";
+            case CANCELADA: return "Cancelada";
+            default: throw new IllegalArgumentException("Status de candidatura invalido");
+        }
     }
 }

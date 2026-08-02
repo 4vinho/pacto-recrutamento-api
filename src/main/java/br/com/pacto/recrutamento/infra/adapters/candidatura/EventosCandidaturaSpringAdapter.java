@@ -24,7 +24,12 @@ class EventosCandidaturaSpringAdapter implements EventosCandidaturaPort {
     }
 
     public void statusAlterado(Candidatura candidatura, StatusCandidatura anterior) {
+        statusAlterado(candidatura, anterior, null);
+    }
+
+    @Override
+    public void statusAlterado(Candidatura candidatura, StatusCandidatura anterior, String feedback) {
         publisher.publishEvent(new StatusCandidaturaAlteradoDTO(UUID.randomUUID(), candidatura.getId(),
-                anterior, candidatura.getStatus(), OffsetDateTime.now()));
+                anterior, candidatura.getStatus(), OffsetDateTime.now(), feedback));
     }
 }

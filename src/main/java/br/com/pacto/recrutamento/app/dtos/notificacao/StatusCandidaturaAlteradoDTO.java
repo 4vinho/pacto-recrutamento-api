@@ -11,16 +11,25 @@ public class StatusCandidaturaAlteradoDTO {
     private final StatusCandidatura statusAnterior;
     private final StatusCandidatura novoStatus;
     private final OffsetDateTime ocorridaEm;
+    private final String feedback;
 
     public StatusCandidaturaAlteradoDTO(UUID eventoId, UUID candidaturaId,
                                         StatusCandidatura statusAnterior,
                                         StatusCandidatura novoStatus,
                                         OffsetDateTime ocorridaEm) {
+        this(eventoId, candidaturaId, statusAnterior, novoStatus, ocorridaEm, null);
+    }
+
+    public StatusCandidaturaAlteradoDTO(UUID eventoId, UUID candidaturaId,
+                                        StatusCandidatura statusAnterior,
+                                        StatusCandidatura novoStatus,
+                                        OffsetDateTime ocorridaEm, String feedback) {
         this.eventoId = eventoId;
         this.candidaturaId = candidaturaId;
         this.statusAnterior = statusAnterior;
         this.novoStatus = novoStatus;
         this.ocorridaEm = ocorridaEm;
+        this.feedback = feedback;
     }
 
     public UUID getEventoId() {
@@ -41,5 +50,9 @@ public class StatusCandidaturaAlteradoDTO {
 
     public OffsetDateTime getOcorridaEm() {
         return ocorridaEm;
+    }
+
+    public String getFeedback() {
+        return feedback;
     }
 }

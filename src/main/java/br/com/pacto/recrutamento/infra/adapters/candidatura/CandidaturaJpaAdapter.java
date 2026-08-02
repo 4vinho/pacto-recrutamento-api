@@ -4,6 +4,7 @@ import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaCandidatura;
 import br.com.pacto.recrutamento.core.entities.RespostaRequisitoCandidatura;
+import br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura;
 import br.com.pacto.recrutamento.core.entities.HistoricoCandidatura;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
@@ -84,8 +85,8 @@ public class CandidaturaJpaAdapter implements CandidaturaPort {
 
     @Override
     public PaginaGenerico<Candidatura> listarPorVaga(UUID vagaId, StatusCandidatura status,
-            String busca, UUID requisitoId, NivelAtendimentoRequisito nivelMinimo,
-            Integer tempoEmpresaMeses, Boolean atendeTodosRequisitos,
+            String busca, List<FiltroRespostaCandidatura> filtrosRespostas, UUID requisitoId,
+            NivelAtendimentoRequisito nivelMinimo, Boolean atendeTodosRequisitos,
             int page, int pageSize) {
         Specification<Candidatura> filtro = (root, query, builder) -> {
             javax.persistence.criteria.Predicate predicate = builder.equal(root.get("vagaId"), vagaId);
@@ -99,6 +100,16 @@ public class CandidaturaJpaAdapter implements CandidaturaPort {
                         builder.like(builder.lower(usuario.get("nome")), termo),
                         builder.like(builder.lower(usuario.get("email")), termo)));
                 predicate = builder.and(predicate, root.get("usuarioId").in(sub));
+            }
+            for (FiltroRespostaCandidatura filtroResposta : filtrosRespostas) {
+                Subquery<UUID> sub = query.subquery(UUID.class);
+                javax.persistence.criteria.Root<br.com.pacto.recrutamento.core.entities.RespostaCandidatura> resposta =
+                        sub.from(br.com.pacto.recrutamento.core.entities.RespostaCandidatura.class);
+                javax.persistence.criteria.Predicate condicao = condicaoResposta(
+                        builder, resposta.get("valor"), filtroResposta);
+                sub.select(resposta.get("candidaturaId")).where(builder.and(
+                        builder.equal(resposta.get("perguntaId"), filtroResposta.getPerguntaId()), condicao));
+                predicate = builder.and(predicate, root.get("id").in(sub));
             }
             if (requisitoId != null && nivelMinimo != null) {
                 Subquery<UUID> sub = query.subquery(UUID.class);
@@ -116,19 +127,31 @@ public class CandidaturaJpaAdapter implements CandidaturaPort {
                         resposta.get("nivel").in(niveisAPartirDe(NivelAtendimentoRequisito.ALTO))));
                 predicate = builder.and(predicate, builder.not(root.get("id").in(sub)));
             }
-            if (tempoEmpresaMeses != null) {
-                java.time.LocalDate limite = java.time.LocalDate.now().minusMonths(tempoEmpresaMeses);
-                Subquery<UUID> sub = query.subquery(UUID.class);
-                javax.persistence.criteria.Root<br.com.pacto.recrutamento.core.entities.Usuario> usuario =
-                        sub.from(br.com.pacto.recrutamento.core.entities.Usuario.class);
-                sub.select(usuario.get("id")).where(builder.lessThanOrEqualTo(usuario.get("dataAdmissao"), limite));
-                predicate = builder.and(predicate, root.get("usuarioId").in(sub));
-            }
             return predicate;
         };
         Page<Candidatura> resultado = candidaturas.findAll(filtro, PageRequest.of(page, pageSize,
                 Sort.by(Sort.Direction.DESC, "criadoEm")));
         return new PaginaGenerico<>(resultado.getContent(), resultado.getTotalElements());
+    }
+
+    private javax.persistence.criteria.Predicate condicaoResposta(
+            javax.persistence.criteria.CriteriaBuilder builder,
+            javax.persistence.criteria.Path<String> campo,
+            FiltroRespostaCandidatura filtro) {
+        String valor = filtro.getValor().trim();
+        switch (filtro.getOperador()) {
+            case CONTEM: return builder.like(builder.lower(campo), "%" + valor.toLowerCase() + "%");
+            case NAO_CONTEM: return builder.notLike(builder.lower(campo), "%" + valor.toLowerCase() + "%");
+            case IGUAL: return builder.equal(builder.lower(campo), valor.toLowerCase());
+            case DIFERENTE: return builder.notEqual(builder.lower(campo), valor.toLowerCase());
+            case MAIOR_QUE: return builder.greaterThan(campo.as(Double.class), Double.valueOf(valor));
+            case MAIOR_OU_IGUAL: return builder.greaterThanOrEqualTo(campo.as(Double.class), Double.valueOf(valor));
+            case MENOR_QUE: return builder.lessThan(campo.as(Double.class), Double.valueOf(valor));
+            case MENOR_OU_IGUAL: return builder.lessThanOrEqualTo(campo.as(Double.class), Double.valueOf(valor));
+            case ANTES_DE: return builder.lessThan(campo, valor);
+            case DEPOIS_DE: return builder.greaterThan(campo, valor);
+            default: throw new IllegalArgumentException("Operador de resposta invalido");
+        }
     }
 
     @Override

@@ -92,14 +92,59 @@ public class CandidaturaService implements CandidaturaUseCase {
             return new TypedPagedResponse<>(403, USUARIO_NAO_AUTORIZADO_CONSULTAR_CANDIDATURA,
                     Collections.<CandidaturaDTO>emptyList(), query.getPage(), query.getPageSize(), 0);
         }
+        if (!filtrosRespostasValidos(query)) {
+            return new TypedPagedResponse<>(400, "Filtros de respostas invalidos",
+                    Collections.<CandidaturaDTO>emptyList(), query.getPage(), query.getPageSize(), 0);
+        }
         PaginaGenerico<Candidatura> pagina = candidaturas.listarPorVaga(query.getVagaId(),
-                query.getStatus(), query.getBusca(), query.getRequisitoId(), query.getNivelMinimo(),
-                query.getTempoEmpresaMeses(), query.getAtendeTodosRequisitos(),
+                query.getStatus(), query.getBusca(), query.getFiltrosRespostas(),
+                query.getRequisitoId(), query.getNivelMinimo(), query.getAtendeTodosRequisitos(),
                 query.getPage(), query.getPageSize());
         List<CandidaturaDTO> dados = pagina.getItens().stream().map(mapper::paraDtoComRequisitos)
                 .collect(java.util.stream.Collectors.toList());
         return new TypedPagedResponse<>(200, "Candidaturas encontradas", dados,
                 query.getPage(), query.getPageSize(), pagina.getTotalItens());
+    }
+
+    private boolean filtrosRespostasValidos(ListarCandidaturasDaVagaDTO query) {
+        for (br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura filtro
+                : query.getFiltrosRespostas()) {
+            if (filtro == null || filtro.getPerguntaId() == null || filtro.getOperador() == null
+                    || filtro.getValor() == null || filtro.getValor().trim().isEmpty()) return false;
+            PerguntaVaga pergunta = perguntas.buscarAtivaPorId(filtro.getPerguntaId()).orElse(null);
+            if (pergunta == null || !query.getVagaId().equals(pergunta.getVagaId())) return false;
+            switch (pergunta.getTipoResposta()) {
+                case NUMERO:
+                    try { Double.parseDouble(filtro.getValor()); } catch (NumberFormatException error) { return false; }
+                    if (!(filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.IGUAL
+                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.DIFERENTE
+                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MAIOR_QUE
+                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MAIOR_OU_IGUAL
+                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MENOR_QUE
+                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MENOR_OU_IGUAL)) return false;
+                    break;
+                case DATA:
+                    try { java.time.LocalDate.parse(filtro.getValor()); } catch (java.time.format.DateTimeParseException error) { return false; }
+                    if (!(filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.IGUAL
+                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.DIFERENTE
+                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.ANTES_DE
+                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.DEPOIS_DE)) return false;
+                    break;
+                case BOOLEANO:
+                    if (!("true".equalsIgnoreCase(filtro.getValor()) || "false".equalsIgnoreCase(filtro.getValor()))) return false;
+                    if (!(filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.IGUAL
+                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.DIFERENTE)) return false;
+                    break;
+                default:
+                    if (filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MAIOR_QUE
+                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MAIOR_OU_IGUAL
+                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MENOR_QUE
+                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.MENOR_OU_IGUAL
+                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.ANTES_DE
+                            || filtro.getOperador() == br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura.Operador.DEPOIS_DE) return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -238,7 +283,7 @@ public class CandidaturaService implements CandidaturaUseCase {
         candidaturas.salvarHistorico(new HistoricoCandidatura(candidatura.getId(),
                 command.getUsuarioSolicitanteId(), anterior, candidatura.getStatus(),
                 command.getFeedback()));
-        publicarAlteracao(candidatura, anterior);
+        publicarAlteracao(candidatura, anterior, command.getFeedback());
         CandidaturaDTO atualizado = mapper.paraDto(candidatura);
         return new TypedResponse<>(200, "Status da candidatura atualizado", atualizado);
     }
@@ -273,7 +318,7 @@ public class CandidaturaService implements CandidaturaUseCase {
         candidaturas.salvar(candidatura);
         candidaturas.salvarHistorico(new HistoricoCandidatura(candidatura.getId(),
                 command.getUsuarioId(), anterior, candidatura.getStatus(), null));
-        publicarAlteracao(candidatura, anterior);
+        publicarAlteracao(candidatura, anterior, null);
         return new TypedResponse<>(200, "Candidatura cancelada", mapper.paraDto(candidatura));
     }
 
@@ -306,8 +351,8 @@ public class CandidaturaService implements CandidaturaUseCase {
         publicadorEventos.publicarCriacao(candidatura);
     }
 
-    private void publicarAlteracao(Candidatura candidatura, StatusCandidatura anterior) {
-        publicadorEventos.publicarAlteracao(candidatura, anterior);
+    private void publicarAlteracao(Candidatura candidatura, StatusCandidatura anterior, String feedback) {
+        publicadorEventos.publicarAlteracao(candidatura, anterior, feedback);
     }
 
     private TypedResponse<CandidaturaDTO> erro(int status, String mensagem) {

@@ -1,34 +1,63 @@
 package br.com.pacto.recrutamento.infra.adapters.notificacao;
 
-import br.com.pacto.recrutamento.infra.projections.DestinatariosCandidaturaProjection;
-import br.com.pacto.recrutamento.infra.repositorys.notificacao.DestinatariosCandidaturaRepository;
+import br.com.pacto.recrutamento.core.entities.Candidatura;
+import br.com.pacto.recrutamento.core.entities.Vaga;
+import br.com.pacto.recrutamento.core.entities.Usuario;
+import br.com.pacto.recrutamento.infra.repositorys.candidatura.CandidaturaJpaRepository;
+import br.com.pacto.recrutamento.infra.repositorys.vaga.VagaJpaRepository;
+import br.com.pacto.recrutamento.infra.repositorys.usuario.UsuarioJpaRepository;
 import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DestinatariosCandidaturaJpaAdapterTest {
     @Test
-    void projecaoProduzResponsaveisEUsuario() {
-        UUID responsavel = UUID.randomUUID();
-        UUID outroResponsavel = UUID.randomUUID();
-        UUID usuario = UUID.randomUUID();
-        DestinatariosCandidaturaProjection primeira = projecao(responsavel, usuario);
-        DestinatariosCandidaturaProjection segunda = projecao(outroResponsavel, usuario);
-        DestinatariosCandidaturaRepository repository = id -> Arrays.asList(primeira, segunda);
+    void buscaResponsaveisDaVagaEUsuarioDaCandidatura() {
+        UUID candidaturaId = UUID.randomUUID();
+        UUID vagaId = UUID.randomUUID();
+        UUID usuarioId = UUID.randomUUID();
+        UUID responsavelId = UUID.randomUUID();
+        UUID outroResponsavelId = UUID.randomUUID();
+        Candidatura candidatura = new Candidatura(usuarioId, vagaId);
+        candidatura.setId(candidaturaId);
+        Vaga vaga = new Vaga(Arrays.asList(responsavelId, outroResponsavelId), "Vaga", "Descricao");
+        vaga.setId(vagaId);
+        CandidaturaJpaRepository candidaturas = mock(CandidaturaJpaRepository.class);
+        VagaJpaRepository vagas = mock(VagaJpaRepository.class);
+        UsuarioJpaRepository usuarios = mock(UsuarioJpaRepository.class);
+        Usuario usuario = new Usuario("candidato@pacto.com", "senha");
+        usuario.setId(usuarioId);
+        usuario.setNome("Maria Silva");
+        when(candidaturas.findById(candidaturaId)).thenReturn(Optional.of(candidatura));
+        when(vagas.findById(vagaId)).thenReturn(Optional.of(vaga));
+        when(usuarios.findById(usuarioId)).thenReturn(Optional.of(usuario));
 
-        assertThat(new DestinatariosCandidaturaJpaAdapter(repository).buscarPorCandidatura(UUID.randomUUID()))
+        assertThat(new DestinatariosCandidaturaJpaAdapter(candidaturas, vagas, usuarios)
+                .buscarPorCandidatura(candidaturaId))
                 .hasValueSatisfying(destinatarios -> {
                     assertThat(destinatarios.getResponsaveisIds())
-                            .containsExactly(responsavel, outroResponsavel);
-                    assertThat(destinatarios.getUsuarioId()).isEqualTo(usuario);
+                            .containsExactly(responsavelId, outroResponsavelId);
+                    assertThat(destinatarios.getUsuarioId()).isEqualTo(usuarioId);
+                    assertThat(destinatarios.getTituloVaga()).isEqualTo("Vaga");
+                    assertThat(destinatarios.getNomeCandidato()).isEqualTo("Maria Silva");
                 });
     }
 
-    private DestinatariosCandidaturaProjection projecao(UUID responsavel, UUID usuario) {
-        return new DestinatariosCandidaturaProjection() {
-            public UUID getResponsavelId() { return responsavel; }
-            public UUID getUsuarioId() { return usuario; }
-        };
+    @Test
+    void retornaVazioQuandoCandidaturaNaoExiste() {
+        UUID candidaturaId = UUID.randomUUID();
+        CandidaturaJpaRepository candidaturas = mock(CandidaturaJpaRepository.class);
+        VagaJpaRepository vagas = mock(VagaJpaRepository.class);
+        UsuarioJpaRepository usuarios = mock(UsuarioJpaRepository.class);
+        when(candidaturas.findById(candidaturaId)).thenReturn(Optional.empty());
+
+        assertThat(new DestinatariosCandidaturaJpaAdapter(candidaturas, vagas, usuarios)
+                .buscarPorCandidatura(candidaturaId)).isEmpty();
     }
 }

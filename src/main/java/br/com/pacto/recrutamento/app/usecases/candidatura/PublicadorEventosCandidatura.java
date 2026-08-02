@@ -22,9 +22,9 @@ class PublicadorEventosCandidatura {
         }
     }
 
-    void publicarAlteracao(Candidatura candidatura, StatusCandidatura anterior) {
+    void publicarAlteracao(Candidatura candidatura, StatusCandidatura anterior, String feedback) {
         try {
-            eventos.statusAlterado(candidatura, anterior);
+            eventos.statusAlterado(candidatura, anterior, feedback);
         } catch (RuntimeException ignored) {
             // O evento e posterior a confirmacao da alteracao e nao a desfaz.
         }

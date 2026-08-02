@@ -3,6 +3,8 @@ package br.com.pacto.recrutamento.app.dtos.candidatura;
 import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import java.util.UUID;
 import br.com.pacto.recrutamento.core.enums.NivelAtendimentoRequisito;
+import br.com.pacto.recrutamento.core.common.FiltroRespostaCandidatura;
+import java.util.List;
 
 public class ListarCandidaturasDaVagaDTO {
     private final UUID usuarioId;
@@ -11,19 +13,19 @@ public class ListarCandidaturasDaVagaDTO {
     private final int page;
     private final int pageSize;
     private final NivelAtendimentoRequisito nivelMinimo;
-    private final Integer tempoEmpresaMeses;
     private final String busca;
+    private final List<FiltroRespostaCandidatura> filtrosRespostas;
     private final UUID requisitoId;
     private final Boolean atendeTodosRequisitos;
 
     public ListarCandidaturasDaVagaDTO(UUID usuarioId, UUID vagaId,
             StatusCandidatura status, int page, int pageSize) {
-        this(usuarioId, vagaId, status, null, null, null, null, null, page, pageSize);
+        this(usuarioId, vagaId, status, null, java.util.Collections.emptyList(), null, null, null, page, pageSize);
     }
 
     public ListarCandidaturasDaVagaDTO(UUID usuarioId, UUID vagaId,
-            StatusCandidatura status, String busca, UUID requisitoId,
-            NivelAtendimentoRequisito nivelMinimo, Integer tempoEmpresaMeses,
+            StatusCandidatura status, String busca, List<FiltroRespostaCandidatura> filtrosRespostas,
+            UUID requisitoId, NivelAtendimentoRequisito nivelMinimo,
             Boolean atendeTodosRequisitos, int page, int pageSize) {
         this.usuarioId = usuarioId;
         this.vagaId = vagaId;
@@ -31,8 +33,8 @@ public class ListarCandidaturasDaVagaDTO {
         this.page = page;
         this.pageSize = pageSize;
         this.nivelMinimo = nivelMinimo;
-        this.tempoEmpresaMeses = tempoEmpresaMeses;
         this.busca = busca;
+        this.filtrosRespostas = filtrosRespostas == null ? java.util.Collections.emptyList() : filtrosRespostas;
         this.requisitoId = requisitoId;
         this.atendeTodosRequisitos = atendeTodosRequisitos;
     }
@@ -42,8 +44,8 @@ public class ListarCandidaturasDaVagaDTO {
     public int getPage() { return page; }
     public int getPageSize() { return pageSize; }
     public NivelAtendimentoRequisito getNivelMinimo() { return nivelMinimo; }
-    public Integer getTempoEmpresaMeses() { return tempoEmpresaMeses; }
     public String getBusca() { return busca; }
+    public List<FiltroRespostaCandidatura> getFiltrosRespostas() { return filtrosRespostas; }
     public UUID getRequisitoId() { return requisitoId; }
     public Boolean getAtendeTodosRequisitos() { return atendeTodosRequisitos; }
 }
