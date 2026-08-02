@@ -171,6 +171,16 @@ public class CandidaturaJpaAdapter implements CandidaturaPort {
         return candidaturas.findByIdForUpdate(id);
     }
 
+    @Override
+    public List<Candidatura> listarCancelaveisPorVaga(UUID vagaId) {
+        return candidaturas.findAllByVagaIdAndStatusIn(vagaId, java.util.Arrays.asList(
+                StatusCandidatura.RASCUNHO,
+                StatusCandidatura.ENVIADA,
+                StatusCandidatura.TRIAGEM,
+                StatusCandidatura.ENTREVISTA_COMPORTAMENTAL,
+                StatusCandidatura.ENTREVISTA_TECNICA));
+    }
+
     public boolean existePorUsuarioIdEVagaId(UUID usuarioId, UUID vagaId) {
         return candidaturas.existsByUsuarioIdAndVagaId(usuarioId, vagaId);
     }

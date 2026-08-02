@@ -27,10 +27,33 @@ lado a lado para o Compose iniciar a solução completa.
 
 ## Executar com Docker
 
+Clone os dois repositórios dentro da mesma pasta, mantendo `pacto-recrutamento-api`
+e `pacto-recrutamento-web` lado a lado:
+
+```powershell
+git clone https://github.com/4vinho/pacto-recrutamento-api.git
+git clone https://github.com/4vinho/pacto-recrutamento-web.git
+cd pacto-recrutamento-api
+```
+
+Crie o arquivo `.env` da API usando o modelo versionado:
+
 ```powershell
 Copy-Item .env.example .env
-docker compose up --build
 ```
+
+Em Linux ou macOS, use `cp .env.example .env`. Antes de iniciar, revise os valores
+do `.env`, principalmente credenciais, portas e `JWT_SECRET`. O arquivo contém toda
+a configuração necessária para o ambiente Docker local e não deve ser versionado.
+
+Por fim, suba frontend, API e serviços de infraestrutura com um único comando:
+
+```powershell
+docker compose up --watch
+```
+
+O Compose constrói as imagens quando necessário. O modo `--watch` acompanha as
+alterações da API; o frontend usa o Angular Dev Server com recarga automática.
 
 Serviços disponíveis:
 
@@ -46,15 +69,14 @@ Serviços disponíveis:
 
 O PostgreSQL e o MinIO usam volumes persistentes. Para parar sem apagar os dados,
 execute `docker compose down`. `docker compose down --volumes` também remove os
-dados locais. Para observar e reconstruir alterações da API, use
-`docker compose watch`.
+dados locais.
 
 ## Executar somente a API
 
 O perfil padrão exige estas variáveis:
 
 - `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`;
-- `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET`;
+- `MINIO_ENDPOINT`, `MINIO_PUBLIC_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET`;
 - `SERVER_PORT` e `JWT_SECRET`;
 - `MAIL_HOST` e `MAIL_PORT`.
 

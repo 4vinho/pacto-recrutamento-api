@@ -8,6 +8,7 @@ import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.ByteArrayInputStream;
 import java.time.Duration;
@@ -16,10 +17,14 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class MinioArquivoStorage implements ArquivoStoragePort {
     private final MinioClient client;
+    private final MinioClient publicClient;
     private final String bucket;
 
-    public MinioArquivoStorage(MinioClient client, MinioProperties properties) {
+    public MinioArquivoStorage(MinioClient client,
+                               @Qualifier("minioPublicClient") MinioClient publicClient,
+                               MinioProperties properties) {
         this.client = client;
+        this.publicClient = publicClient;
         this.bucket = properties.getBucket();
     }
 
@@ -52,7 +57,7 @@ public class MinioArquivoStorage implements ArquivoStoragePort {
     @Override
     public String gerarUrlTemporaria(String chave, Duration duracao) {
         try {
-            return client.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
+            return publicClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
                     .method(Method.GET)
                     .bucket(bucket)
                     .object(chave)

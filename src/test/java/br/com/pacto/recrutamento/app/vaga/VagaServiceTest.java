@@ -1,14 +1,17 @@
 package br.com.pacto.recrutamento.app.ports.out.vaga;
 
 import br.com.pacto.recrutamento.app.dtos.vaga.*;
+import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
 import br.com.pacto.recrutamento.app.usecases.vaga.VagaService;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
 import br.com.pacto.recrutamento.core.common.PaginaGenerico;
 import br.com.pacto.recrutamento.core.entities.PerguntaVaga;
+import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.RequisitoVaga;
 import br.com.pacto.recrutamento.core.entities.Vaga;
 import br.com.pacto.recrutamento.core.enums.StatusVaga;
+import br.com.pacto.recrutamento.core.enums.StatusCandidatura;
 import br.com.pacto.recrutamento.core.enums.TipoResposta;
 import org.junit.jupiter.api.Test;
 
@@ -33,8 +36,10 @@ class VagaServiceTest {
     private final MemoriaVagas vagas = new MemoriaVagas();
     private final MemoriaPerguntas perguntas = new MemoriaPerguntas();
     private final MemoriaRequisitos requisitos = new MemoriaRequisitos();
+    private final MemoriaCandidaturas candidaturas = new MemoriaCandidaturas();
     private final VagaService service = new VagaService(vagas, perguntas, requisitos,
             usuarioId -> administrador.equals(usuarioId) || segundoResponsavel.equals(usuarioId),
+            candidaturas,
             Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC));
 
     @Test
@@ -215,6 +220,34 @@ class VagaServiceTest {
     }
 
     @Test
+    void cancelaCandidaturasAtivasAoCancelarVaga() {
+        Vaga vaga = vaga();
+        vaga.setStatus(StatusVaga.PUBLICADA);
+        vagas.salvar(vaga);
+        Candidatura candidatura = candidaturas.salvar(
+                new Candidatura(UUID.randomUUID(), vaga.getId()));
+
+        TypedResponse<VagaDTO> resposta = service.alterarStatusVaga(
+                new AlterarStatusVagaDTO(administrador, vaga.getId(), StatusVaga.CANCELADA));
+
+        assertEquals(200, resposta.getStatusCode());
+        assertEquals(StatusCandidatura.CANCELADA, candidatura.getStatus());
+        assertNotNull(candidatura.getCanceladoEm());
+    }
+
+    @Test
+    void cancelaCandidaturasAtivasAoExcluirVaga() {
+        Vaga vaga = vaga();
+        vagas.salvar(vaga);
+        Candidatura candidatura = candidaturas.salvar(
+                new Candidatura(UUID.randomUUID(), vaga.getId()));
+
+        service.excluirVaga(new ExcluirVagaDTO(administrador, vaga.getId()));
+
+        assertEquals(StatusCandidatura.CANCELADA, candidatura.getStatus());
+    }
+
+    @Test
     void naoAlteraPerguntaDeOutraVaga() {
         Vaga vaga = vaga();
         Vaga outraVaga = vaga();
@@ -374,5 +407,45 @@ class VagaServiceTest {
             dados.put(requisito.getId(), requisito);
             return requisito;
         }
+    }
+
+    private static final class MemoriaCandidaturas implements CandidaturaPort {
+        private final Map<UUID, Candidatura> dados = new HashMap<>();
+
+        public PaginaGenerico<Candidatura> listarPorUsuario(UUID usuarioId, int page, int pageSize) {
+            return new PaginaGenerico<>(Collections.<Candidatura>emptyList(), 0);
+        }
+
+        public Optional<Candidatura> buscarPorId(UUID candidaturaId) {
+            return Optional.ofNullable(dados.get(candidaturaId));
+        }
+
+        public Optional<Candidatura> buscarPorIdParaAtualizacao(UUID candidaturaId) {
+            return buscarPorId(candidaturaId);
+        }
+
+        public boolean existePorUsuarioIdEVagaId(UUID usuarioId, UUID vagaId) {
+            return false;
+        }
+
+        public List<Candidatura> listarCancelaveisPorVaga(UUID vagaId) {
+            return dados.values().stream()
+                    .filter(c -> vagaId.equals(c.getVagaId()))
+                    .filter(c -> c.getStatus() != StatusCandidatura.APROVADA)
+                    .filter(c -> c.getStatus() != StatusCandidatura.REJEITADA)
+                    .filter(c -> c.getStatus() != StatusCandidatura.CANCELADA)
+                    .collect(Collectors.toList());
+        }
+
+        public Candidatura salvar(Candidatura candidatura) {
+            dados.put(candidatura.getId(), candidatura);
+            return candidatura;
+        }
+
+        public void registrarRespostasPerguntasAtomicamente(Candidatura candidatura,
+                List<br.com.pacto.recrutamento.core.entities.RespostaCandidatura> respostas) { }
+
+        public void registrarRespostasRequisitosAtomicamente(Candidatura candidatura,
+                List<br.com.pacto.recrutamento.core.entities.RespostaRequisitoCandidatura> respostas) { }
     }
 }

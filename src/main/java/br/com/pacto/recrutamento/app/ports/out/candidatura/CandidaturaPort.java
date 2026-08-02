@@ -44,6 +44,10 @@ public interface CandidaturaPort {
 
     Optional<Candidatura> buscarPorIdParaAtualizacao(UUID candidaturaId);
 
+    default List<Candidatura> listarCancelaveisPorVaga(UUID vagaId) {
+        return java.util.Collections.emptyList();
+    }
+
     boolean existePorUsuarioIdEVagaId(UUID usuarioId, UUID vagaId);
 
     default List<RespostaCandidatura> listarRespostas(UUID candidaturaId) {

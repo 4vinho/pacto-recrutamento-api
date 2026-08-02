@@ -17,8 +17,9 @@ import static org.mockito.Mockito.*;
 
 class MinioArquivoStorageTest {
     private final MinioClient client = mock(MinioClient.class);
+    private final MinioClient publicClient = mock(MinioClient.class);
     private final ArquivoStoragePort storage =
-            new MinioArquivoStorage(client, new MinioProperties("curriculos"));
+            new MinioArquivoStorage(client, publicClient, new MinioProperties("curriculos"));
 
     @Test
     void armazenaNoBucketPrivadoConfigurado() throws Exception {
@@ -45,7 +46,7 @@ class MinioArquivoStorageTest {
 
     @Test
     void delegaGeracaoDeUrlPreAssinada() throws Exception {
-        when(client.getPresignedObjectUrl(
+        when(publicClient.getPresignedObjectUrl(
                 org.mockito.ArgumentMatchers.any(GetPresignedObjectUrlArgs.class)))
                 .thenReturn("https://minio/url-assinada");
 
@@ -55,7 +56,8 @@ class MinioArquivoStorageTest {
         assertThat(url).isEqualTo("https://minio/url-assinada");
         ArgumentCaptor<GetPresignedObjectUrlArgs> args =
                 ArgumentCaptor.forClass(GetPresignedObjectUrlArgs.class);
-        verify(client).getPresignedObjectUrl(args.capture());
+        verify(publicClient).getPresignedObjectUrl(args.capture());
+        verify(client, never()).getPresignedObjectUrl(any(GetPresignedObjectUrlArgs.class));
         assertThat(args.getValue().bucket()).isEqualTo("curriculos");
         assertThat(args.getValue().object()).isEqualTo("candidato/curriculo.pdf");
         assertThat(args.getValue().expiry()).isEqualTo(300);

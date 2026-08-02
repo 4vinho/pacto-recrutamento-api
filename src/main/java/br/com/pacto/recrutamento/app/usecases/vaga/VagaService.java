@@ -4,6 +4,7 @@ import static br.com.pacto.recrutamento.core.common.ErrorMessages.*;
 
 import br.com.pacto.recrutamento.app.dtos.vaga.*;
 import br.com.pacto.recrutamento.app.ports.in.vaga.VagaUseCase;
+import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
 import br.com.pacto.recrutamento.app.ports.out.vaga.AutorizacaoVagaPort;
 import br.com.pacto.recrutamento.app.ports.out.vaga.PerguntaVagaPort;
 import br.com.pacto.recrutamento.app.ports.out.vaga.RequisitoVagaPort;
@@ -32,15 +33,17 @@ public class VagaService implements VagaUseCase {
     private final PerguntaVagaPort perguntas;
     private final RequisitoVagaPort requisitos;
     private final AutorizacaoVagaPort autorizacao;
+    private final CandidaturaPort candidaturas;
     private final Clock clock;
 
     public VagaService(VagaPort vagas, PerguntaVagaPort perguntas,
                        RequisitoVagaPort requisitos, AutorizacaoVagaPort autorizacao,
-                       Clock clock) {
+                       CandidaturaPort candidaturas, Clock clock) {
         this.vagas = vagas;
         this.perguntas = perguntas;
         this.requisitos = requisitos;
         this.autorizacao = autorizacao;
+        this.candidaturas = candidaturas;
         this.clock = clock;
     }
 
@@ -153,6 +156,7 @@ public class VagaService implements VagaUseCase {
     }
 
     @Override
+    @Transactional
     public TypedResponse<VagaDTO> alterarStatusVaga(AlterarStatusVagaDTO command) {
         if (command == null || command.getStatus() == null) return vagaErro(400, STATUS_VAGA_OBRIGATORIO);
         TypedResponse<VagaDTO> acesso = validarAcesso(command.getUsuarioSolicitanteId());
@@ -164,10 +168,13 @@ public class VagaService implements VagaUseCase {
         } catch (IllegalStateException e) {
             return vagaErro(422, e.getMessage());
         }
-        return vagaResposta(200, "Status da vaga atualizado", vagas.salvar(vaga.get()));
+        Vaga salva = vagas.salvar(vaga.get());
+        if (salva.getStatus() == StatusVaga.CANCELADA) cancelarCandidaturas(salva.getId());
+        return vagaResposta(200, "Status da vaga atualizado", salva);
     }
 
     @Override
+    @Transactional
     public TypedResponse<Void> excluirVaga(ExcluirVagaDTO command) {
         if (command == null) return vazioErro(400, DADOS_VAGA_INVALIDOS);
         TypedResponse<Void> acesso = validarAcessoVazio(command.getUsuarioSolicitanteId());
@@ -176,6 +183,7 @@ public class VagaService implements VagaUseCase {
         if (!vaga.isPresent()) return vazioErro(404, VAGA_NAO_ENCONTRADA);
         vaga.get().setExcluidoEm(agora());
         vagas.salvar(vaga.get());
+        cancelarCandidaturas(vaga.get().getId());
         return new TypedResponse<Void>(204, "Vaga excluida", null);
     }
 
@@ -313,6 +321,14 @@ public class VagaService implements VagaUseCase {
 
     private OffsetDateTime agora() {
         return OffsetDateTime.now(clock);
+    }
+
+    private void cancelarCandidaturas(UUID vagaId) {
+        OffsetDateTime data = agora();
+        candidaturas.listarCancelaveisPorVaga(vagaId).forEach(candidatura -> {
+            candidatura.cancelar(data);
+            candidaturas.salvar(candidatura);
+        });
     }
 
     private void preencher(PerguntaVaga pergunta, SalvarPerguntaVagaDTO command) {
