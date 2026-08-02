@@ -1,131 +1,100 @@
-# Recrutamento API
+# Pacto Recrutamento — API
 
-Backend do sistema de recrutamento interno, desenvolvido com Java 8, Spring Boot,
-PostgreSQL, MinIO e Flyway.
+API REST do portal interno de recrutamento. Implementada em Java 8 e Spring Boot
+2.7, com PostgreSQL, Flyway, MinIO, JWT e envio de e-mail por SMTP.
+
+## Funcionalidades
+
+- cadastro, autenticação, renovação e encerramento de sessão;
+- recuperação de senha;
+- vagas com perguntas, requisitos e múltiplos responsáveis;
+- templates reutilizáveis para criação de vagas;
+- candidatura em etapas, currículo e acompanhamento do processo seletivo;
+- avaliação com filtros, histórico, feedback e controle de concorrência;
+- notificações persistidas, envio por e-mail e retentativa automática.
+
+O detalhamento de arquitetura, regras, endpoints, fluxos e banco está em
+[DOCUMENTACAO.md](DOCUMENTACAO.md). O contrato completo e executável fica no
+Swagger.
 
 ## Requisitos
 
-Para execução com contêineres:
+Para executar toda a solução: Docker e Docker Compose. Para executar somente a
+API localmente: Java 8, Maven 3.8+, PostgreSQL, MinIO e um servidor SMTP.
 
-- Docker;
-- Docker Compose.
-
-Para execução local:
-
-- Java 8;
-- Maven 3.8+;
-- PostgreSQL;
-- MinIO;
-- um servidor SMTP, como o Mailpit.
+Os repositórios `pacto-recrutamento-api` e `pacto-recrutamento-web` devem estar
+lado a lado para o Compose iniciar a solução completa.
 
 ## Executar com Docker
 
-Copie o arquivo de exemplo e, se necessário, altere as credenciais e a chave JWT:
-
-```shell
-cp .env.example .env
-```
-
-No PowerShell:
-
 ```powershell
 Copy-Item .env.example .env
-```
-
-Suba todos os serviços:
-
-```shell
 docker compose up --build
-```
-
-Durante o desenvolvimento, o Compose Watch pode reconstruir a API quando houver
-alterações em `src` ou no `pom.xml`:
-
-```shell
-docker compose watch
 ```
 
 Serviços disponíveis:
 
 | Serviço | Endereço |
 | --- | --- |
+| Frontend | `http://localhost:4200` |
 | API | `http://localhost:8080` |
 | Swagger UI | `http://localhost:8080/swagger-ui.html` |
-| OpenAPI JSON | `http://localhost:8080/v3/api-docs` |
+| Health check | `http://localhost:8080/actuator/health` |
 | PostgreSQL | `localhost:5432` |
-| MinIO API | `http://localhost:9000` |
-| MinIO Console | `http://localhost:9001` |
+| MinIO API / console | `http://localhost:9000` / `http://localhost:9001` |
 | Mailpit | `http://localhost:8025` |
-| SMTP do Mailpit | `localhost:1025` |
 
-Os dados do PostgreSQL e do MinIO são mantidos em volumes nomeados. O Mailpit é
-destinado ao desenvolvimento local e mantém os e-mails apenas enquanto seu
-contêiner estiver em execução.
+O PostgreSQL e o MinIO usam volumes persistentes. Para parar sem apagar os dados,
+execute `docker compose down`. `docker compose down --volumes` também remove os
+dados locais. Para observar e reconstruir alterações da API, use
+`docker compose watch`.
 
-## Notificações por e-mail
+## Executar somente a API
 
-A API envia e-mails nos seguintes fluxos:
+O perfil padrão exige estas variáveis:
 
-- criação de candidatura: notifica o candidato e os responsáveis pela vaga;
-- alteração do status: notifica o candidato e informa o novo status;
-- recuperação de senha: envia um link contendo o token de redefinição.
+- `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`;
+- `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET`;
+- `SERVER_PORT` e `JWT_SECRET`;
+- `MAIL_HOST` e `MAIL_PORT`.
 
-As notificações de candidatura são persistidas antes do envio. Falhas de SMTP não
-desfazem a candidatura: o registro fica com status de falha e é reprocessado pelo
-agendador. Eventos já enviados não são enviados novamente.
+As demais opções de e-mail e retentativa têm padrões em `application.yml`. Para
+desenvolvimento, o perfil `dev` fornece padrões locais para banco, MinIO, porta e
+JWT:
 
-Para testar localmente:
+```powershell
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
 
-1. Inicie a aplicação com `docker compose up --build`.
-2. Crie uma candidatura, altere seu status ou solicite recuperação de senha.
-3. Abra `http://localhost:8025` para visualizar a mensagem capturada pelo Mailpit.
+## Contas de demonstração
 
-### Configuração de e-mail
+Criadas pelo Flyway em um banco novo:
 
-| Variável | Padrão | Finalidade |
-| --- | --- | --- |
-| `MAIL_HOST` | `localhost` | Host do servidor SMTP. No Compose, a API usa `mailpit`. |
-| `MAIL_PORT` | `1025` | Porta SMTP. |
-| `MAIL_USERNAME` | vazio | Usuário SMTP, quando exigido pelo provedor. |
-| `MAIL_PASSWORD` | vazio | Senha SMTP, quando exigida pelo provedor. |
-| `MAIL_SMTP_AUTH` | `false` | Habilita autenticação SMTP. |
-| `MAIL_STARTTLS` | `false` | Habilita STARTTLS. |
-| `MAIL_FROM` | `nao-responda@pacto.local` | Remetente das mensagens. |
-| `PASSWORD_RESET_URL` | `http://localhost:4200/auth/redefinir-senha` | Página do frontend usada no link de recuperação. |
-| `NOTIFICATION_RETRY_DELAY_MS` | `60000` | Intervalo entre ciclos de retentativa. |
-| `NOTIFICATION_MAX_ATTEMPTS` | `5` | Máximo de tentativas por notificação. |
-
-Em produção, configure um provedor SMTP real e habilite autenticação e TLS conforme
-as exigências desse provedor.
-
-## Contas iniciais
-
-Na primeira inicialização do banco, o Flyway cria uma conta para cada perfil:
-
-| Perfil | E-mail | Senha |
+| Papel | E-mail | Senha |
 | --- | --- | --- |
 | Administrador | `socrates@pacto.com` | `socrates` |
 | Responsável por vaga | `platao@pacto.com` | `platao` |
 | Candidato | `aristoteles@pacto.com` | `aristoteles` |
 
-## Executar sem Docker
+Use essas credenciais somente em desenvolvimento.
 
-Defina as variáveis obrigatórias de banco de dados, MinIO, servidor e segurança:
+## Verificação
 
-- `DATABASE_URL`, `DATABASE_USERNAME` e `DATABASE_PASSWORD`;
-- `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` e `MINIO_BUCKET`;
-- `SERVER_PORT` e `JWT_SECRET`;
-- `MAIL_HOST` e `MAIL_PORT`.
-
-As demais configurações de e-mail possuem valores padrão para desenvolvimento.
-Depois, execute:
-
-```shell
-mvn spring-boot:run
-```
-
-## Testar
-
-```shell
+```powershell
 mvn test
+mvn verify
 ```
+
+`verify` também gera a cobertura JaCoCo em `target/site/jacoco/`. As instruções de
+análise estática estão em [SONARQUBE.md](SONARQUBE.md).
+
+## Convenções operacionais
+
+- respostas usam o envelope `TypedResponse`; listas paginadas usam
+  `TypedPagedResponse`;
+- endpoints protegidos recebem `Authorization: Bearer <access-token>`;
+- migrations ficam em `src/main/resources/db/migration` e migrations aplicadas
+  nunca devem ser alteradas;
+- currículos aceitam até 5 MiB e os arquivos ficam no MinIO; o banco mantém apenas
+  seus metadados;
+- segredos e o arquivo `.env` não devem ser versionados.
