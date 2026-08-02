@@ -11,7 +11,7 @@ COPY src ./src
 
 EXPOSE 8080
 
-CMD ["mvn", "spring-boot:run", "-DskipTests"]
+CMD ["mvn", "spring-boot:run", "-Dmaven.test.skip=true"]
 
 FROM dependencies AS build
 

@@ -50,6 +50,7 @@ public class CurriculoController {
     }
 
     @GetMapping("/url")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RESPONSAVEL_VAGA', 'CANDIDATO')")
     public ResponseEntity<TypedResponse<UrlTemporariaCurriculoDTO>> gerarUrl(
             Authentication authentication, @PathVariable UUID candidaturaId) {
         return HttpResponses.from(service.gerarUrlTemporariaCurriculo(

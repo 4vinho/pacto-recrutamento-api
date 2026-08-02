@@ -6,4 +6,6 @@ import java.util.UUID;
 
 public interface AutorizacaoResponsavelCandidaturaPort {
     boolean podeGerenciar(UUID usuarioId, Vaga vaga);
+
+    boolean podeConsultarCurriculos(UUID usuarioId);
 }
