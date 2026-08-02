@@ -41,20 +41,20 @@ docker compose up --watch
 
 No Linux ou macOS, substitua `Copy-Item` por `cp`. Aguarde os health checks e abra [http://localhost:4200](http://localhost:4200).
 
-### 2. Explore os três pontos de vista
+### 2. Avalie as jornadas principais
 
-| Perfil | E-mail | Senha | O que avaliar |
-| --- | --- | --- | --- |
-| Administrador | `socrates@pacto.com` | `socrates` | templates, criação de vaga e visão de gestão |
-| Responsável | `platao@pacto.com` | `platao` | candidatos, filtros, feedback e mudança de etapa |
-| Candidato | `aristoteles@pacto.com` | `aristoteles` | vagas, candidatura em etapas e acompanhamento |
+| Perfil        | E-mail                  | Senha         | Jornada sugerida                                       |
+| ------------- | ----------------------- | ------------- | ------------------------------------------------------ |
+| Candidato     | `aristoteles@pacto.com` | `aristoteles` | consultar vagas e acompanhar uma candidatura           |
+| Responsável   | `platao@pacto.com`      | `platao`      | filtrar candidatos, registrar feedback e alterar etapa |
+| Administrador | `socrates@pacto.com`    | `socrates`    | criar template e gerenciar uma vaga                    |
 
-Sugestão de roteiro:
+Um roteiro curto que conecta frontend e backend:
 
-1. Entre como **candidato**, consulte uma vaga e acompanhe as candidaturas existentes.
-2. Entre como **responsável**, abra uma vaga e altere a etapa de um candidato com feedback.
-3. Confira o histórico da candidatura e o e-mail capturado no [Mailpit](http://localhost:8025).
-4. Entre como **administrador** e crie uma vaga a partir de um template.
+1. Entre como **candidato** e observe a candidatura dividida em perguntas, requisitos e currículo.
+2. Entre como **responsável** e avance esse candidato no processo seletivo.
+3. Confira o histórico exibido na aplicação e o e-mail gerado no [Mailpit](http://localhost:8025).
+4. Entre como **administrador** e crie uma vaga reutilizando um template.
 5. Explore e execute os endpoints pelo [Swagger UI](http://localhost:8080/swagger-ui.html).
 
 As contas e a massa de demonstração são carregadas pelo Flyway. A migration é
