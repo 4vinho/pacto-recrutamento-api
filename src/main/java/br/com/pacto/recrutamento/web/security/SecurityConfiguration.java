@@ -7,6 +7,7 @@ import br.com.pacto.recrutamento.core.common.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 public class SecurityConfiguration {
+    private static final String ADMINISTRADOR = "ADMINISTRADOR";
+    private static final String RESPONSAVEL_VAGA = "RESPONSAVEL_VAGA";
+    private static final String CANDIDATO = "CANDIDATO";
+
     @Bean
     SecurityFilterChain securityFilterChain(
             HttpSecurity http, JwtAuthenticationFilter jwtFilter, ObjectMapper objectMapper)
@@ -36,7 +41,30 @@ public class SecurityConfiguration {
                         "/swagger-ui.html",
                         "/swagger-ui/**",
                         "/actuator/health").permitAll()
-                .anyRequest().authenticated()
+                .antMatchers(HttpMethod.POST, "/auth/logout").authenticated()
+                .antMatchers("/templates-vaga/**").hasRole(ADMINISTRADOR)
+                .antMatchers(HttpMethod.GET, "/vagas/*/candidaturas")
+                    .hasAnyRole(ADMINISTRADOR, RESPONSAVEL_VAGA)
+                .antMatchers(HttpMethod.POST, "/vagas/*/candidaturas")
+                    .hasRole(CANDIDATO)
+                .antMatchers(HttpMethod.POST, "/vagas/*/candidaturas/envio")
+                    .hasRole(CANDIDATO)
+                .antMatchers(HttpMethod.GET, "/vagas/**")
+                    .hasAnyRole(ADMINISTRADOR, RESPONSAVEL_VAGA, CANDIDATO)
+                .antMatchers("/vagas/**").hasAnyRole(ADMINISTRADOR, RESPONSAVEL_VAGA)
+                .antMatchers(HttpMethod.GET, "/candidaturas/me/**").hasRole(CANDIDATO)
+                .antMatchers(HttpMethod.POST, "/candidaturas/*/respostas")
+                    .hasRole(CANDIDATO)
+                .antMatchers(HttpMethod.POST, "/candidaturas/*/requisitos")
+                    .hasRole(CANDIDATO)
+                .antMatchers(HttpMethod.POST, "/candidaturas/*/cancelamento")
+                    .hasRole(CANDIDATO)
+                .antMatchers(HttpMethod.PATCH, "/candidaturas/*/status")
+                    .hasAnyRole(ADMINISTRADOR, RESPONSAVEL_VAGA)
+                .antMatchers(HttpMethod.GET, "/candidaturas/*")
+                    .hasAnyRole(ADMINISTRADOR, RESPONSAVEL_VAGA, CANDIDATO)
+                .antMatchers("/candidaturas/*/curriculo/**").hasRole(CANDIDATO)
+                .anyRequest().denyAll()
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint((request, response, exception) -> {
