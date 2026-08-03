@@ -111,7 +111,17 @@ class TemplateVagaServiceTest {
 
         TemplateVagaService service(boolean admin) {
             return new TemplateVagaService(templates, perguntas, requisitos, vagas, perguntasVaga, requisitosVaga,
-                    id -> admin, Clock.systemUTC());
+                    new AutorizacaoTemplateVagaPort() {
+                        @Override
+                        public boolean podeManterTemplates(UUID usuarioId) {
+                            return admin;
+                        }
+
+                        @Override
+                        public boolean podeExcluirTemplates(UUID usuarioId) {
+                            return admin;
+                        }
+                    }, Clock.systemUTC());
         }
 
         TemplateVaga template() {

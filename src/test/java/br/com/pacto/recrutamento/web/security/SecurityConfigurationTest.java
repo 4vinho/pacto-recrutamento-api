@@ -1,9 +1,11 @@
 package br.com.pacto.recrutamento.web.security;
 
+import br.com.pacto.recrutamento.RecrutamentoApiApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SecurityConfigurationTest.ContractController.class)
+@ContextConfiguration(classes = RecrutamentoApiApplication.class)
 @Import({
         SecurityConfiguration.class,
         JwtAuthenticationFilter.class,
@@ -27,7 +30,7 @@ class SecurityConfigurationTest {
     void deveRestringirContratosPorPapel() throws Exception {
         devePermitir(HttpMethod.GET, "/templates-vaga", "ADMINISTRADOR");
         devePermitir(HttpMethod.GET, "/templates-vaga", "RESPONSAVEL_VAGA");
-        deveNegar(HttpMethod.POST, "/templates-vaga", "RESPONSAVEL_VAGA");
+        devePermitir(HttpMethod.POST, "/templates-vaga", "RESPONSAVEL_VAGA");
         devePermitir(HttpMethod.POST, "/vagas/1", "RESPONSAVEL_VAGA");
         deveNegar(HttpMethod.POST, "/vagas/1", "CANDIDATO");
         devePermitir(HttpMethod.POST, "/vagas/1/candidaturas", "CANDIDATO");

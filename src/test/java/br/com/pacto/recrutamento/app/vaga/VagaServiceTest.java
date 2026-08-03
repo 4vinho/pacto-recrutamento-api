@@ -2,6 +2,7 @@ package br.com.pacto.recrutamento.app.ports.out.vaga;
 
 import br.com.pacto.recrutamento.app.dtos.vaga.*;
 import br.com.pacto.recrutamento.app.ports.out.candidatura.CandidaturaPort;
+import br.com.pacto.recrutamento.app.ports.out.vaga.AutorizacaoVagaPort;
 import br.com.pacto.recrutamento.app.usecases.vaga.VagaService;
 import br.com.pacto.recrutamento.core.common.TypedResponse;
 import br.com.pacto.recrutamento.core.common.TypedPagedResponse;
@@ -38,7 +39,17 @@ class VagaServiceTest {
     private final MemoriaRequisitos requisitos = new MemoriaRequisitos();
     private final MemoriaCandidaturas candidaturas = new MemoriaCandidaturas();
     private final VagaService service = new VagaService(vagas, perguntas, requisitos,
-            usuarioId -> administrador.equals(usuarioId) || segundoResponsavel.equals(usuarioId),
+            new AutorizacaoVagaPort() {
+                @Override
+                public boolean podeManterVagas(UUID usuarioId) {
+                    return administrador.equals(usuarioId) || segundoResponsavel.equals(usuarioId);
+                }
+
+                @Override
+                public boolean podeExcluirVagas(UUID usuarioId) {
+                    return administrador.equals(usuarioId) || segundoResponsavel.equals(usuarioId);
+                }
+            },
             candidaturas,
             Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC));
 

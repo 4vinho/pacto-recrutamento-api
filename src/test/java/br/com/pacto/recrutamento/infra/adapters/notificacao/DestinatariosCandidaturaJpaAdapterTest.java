@@ -3,12 +3,14 @@ package br.com.pacto.recrutamento.infra.adapters.notificacao;
 import br.com.pacto.recrutamento.core.entities.Candidatura;
 import br.com.pacto.recrutamento.core.entities.Vaga;
 import br.com.pacto.recrutamento.core.entities.Usuario;
+import br.com.pacto.recrutamento.core.enums.NomePapel;
 import br.com.pacto.recrutamento.infra.repositorys.candidatura.CandidaturaJpaRepository;
 import br.com.pacto.recrutamento.infra.repositorys.vaga.VagaJpaRepository;
 import br.com.pacto.recrutamento.infra.repositorys.usuario.UsuarioJpaRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,6 +39,8 @@ class DestinatariosCandidaturaJpaAdapterTest {
         when(candidaturas.findById(candidaturaId)).thenReturn(Optional.of(candidatura));
         when(vagas.findById(vagaId)).thenReturn(Optional.of(vaga));
         when(usuarios.findById(usuarioId)).thenReturn(Optional.of(usuario));
+        when(usuarios.findIdsByPapelAtivo(NomePapel.RESPONSAVEL_VAGA))
+                .thenReturn(List.of(responsavelId, outroResponsavelId));
 
         assertThat(new DestinatariosCandidaturaJpaAdapter(candidaturas, vagas, usuarios)
                 .buscarPorCandidatura(candidaturaId))
